@@ -24,10 +24,10 @@ int main(int argc, char **argv)
   int fd, res;
   struct termios oldtio, newtio;
   // TP1
-  char[] buf_temp = "Teste";
+  char* buf_temp = "Teste";
   int n = sizeof(buf_temp);
   char buf[n];
-  int i; // sum = 0, speed = 0;
+  //int i; // sum = 0, speed = 0;
 
   if ((argc < 2) ||
       ((strcmp("/dev/ttyS10", argv[1]) != 0) &&
