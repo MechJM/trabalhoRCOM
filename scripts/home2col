@@ -1,0 +1,7 @@
+#!/usr/bin/bash
+#Usage: ./home2col <files_to_be_changed>
+for file in "$@"
+do
+	sed -i "s/ttyS10/ttyS0/g" $file
+	sed -i "s/ttyS11/ttyS1/g" $file
+done
