@@ -64,3 +64,13 @@ unsigned char * generate_su_tram(unsigned char address, unsigned char control)
 
     return tram;
 }
+
+int parse_tram(char * tram, int tram_size, char * data_parsed)
+{
+    if ((tram[0] != FLAG) // Checks if the first byte matches FLAG
+    || (tram[1] != COMM_SEND_REP_REC && tram[1] != COMM_REC_REP_SEND) //Checks if the second byte matches one of the possible values for the address field 
+    || (tram[2] != INFO_CTRL && tram[2] != (INFO_CTRL | S_MASK) && tram[2] != SET && tram[2] != DISC && tram[2] != UA && tram[2] != RR && tram[2] != (RR | R_MASK) && tram[2] != REJ && tram[2] != (REJ | R_MASK))) //Checks if the third byte matches one of the possible values for the control field
+    return WRONG_HEADER;
+
+    //TODO 
+}

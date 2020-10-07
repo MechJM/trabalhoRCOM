@@ -1,9 +1,13 @@
 #include <stdlib.h>
+#include <stdio.h>
 
 #pragma once
 
+//Flag
+#define FLAG 0x7e
+
+//Control Field
 #define INFO_CTRL 0x00
-#define FLAG      0x7e
 #define SET       0x03
 #define DISC      0x0b
 #define UA        0x07
@@ -12,8 +16,12 @@
 #define R_MASK    0x80
 #define S_MASK    0x40
 
+// Address Field
 #define COMM_SEND_REP_REC 0x03
 #define COMM_REC_REP_SEND 0x01
+
+//Parse Output Values
+#define WRONG_HEADER 1
 
 int r,s;
 
@@ -22,3 +30,5 @@ void setup_rs();
 unsigned char * generate_info_tram(char * data,unsigned char address,int array_size);
 
 unsigned char * generate_su_tram(unsigned char address, unsigned char control);
+
+int parse_tram(char * tram, int tram_size, char * data_parsed);

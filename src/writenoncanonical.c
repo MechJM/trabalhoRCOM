@@ -32,7 +32,9 @@ int main(int argc, char **argv)
 
   unsigned char * buf_temp = generate_su_tram(COMM_SEND_REP_REC,SET);
   
-  int n = sizeof(buf_temp);
+  //int n = sizeof(buf_temp)/sizeof(unsigned char);
+  int n = 5;
+  
   unsigned char buf[n];
   //int i; // sum = 0, speed = 0;
 
@@ -93,15 +95,6 @@ int main(int argc, char **argv)
   {
     buf[i] = buf_temp[i];
   }
-
-  /*
-  for (i = 0; i < n; i++)
-  {
-    buf[i] = 'a';
-  }
-  */
-  /*testing*/
-  //buf[25] = '\n';
 
   res = write(fd, buf, n);
   printf("%d bytes written\n", res);
