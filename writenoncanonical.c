@@ -30,12 +30,12 @@ int main(int argc, char **argv)
   char c = 0x03;
   char bcc = a ^ c;
 
-  char* buf_temp = malloc(5);
-  strcat(buf_temp,&flag);
-  strcat(buf_temp,&a);
-  strcat(buf_temp,&c);
-  strcat(buf_temp,&bcc);
-  strcat(buf_temp,&flag);
+  char *buf_temp = malloc(5);
+  strcat(buf_temp, &flag);
+  strcat(buf_temp, &a);
+  strcat(buf_temp, &c);
+  strcat(buf_temp, &bcc);
+  strcat(buf_temp, &flag);
   int n = sizeof(buf_temp);
   char buf[n];
   //int i; // sum = 0, speed = 0;
