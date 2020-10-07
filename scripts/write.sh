@@ -1,1 +1,1 @@
-./write /dev/ttyS11
+./write /dev/ttyS10

@@ -1,1 +1,1 @@
-./read /dev/ttyS10
+./read /dev/ttyS11
