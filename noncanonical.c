@@ -16,6 +16,17 @@
 
 volatile int STOP = FALSE;
 
+void checkBuffer(int fd, char buf[255])
+{
+  // Check Buff
+  if (buf[0] == '0' && buf[1] == '0') // ...
+  {
+    // Retransmit?
+    write(fd, buf, 255);
+  }
+  return;
+}
+
 int main(int argc, char **argv)
 {
   //int fd,c, res;
@@ -79,6 +90,7 @@ int main(int argc, char **argv)
   {                           /* loop for input */
     res = read(fd, buf, 255); /* returns after 5 chars have been input */
     buf[res] = 0;             /* so we can printf... */
+    checkBuffer(fd, buf);
     printf(":%s:%d\n", buf, res);
     if (buf[0] == 'z')
       STOP = TRUE;

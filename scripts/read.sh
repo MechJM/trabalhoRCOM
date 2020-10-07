@@ -1,0 +1,1 @@
+./read /dev/ttyS10
