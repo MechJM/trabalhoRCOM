@@ -1,3 +1,5 @@
+#include <stdlib.h>
+
 #pragma once
 
 #define INFO_CTRL 0x00
@@ -17,6 +19,6 @@ int r,s;
 
 void setup_rs();
 
-char * generate_info_tram(char * data,unsigned char address,int array_size);
+unsigned char * generate_info_tram(char * data,unsigned char address,int array_size);
 
-char * generate_su_tram(unsigned char address, unsigned char control);
+unsigned char * generate_su_tram(unsigned char address, unsigned char control);

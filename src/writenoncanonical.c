@@ -22,22 +22,15 @@ volatile int STOP = FALSE;
 
 int main(int argc, char **argv)
 {
+  setup_rs();
+
   //int fd,c, res;
   int fd, res;
   struct termios oldtio, newtio;
   // TP1
   // Class 2
-  char flag = 0x7E;
-  char a = 0x03;
-  char c = 0x03;
-  char bcc = a ^ c;
 
-  unsigned char buf_temp[5];
-  buf_temp[0] = flag;
-  buf_temp[1] = a;
-  buf_temp[2] = c;
-  buf_temp[3] = bcc;
-  buf_temp[4] = flag;
+  unsigned char * buf_temp = generate_su_tram(COMM_SEND_REP_REC,SET);
   
   int n = sizeof(buf_temp);
   unsigned char buf[n];

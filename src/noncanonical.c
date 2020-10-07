@@ -31,6 +31,7 @@ void checkBuffer(int fd, char buf[255])
 
 int main(int argc, char **argv)
 {
+  setup_rs();
   //int fd,c, res;
   int fd, res;
   struct termios oldtio, newtio;

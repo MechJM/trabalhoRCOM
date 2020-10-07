@@ -6,9 +6,9 @@ void setup_rs()
     s = 0;
 }
 
-char * generate_info_tram(char * data,unsigned char address,int array_size)
+unsigned char * generate_info_tram(char * data,unsigned char address,int array_size)
 {
-    char * tram = malloc((6 + array_size) * sizeof(unsigned char));
+    unsigned char * tram = malloc((6 + array_size) * sizeof(unsigned char));
     
     tram[0] = FLAG;
     tram[1] = address;
@@ -39,7 +39,7 @@ char * generate_info_tram(char * data,unsigned char address,int array_size)
     return tram;
 }
 
-char * generate_su_tram(unsigned char address, unsigned char control)
+unsigned char * generate_su_tram(unsigned char address, unsigned char control)
 {
     unsigned char * tram = malloc(5 * sizeof(unsigned char));
     tram[0] = FLAG;
