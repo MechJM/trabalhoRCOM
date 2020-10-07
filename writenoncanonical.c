@@ -24,7 +24,18 @@ int main(int argc, char **argv)
   int fd, res;
   struct termios oldtio, newtio;
   // TP1
-  char* buf_temp = "Teste";
+  // Class 2
+  char flag = 0x7E;
+  char a = 0x03;
+  char c = 0x03;
+  char bcc = a ^ c;
+
+  char* buf_temp = malloc(5);
+  strcat(buf_temp,&flag);
+  strcat(buf_temp,&a);
+  strcat(buf_temp,&c);
+  strcat(buf_temp,&bcc);
+  strcat(buf_temp,&flag);
   int n = sizeof(buf_temp);
   char buf[n];
   //int i; // sum = 0, speed = 0;
