@@ -6,33 +6,42 @@
 #include <termios.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <strings.h>
 #include <stdlib.h>
 #include <string.h>
 
+#include "tram.h"
+
 #define BAUDRATE B38400
+#define MODEMDEVICE "/dev/ttyS11"
 #define _POSIX_SOURCE 1 /* POSIX compliant source */
 #define FALSE 0
 #define TRUE 1
 
 volatile int STOP = FALSE;
 
-void checkBuffer(int fd, char buf[255])
-{
-  // Check Buff
-  if (buf[0] == '0' && buf[1] == '0') // ...
-  {
-    // Retransmit?
-    write(fd, buf, 255);
-  }
-  return;
-}
-
 int main(int argc, char **argv)
 {
   //int fd,c, res;
   int fd, res;
   struct termios oldtio, newtio;
-  char buf[255];
+  // TP1
+  // Class 2
+  char flag = 0x7E;
+  char a = 0x03;
+  char c = 0x03;
+  char bcc = a ^ c;
+
+  unsigned char buf_temp[5];
+  buf_temp[0] = flag;
+  buf_temp[1] = a;
+  buf_temp[2] = c;
+  buf_temp[3] = bcc;
+  buf_temp[4] = flag;
+  
+  int n = sizeof(buf_temp);
+  unsigned char buf[n];
+  //int i; // sum = 0, speed = 0;
 
   if ((argc < 2) ||
       ((strcmp("/dev/ttyS10", argv[1]) != 0) &&
@@ -86,21 +95,35 @@ int main(int argc, char **argv)
 
   printf("New termios structure set\n");
 
-  while (STOP == FALSE)
-  {                           /* loop for input */
-    res = read(fd, buf, 255); /* returns after 5 chars have been input */
-    buf[res] = 0;             /* so we can printf... */
-    checkBuffer(fd, buf);
-    printf(":%s:%d\n", buf, res);
-    if (buf[0] == 'z')
-      STOP = TRUE;
+  // TP1
+  for (int i = 0; i < n; i++)
+  {
+    buf[i] = buf_temp[i];
   }
 
+  /*
+  for (i = 0; i < n; i++)
+  {
+    buf[i] = 'a';
+  }
+  */
+  /*testing*/
+  //buf[25] = '\n';
+
+  res = write(fd, buf, n);
+  printf("%d bytes written\n", res);
+
   /* 
-    O ciclo WHILE deve ser alterado de modo a respeitar o indicado no gui�o 
+    O ciclo FOR e as instru��es seguintes devem ser alterados de modo a respeitar 
+    o indicado no gui�o 
   */
 
-  tcsetattr(fd, TCSANOW, &oldtio);
+  if (tcsetattr(fd, TCSANOW, &oldtio) == -1)
+  {
+    perror("tcsetattr");
+    exit(-1);
+  }
+
   close(fd);
   return 0;
 }

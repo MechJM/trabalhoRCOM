@@ -6,39 +6,35 @@
 #include <termios.h>
 #include <stdio.h>
 #include <unistd.h>
-#include <strings.h>
 #include <stdlib.h>
 #include <string.h>
 
+#include "tram.h"
+
 #define BAUDRATE B38400
-#define MODEMDEVICE "/dev/ttyS11"
 #define _POSIX_SOURCE 1 /* POSIX compliant source */
 #define FALSE 0
 #define TRUE 1
 
 volatile int STOP = FALSE;
 
+void checkBuffer(int fd, char buf[255])
+{
+  // Check Buff
+  if (buf[0] == '0' && buf[1] == '0') // ...
+  {
+    // Retransmit?
+    write(fd, buf, 255);
+  }
+  return;
+}
+
 int main(int argc, char **argv)
 {
   //int fd,c, res;
   int fd, res;
   struct termios oldtio, newtio;
-  // TP1
-  // Class 2
-  char flag = 0x7E;
-  char a = 0x03;
-  char c = 0x03;
-  char bcc = a ^ c;
-
-  char *buf_temp = malloc(5);
-  strcat(buf_temp, &flag);
-  strcat(buf_temp, &a);
-  strcat(buf_temp, &c);
-  strcat(buf_temp, &bcc);
-  strcat(buf_temp, &flag);
-  int n = sizeof(buf_temp);
-  char buf[n];
-  //int i; // sum = 0, speed = 0;
+  char buf[255];
 
   if ((argc < 2) ||
       ((strcmp("/dev/ttyS10", argv[1]) != 0) &&
@@ -92,35 +88,21 @@ int main(int argc, char **argv)
 
   printf("New termios structure set\n");
 
-  // TP1
-  for (int i = 0; i < n; i++)
-  {
-    buf[i] = buf_temp[i];
+  while (STOP == FALSE)
+  {                           /* loop for input */
+    res = read(fd, buf, 255); /* returns after 5 chars have been input */
+    buf[res] = 0;             /* so we can printf... */
+    checkBuffer(fd, buf);
+    printf(":%s:%d\n", buf, res);
+    if (buf[0] == 'z')
+      STOP = TRUE;
   }
-
-  /*
-  for (i = 0; i < n; i++)
-  {
-    buf[i] = 'a';
-  }
-  */
-  /*testing*/
-  //buf[25] = '\n';
-
-  res = write(fd, buf, n);
-  printf("%d bytes written\n", res);
 
   /* 
-    O ciclo FOR e as instru��es seguintes devem ser alterados de modo a respeitar 
-    o indicado no gui�o 
+    O ciclo WHILE deve ser alterado de modo a respeitar o indicado no gui�o 
   */
 
-  if (tcsetattr(fd, TCSANOW, &oldtio) == -1)
-  {
-    perror("tcsetattr");
-    exit(-1);
-  }
-
+  tcsetattr(fd, TCSANOW, &oldtio);
   close(fd);
   return 0;
 }
