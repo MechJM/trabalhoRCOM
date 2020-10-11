@@ -118,18 +118,18 @@ int main(int argc, char **argv)
     unsigned char * response = malloc(255*sizeof(unsigned char));
     while(timeout)
     {
-      printf("Cheguei aqui\n");
+      
       read(fd,response,1);
-      printf("Cheguei aqui2\n");
+      
       if (response[0] == FLAG)
       {
-        printf("Cheguei aqui2.5\n");
+        
         int i = 0;
         do
         {
           i++;
           read(fd,&response[i],1);
-        } while (response[i] != FLAG);
+        } while (response[i] != FLAG && timeout);
         response[i+1] = 0;
         unsigned char * received_data = malloc(255*sizeof(unsigned char));
         int parse_result = parse_tram(&response[1],i-2,received_data);
@@ -138,7 +138,7 @@ int main(int argc, char **argv)
         j = 3;
         break;
       }
-      printf("Cheguei aqui3\n");
+      
     }
     
     timeout = 1;
