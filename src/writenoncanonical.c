@@ -30,12 +30,12 @@ int main(int argc, char **argv)
   // TP1
   // Class 2
 
-  unsigned char * buf_temp = generate_su_tram(COMM_SEND_REP_REC,SET);
+  //unsigned char * buf_temp = generate_su_tram(COMM_SEND_REP_REC,SET);
   
   //int n = sizeof(buf_temp)/sizeof(unsigned char);
   int n = 5;
   
-  unsigned char buf[n];
+  //unsigned char buf[n];
   //int i; // sum = 0, speed = 0;
 
   if ((argc < 2) ||
@@ -90,13 +90,9 @@ int main(int argc, char **argv)
 
   printf("New termios structure set\n");
 
-  // TP1
-  for (int i = 0; i < n; i++)
-  {
-    buf[i] = buf_temp[i];
-  }
+  unsigned char * tram = generate_su_tram(COMM_SEND_REP_REC,SET);
 
-  res = write(fd, buf, n);
+  res = write(fd, tram, n);
   printf("%d bytes written\n", res);
 
   /* 

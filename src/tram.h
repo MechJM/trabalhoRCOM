@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <unistd.h>
 
 #pragma once
 
@@ -22,6 +23,8 @@
 
 //Parse Output Values
 #define WRONG_HEADER 1
+#define START_COMMUNICATION 2
+#define ACKNOWLEDGE_START 3
 
 int r,s;
 
@@ -31,4 +34,6 @@ unsigned char * generate_info_tram(char * data,unsigned char address,int array_s
 
 unsigned char * generate_su_tram(unsigned char address, unsigned char control);
 
-int parse_tram(char * tram, int tram_size, char * data_parsed);
+int parse_tram(unsigned char * tram, int tram_size,unsigned char * data_parsed);
+
+void process_tram_received(int parse_result, unsigned char * data_received, int port);
