@@ -25,15 +25,20 @@
 #define WRONG_HEADER 1
 #define START_COMMUNICATION 2
 #define ACKNOWLEDGE_START 3
+#define DATA_RECEIVED 4
+#define END_COMMUNICATION 5
+#define NO_ISSUE_DATA 6
+#define ISSUE_DATA 7
+#define INTEGRITY_FAILED 8
 
 int r,s;
 
 void setup_rs();
 
-unsigned char * generate_info_tram(char * data,unsigned char address,int array_size);
+unsigned char * generate_info_tram(unsigned char * data,unsigned char address,int array_size);
 
 unsigned char * generate_su_tram(unsigned char address, unsigned char control);
 
 int parse_tram(unsigned char * tram, int tram_size,unsigned char * data_parsed);
 
-void process_tram_received(int parse_result, unsigned char * data_received, int port);
+void process_tram_received(int parse_result,unsigned char * data_to_be_sent,int data_size, int port);

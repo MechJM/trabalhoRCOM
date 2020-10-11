@@ -6,7 +6,7 @@ void setup_rs()
     s = 0;
 }
 
-unsigned char * generate_info_tram(char * data,unsigned char address,int array_size)
+unsigned char * generate_info_tram(unsigned char * data,unsigned char address,int array_size)
 {
     unsigned char * tram = malloc((6 + array_size) * sizeof(unsigned char));
     
@@ -66,10 +66,6 @@ unsigned char * generate_su_tram(unsigned char address, unsigned char control)
 
 int parse_tram(unsigned char * tram, int tram_size,unsigned char * data_parsed)
 {
-    //TEMPORARY
-    tram_size=tram_size;
-    data_parsed=data_parsed;
-    //TEMPORARY
     if (  (tram[0] != COMM_SEND_REP_REC && tram[0] != COMM_REC_REP_SEND) //Checks if the second byte matches one of the possible values for the address field 
     || (tram[1] != INFO_CTRL && tram[1] != (INFO_CTRL | S_MASK) && tram[1] != SET && tram[1] != DISC && tram[1] != UA && tram[1] != RR && tram[1] != (RR | R_MASK) && tram[1] != REJ && tram[1] != (REJ | R_MASK))) //Checks if the third byte matches one of the possible values for the control field
     return WRONG_HEADER;
@@ -83,23 +79,63 @@ int parse_tram(unsigned char * tram, int tram_size,unsigned char * data_parsed)
         } 
         case UA:
         {
-            printf("Request to start communication was acknowledged.\n");
+            printf("Request to start/end communication was acknowledged.\n");
             return ACKNOWLEDGE_START;
+        }
+        case INFO_CTRL:
+        {
+            for (int i = 3; i < (tram_size + 3 - 4); i++)
+            {
+                data_parsed[i - 3] = tram[i];
+            }
+            printf("Data tram received.\n");
+            return DATA_RECEIVED;
+        }
+        case (INFO_CTRL|S_MASK):
+        {
+            for (int i = 3; i < (tram_size + 3 - 4); i++)
+            {
+                data_parsed[i - 3] = tram[i];
+            }
+            printf("Data tram received.\n");
+            return DATA_RECEIVED;
+        }
+        case DISC:
+        {
+            printf("Connection ended.\n");
+            return END_COMMUNICATION;
+        }
+        case RR:
+        {
+            printf("Data was sent without issues. Positive acknowledgment.\n");
+            return NO_ISSUE_DATA;
+        }
+        case (RR|R_MASK):
+        {
+            printf("Data was sent without issues. Positive acknowledgment.\n");
+            return NO_ISSUE_DATA;
+        }
+        case REJ:
+        {
+            printf("Data sent had issues. Negative acknowledgment.\n");
+            return ISSUE_DATA;
+        }
+        case (REJ|R_MASK):
+        {
+            printf("Data sent had issues. Negative acknowledgment.\n");
+            return ISSUE_DATA;
         }
         default: fprintf(stderr,"Invalid control byte! Value: %s\n",&tram[1]);
     }
-    //TODO
+    //TODO VERIFY BCCs
     return 0;
 }
 
-void process_tram_received(int parse_result, unsigned char * data_received, int port)
+void process_tram_received(int parse_result,unsigned char * data_to_be_sent,int data_size, int port)
 {
-    //TEMPORARY
-    data_received=data_received;
-    //TEMPORARY
-
+    
     unsigned char * response;
-    int response_size;
+    int response_size = 0;
 
     switch(parse_result)
     {
@@ -111,18 +147,45 @@ void process_tram_received(int parse_result, unsigned char * data_received, int 
         }
         case ACKNOWLEDGE_START:
         {
-            //Only for class 2 exercises
+            response = generate_info_tram(data_to_be_sent,COMM_SEND_REP_REC,data_size);
+            response_size = data_size;
+            break;
+        }
+        case WRONG_HEADER:
+        {
             return;
+        }
+        case DATA_RECEIVED:
+        {
+            response = generate_su_tram(COMM_SEND_REP_REC,RR);
+            response_size = 5;
+            break;
+        }
+        case END_COMMUNICATION:
+        {
+            response = generate_su_tram(COMM_SEND_REP_REC,DISC);
+            response_size = 5;
+            break;
+        }
+        case NO_ISSUE_DATA:
+        {
+            //TODO
+            break;
+        }
+        case ISSUE_DATA:
+        {
+            //TODO
+            break;
+        }
+        case INTEGRITY_FAILED:
+        {
+            //TODO
+            break;
         }
         default: fprintf(stderr,"Invalid parse result! Value: %d\n",parse_result);
     }
 
-    //TEMPORARY
-    response_size=response_size;
-    response=response;
-    port=port;
-    //TEMPORARY
 
-    //TODO
-    //write(port,response,response_size);
+    //TODO FINISH THIS FUNCTION
+    write(port,response,response_size);
 }

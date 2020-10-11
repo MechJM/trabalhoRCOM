@@ -106,7 +106,7 @@ int main(int argc, char **argv)
       buf[i+1] = 0;
       unsigned char * received_data = malloc(255*sizeof(unsigned char));
       int parse_result = parse_tram(&buf[1],i-2,received_data);
-      process_tram_received(parse_result,received_data,fd);
+      process_tram_received(parse_result,NULL,0,fd);
       //TODO
       break;
     }
