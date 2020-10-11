@@ -9,6 +9,7 @@
 #include <strings.h>
 #include <stdlib.h>
 #include <string.h>
+#include <signal.h>
 
 #include "tram.h"
 
@@ -20,16 +21,24 @@
 
 volatile int STOP = FALSE;
 
+int timeout;
+
+void sigalrm_handler(int signo)
+{
+  if (signo != SIGALRM) fprintf(stderr,"This signal handler shouldn't have been called. signo: %d\n",signo);
+  timeout = 0;
+}
+
 int main(int argc, char **argv)
 {
   setup_rs();
 
   //int fd,c, res;
-  int fd, res;
+  int fd;//, res;
   struct termios oldtio, newtio;
   // TP1
   // Class 2
-
+  timeout = 1;
   //unsigned char * buf_temp = generate_su_tram(COMM_SEND_REP_REC,SET);
   
   //int n = sizeof(buf_temp)/sizeof(unsigned char);
@@ -90,10 +99,52 @@ int main(int argc, char **argv)
 
   printf("New termios structure set\n");
 
+  struct sigaction action;
+  action.sa_handler = sigalrm_handler;
+  sigemptyset(&action.sa_mask);
+  action.sa_flags = 0;
+
+  if (sigaction(SIGALRM,&action,NULL) < 0) fprintf(stderr,"Couldn't install signal handler for SIGALRM.\n");
+
+
   unsigned char * tram = generate_su_tram(COMM_SEND_REP_REC,SET);
 
-  res = write(fd, tram, n);
-  printf("%d bytes written\n", res);
+  for (int j = 0; j < 3; j++)
+  {
+    write(fd, tram, n);
+    alarm(3);
+    printf("Attempting to establish connection.\n");
+    
+    unsigned char * response = malloc(255*sizeof(unsigned char));
+    while(timeout)
+    {
+      printf("Cheguei aqui\n");
+      read(fd,response,1);
+      printf("Cheguei aqui2\n");
+      if (response[0] == FLAG)
+      {
+        printf("Cheguei aqui2.5\n");
+        int i = 0;
+        do
+        {
+          i++;
+          read(fd,&response[i],1);
+        } while (response[i] != FLAG);
+        response[i+1] = 0;
+        unsigned char * received_data = malloc(255*sizeof(unsigned char));
+        int parse_result = parse_tram(&response[1],i-2,received_data);
+        process_tram_received(parse_result,received_data,fd);
+        //TODO
+        j = 3;
+        break;
+      }
+      printf("Cheguei aqui3\n");
+    }
+    
+    timeout = 1;
+  }
+
+  
 
   /* 
     O ciclo FOR e as instru��es seguintes devem ser alterados de modo a respeitar 

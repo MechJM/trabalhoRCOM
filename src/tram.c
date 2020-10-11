@@ -109,9 +109,20 @@ void process_tram_received(int parse_result, unsigned char * data_received, int 
             response_size = 5;
             break;
         }
-        default: fprintf(stderr,"Invalid parse result! Value: %d",parse_result);
+        case ACKNOWLEDGE_START:
+        {
+            //Only for class 2 exercises
+            return;
+        }
+        default: fprintf(stderr,"Invalid parse result! Value: %d\n",parse_result);
     }
 
+    //TEMPORARY
+    response_size=response_size;
+    response=response;
+    port=port;
+    //TEMPORARY
+
     //TODO
-    write(port,response,response_size);
+    //write(port,response,response_size);
 }
