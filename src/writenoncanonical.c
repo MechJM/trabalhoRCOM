@@ -1,4 +1,4 @@
-/*Non-Canonical Input Processing*/
+/* Non-Canonical Input Processing */
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -25,8 +25,49 @@ int timeout;
 
 void sigalrm_handler(int signo)
 {
-  if (signo != SIGALRM) fprintf(stderr,"This signal handler shouldn't have been called. signo: %d\n",signo);
+  if (signo != SIGALRM)
+    fprintf(stderr, "This signal handler shouldn't have been called. signo: %d\n", signo);
   timeout = 0;
+}
+
+unsigned char *readFile(unsigned char *fileName)
+{
+  printf("Reading File <%s>\n", fileName);
+  FILE *f;
+  struct stat metadata;
+  unsigned char *fileData;
+  if ((f = fopen((char *)fileName, "rb")) == NULL)
+  {
+    perror("Error Read File!");
+  }
+  stat((char *)fileName, &metadata);
+  printf("File Size =  %ld Bytes\n", metadata.st_size);
+  fileData = (unsigned char *)malloc(metadata.st_size);
+  fread(fileData, sizeof(unsigned char), metadata.st_size, f);
+  fclose(f);
+  for (unsigned int i = 0; i < sizeof(fileData); i++)
+  {
+    printf("fileData[%d] = %d\n", i, fileData[i]);
+  }
+  return fileData;
+}
+
+void restoreFile(char *fileName, unsigned char *fileData)
+{
+  FILE *f;
+  f = fopen(fileName, "w");
+  fputs((const char *)fileData, f);
+  fclose(f);
+}
+
+unsigned char *splitFileData(unsigned char *fileData, int packet_size)
+{
+  unsigned char *packet = (unsigned char *)malloc(packet_size);
+  for (int i = 0; i < packet_size; i++)
+  {
+    packet[i] = fileData[i];
+  }
+  return packet;
 }
 
 int main(int argc, char **argv)
@@ -34,16 +75,16 @@ int main(int argc, char **argv)
   setup_rs();
 
   //int fd,c, res;
-  int fd;//, res;
+  int fd; //, res;
   struct termios oldtio, newtio;
   // TP1
   // Class 2
   timeout = 1;
   //unsigned char * buf_temp = generate_su_tram(COMM_SEND_REP_REC,SET);
-  
+
   //int n = sizeof(buf_temp)/sizeof(unsigned char);
   int n = 5;
-  
+
   //unsigned char buf[n];
   //int i; // sum = 0, speed = 0;
 
@@ -54,6 +95,12 @@ int main(int argc, char **argv)
     printf("Usage:\tnserial SerialPort\n\tex: nserial /dev/ttyS11\n");
     exit(1);
   }
+
+  unsigned char *fileData = readFile((unsigned char *)argv[2]);
+  int packet_size = 64;
+  unsigned char *packet = splitFileData(fileData, packet_size);
+  // Passar fileData pela trama
+  restoreFile("testClone.txt", packet);
 
   /*
     Open serial port device for reading and writing and not as controlling tty
@@ -104,49 +151,47 @@ int main(int argc, char **argv)
   sigemptyset(&action.sa_mask);
   action.sa_flags = 0;
 
-  if (sigaction(SIGALRM,&action,NULL) < 0) fprintf(stderr,"Couldn't install signal handler for SIGALRM.\n");
+  if (sigaction(SIGALRM, &action, NULL) < 0)
+    fprintf(stderr, "Couldn't install signal handler for SIGALRM.\n");
 
-
-  unsigned char * tram = generate_su_tram(COMM_SEND_REP_REC,SET);
-  unsigned char * data_to_be_sent = NULL;
+  unsigned char *tram = generate_su_tram(COMM_SEND_REP_REC, SET);
+  unsigned char *data_to_be_sent = NULL;
   int data_size = 0;
 
   for (int j = 0; j < 3; j++)
   {
-    write(fd, tram, n);
+    int res = write(fd, tram, n);
+    printf("Writting %d Bytes\n", res);
+
     alarm(3);
     printf("Attempting to establish connection.\n");
-    
-    unsigned char * response = malloc(255*sizeof(unsigned char));
-    while(timeout)
+
+    unsigned char *response = malloc(255 * sizeof(unsigned char));
+    while (timeout)
     {
-      
-      read(fd,response,1);
-      
+
+      read(fd, response, 1);
+
       if (response[0] == FLAG)
       {
-        
+
         int i = 0;
         do
         {
           i++;
-          read(fd,&response[i],1);
+          read(fd, &response[i], 1);
         } while (response[i] != FLAG && timeout);
-        response[i+1] = 0;
-        unsigned char * received_data = malloc(255*sizeof(unsigned char));
-        int parse_result = parse_tram(&response[1],i-2,received_data);
-        process_tram_received(parse_result,data_to_be_sent,data_size,fd);
+        response[i + 1] = 0;
+        unsigned char *received_data = malloc(255 * sizeof(unsigned char));
+        int parse_result = parse_tram(&response[1], i - 2, received_data);
+        process_tram_received(parse_result, data_to_be_sent, data_size, fd);
         //TODO
         j = 3;
         break;
       }
-      
     }
-    
     timeout = 1;
   }
-
-  
 
   /* 
     O ciclo FOR e as instru��es seguintes devem ser alterados de modo a respeitar 
