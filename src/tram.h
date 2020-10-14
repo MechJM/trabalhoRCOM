@@ -42,3 +42,7 @@ unsigned char *generate_su_tram(unsigned char address, unsigned char control);
 int parse_tram(unsigned char *tram, int tram_size, unsigned char *data_parsed);
 
 void process_tram_received(int parse_result, unsigned char *data_to_be_sent, int data_size, int port);
+
+void byte_stuff(unsigned char * tram);
+
+void byte_unstuff(unsigned char * tram);

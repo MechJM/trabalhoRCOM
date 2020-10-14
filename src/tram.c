@@ -192,3 +192,9 @@ void process_tram_received(int parse_result, unsigned char *data_to_be_sent, int
     int res = write(port, response, response_size);
     printf("%d Bytes Written\n", res);
 }
+
+void byte_stuff(unsigned char * tram)
+{}
+
+void byte_unstuff(unsigned char * tram)
+{}

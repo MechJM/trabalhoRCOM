@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/bin/bash
 #Usage: ./home2col <files_to_be_changed>
 for file in "$@"
 do
