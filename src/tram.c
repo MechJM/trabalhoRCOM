@@ -68,69 +68,91 @@ unsigned char *generate_su_tram(unsigned char address, unsigned char control)
 
 int parse_tram(unsigned char *tram, int tram_size, unsigned char *data_parsed)
 {
+    //Tram must be unstuffed before being passed to this function, flags should not be included in the tram passed
     if ((tram[0] != COMM_SEND_REP_REC && tram[0] != COMM_REC_REP_SEND)                                                                                                                                                  //Checks if the second byte matches one of the possible values for the address field
         || (tram[1] != INFO_CTRL && tram[1] != (INFO_CTRL | S_MASK) && tram[1] != SET && tram[1] != DISC && tram[1] != UA && tram[1] != RR && tram[1] != (RR | R_MASK) && tram[1] != REJ && tram[1] != (REJ | R_MASK))) //Checks if the third byte matches one of the possible values for the control field
         return WRONG_HEADER;
 
+    unsigned char bcc1 = tram[0] ^ tram[1];
+
+    if (bcc1 != tram[2]) return INTEGRITY_HEADER_FAILED;
+
+    int is_info_tram = 0;
+
     switch (tram[1])
     {
-    case SET:
-    {
-        printf("Request to start communication received. Acknowledging.\n");
-        return START_COMMUNICATION;
-    }
-    case UA:
-    {
-        printf("Request to start/end communication was acknowledged.\n");
-        return ACKNOWLEDGE_START;
-    }
-    case INFO_CTRL:
-    {
-        for (int i = 3; i < (tram_size + 3 - 4); i++)
+        case SET:
         {
-            data_parsed[i - 3] = tram[i];
+            printf("Request to start communication received. Acknowledging.\n");
+            return START_COMMUNICATION;
         }
-        printf("Data tram received.\n");
-        return DATA_RECEIVED;
-    }
-    case (INFO_CTRL | S_MASK):
-    {
-        for (int i = 3; i < (tram_size + 3 - 4); i++)
+        case UA:
         {
-            data_parsed[i - 3] = tram[i];
+            printf("Request to start/end communication was acknowledged.\n");
+            return ACKNOWLEDGE_START;
         }
-        printf("Data tram received.\n");
-        return DATA_RECEIVED;
+        case INFO_CTRL:
+        {
+            is_info_tram = 1;
+            for (int i = 3; i < (tram_size + 3 - 4); i++)
+            {
+                data_parsed[i - 3] = tram[i];
+            }
+            printf("Data tram received.\n");
+            return DATA_RECEIVED;
+        }
+        case (INFO_CTRL | S_MASK):
+        {
+            is_info_tram = 1;
+            for (int i = 3; i < (tram_size + 3 - 4); i++)
+            {
+                data_parsed[i - 3] = tram[i];
+            }
+            printf("Data tram received.\n");
+            return DATA_RECEIVED;
+        }
+        case DISC:
+        {
+            printf("Connection ended.\n");
+            return END_COMMUNICATION;
+        }
+        case RR:
+        {
+            printf("Data was sent without issues. Positive acknowledgment.\n");
+            return NO_ISSUE_DATA;
+        }
+        case (RR | R_MASK):
+        {
+            printf("Data was sent without issues. Positive acknowledgment.\n");
+            return NO_ISSUE_DATA;
+        }
+        case REJ:
+        {
+            printf("Data sent had issues. Negative acknowledgment.\n");
+            return ISSUE_DATA;
+        }
+        case (REJ | R_MASK):
+        {
+            printf("Data sent had issues. Negative acknowledgment.\n");
+            return ISSUE_DATA;
+        }
+        default:
+            fprintf(stderr, "Invalid control byte! Value: %s\n", &tram[1]);
     }
-    case DISC:
+
+    unsigned char bcc2 = 0x00;
+
+    if (is_info_tram)
     {
-        printf("Connection ended.\n");
-        return END_COMMUNICATION;
+        for (int i = 3; i < (tram_size - 1); i++)
+        {
+            bcc2 ^= tram[i];
+        }
     }
-    case RR:
-    {
-        printf("Data was sent without issues. Positive acknowledgment.\n");
-        return NO_ISSUE_DATA;
-    }
-    case (RR | R_MASK):
-    {
-        printf("Data was sent without issues. Positive acknowledgment.\n");
-        return NO_ISSUE_DATA;
-    }
-    case REJ:
-    {
-        printf("Data sent had issues. Negative acknowledgment.\n");
-        return ISSUE_DATA;
-    }
-    case (REJ | R_MASK):
-    {
-        printf("Data sent had issues. Negative acknowledgment.\n");
-        return ISSUE_DATA;
-    }
-    default:
-        fprintf(stderr, "Invalid control byte! Value: %s\n", &tram[1]);
-    }
-    //TODO VERIFY BCCs
+
+    if (bcc2 != tram[tram_size - 1]) return INTEGRITY_DATA_FAILED;
+
+    //TODO Finish function
     return 0;
 }
 
@@ -179,7 +201,12 @@ void process_tram_received(int parse_result, unsigned char *data_to_be_sent, int
         //TODO
         break;
     }
-    case INTEGRITY_FAILED:
+    case INTEGRITY_HEADER_FAILED:
+    {
+        //TODO
+        break;
+    }
+    case INTEGRITY_DATA_FAILED:
     {
         //TODO
         break;
@@ -195,9 +222,8 @@ void process_tram_received(int parse_result, unsigned char *data_to_be_sent, int
 
 unsigned char * translate_array(unsigned char * array, int offset, int array_size, int starting_point)
 {
-    unsigned char * new_array = calloc(array_size + offset,1);
+    unsigned char * new_array = calloc(array_size + offset, sizeof(unsigned char));
 
-    
     for (int i = 0; i < (array_size + offset); i++)
     {
         if (i < starting_point)
@@ -218,13 +244,42 @@ unsigned char * translate_array(unsigned char * array, int offset, int array_siz
     return new_array;
 }
 
-void byte_stuff(unsigned char * tram, int tram_size)
+void byte_stuff(unsigned char * tram, int * tram_size)
 {
-    
+    for (int i = 3; i < ((*tram_size) - 1); i++)
+    {
+        if (tram[i] == FLAG)
+        {
+            tram = translate_array(tram,1,(*tram_size),i);
+            (*tram_size)++;
+            tram[i] = ESC_BYTE_1;
+            tram[++i] = ESC_BYTE_2;
+        }
+        else if (tram[i] == ESC_BYTE_1)
+        {
+            tram = translate_array(tram,1,(*tram_size),i);
+            (*tram_size)++;
+            tram[i] = ESC_BYTE_1;
+            tram[++i] = ESC_BYTE_3;
+        }
+    }
 }
 
-void byte_unstuff(unsigned char * tram, int tram_size)
+void byte_unstuff(unsigned char * tram, int * tram_size)
 {
-    tram_size = tram_size;
-    tram = tram;
+    for (int i = 2; i < (*tram_size); i++)
+    {
+        if (tram[i] == ESC_BYTE_1 && tram[i + 1] == ESC_BYTE_2)
+        {
+            tram = translate_array(tram,-1,(*tram_size),i);
+            (*tram_size)--;
+            tram[i] = FLAG;
+        }
+        else if (tram[i] == ESC_BYTE_1 && tram[i + 1] == ESC_BYTE_3)
+        {
+            tram = translate_array(tram,-1,(*tram_size),i);
+            (*tram_size)--;
+            tram[i] = ESC_BYTE_1;
+        }
+    }
 }

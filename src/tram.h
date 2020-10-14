@@ -4,6 +4,18 @@
 
 #pragma once
 
+enum states
+{
+    start,
+    flag_rcv,
+    a_rcv,
+    c_rcv,
+    bcc_ok,
+    stop
+};
+
+enum states state;
+
 // Flag
 #define FLAG 0x7e
 
@@ -29,7 +41,13 @@
 #define END_COMMUNICATION 5
 #define NO_ISSUE_DATA 6
 #define ISSUE_DATA 7
-#define INTEGRITY_FAILED 8
+#define INTEGRITY_HEADER_FAILED 8
+#define INTEGRITY_DATA_FAILED 9
+
+//Escape sequences
+#define ESC_BYTE_1 0x7d
+#define ESC_BYTE_2 0x5e
+#define ESC_BYTE_3 0x5d
 
 int r, s;
 
@@ -45,6 +63,6 @@ void process_tram_received(int parse_result, unsigned char *data_to_be_sent, int
 
 unsigned char * translate_array(unsigned char * array, int offset, int array_size, int starting_point);
 
-void byte_stuff(unsigned char * tram, int tram_size);
+void byte_stuff(unsigned char * tram, int * tram_size);
 
-void byte_unstuff(unsigned char * tram, int tram_size);
+void byte_unstuff(unsigned char * tram, int * tram_size);
