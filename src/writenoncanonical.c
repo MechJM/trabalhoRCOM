@@ -97,10 +97,8 @@ int main(int argc, char **argv)
   }
 
   unsigned char *fileData = readFile((unsigned char *)argv[2]);
-  int packet_size = 64;
+  int packet_size = 650;
   unsigned char *packet = splitFileData(fileData, packet_size);
-  // Passar fileData pela trama
-  restoreFile("testClone.txt", packet);
 
   /*
     Open serial port device for reading and writing and not as controlling tty
@@ -185,7 +183,11 @@ int main(int argc, char **argv)
         unsigned char *received_data = malloc(255 * sizeof(unsigned char));
         int parse_result = parse_tram(&response[1], i - 2, received_data);
         process_tram_received(parse_result, data_to_be_sent, data_size, fd);
-        //TODO
+
+        // TODO
+        printf("Sending Simple Packet With %d Bytes...\n", packet_size);
+        write(fd, packet, packet_size);
+
         j = 3;
         break;
       }

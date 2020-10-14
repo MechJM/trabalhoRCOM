@@ -20,21 +20,11 @@ volatile int STOP = FALSE;
 
 void restoreFile(char *fileName, unsigned char *fileData)
 {
+  printf("Restoring File...\n");
   FILE *f;
   f = fopen(fileName, "w");
   fputs((const char *)fileData, f);
   fclose(f);
-}
-
-void checkBuffer(int fd, char buf[255])
-{
-  // Check Buff
-  if (buf[0] == '0' && buf[1] == '0') // ...
-  {
-    // Retransmit?
-    write(fd, buf, 255);
-  }
-  return;
 }
 
 int main(int argc, char **argv)
@@ -43,7 +33,8 @@ int main(int argc, char **argv)
   //int fd,c, res;
   int fd, res;
   struct termios oldtio, newtio;
-  unsigned char buf[255];
+  int packet_size = 650;
+  unsigned char buf[packet_size];
 
   if ((argc < 2) ||
       ((strcmp("/dev/ttyS10", argv[1]) != 0) &&
@@ -101,7 +92,6 @@ int main(int argc, char **argv)
   {                         /* loop for input */
     res = read(fd, buf, 1); /* returns after 5 chars have been input */
     buf[res] = 0;           /* so we can printf... */
-    //checkBuffer(fd, buf);
     if (buf[0] == FLAG)
     {
       int i = 0;
@@ -114,7 +104,11 @@ int main(int argc, char **argv)
       unsigned char *received_data = malloc(255 * sizeof(unsigned char));
       int parse_result = parse_tram(&buf[1], i - 2, received_data);
       process_tram_received(parse_result, NULL, 0, fd);
-      //TODO
+
+      res = read(fd, buf, packet_size);
+      printf("Received Packet With %d Bytes...\n", res);
+      restoreFile("test_copy.txt", buf);
+
       break;
     }
     /*
