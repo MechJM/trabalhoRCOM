@@ -43,6 +43,8 @@ int parse_tram(unsigned char *tram, int tram_size, unsigned char *data_parsed);
 
 void process_tram_received(int parse_result, unsigned char *data_to_be_sent, int data_size, int port);
 
-void byte_stuff(unsigned char * tram);
+unsigned char * translate_array(unsigned char * array, int offset, int array_size, int starting_point);
 
-void byte_unstuff(unsigned char * tram);
+void byte_stuff(unsigned char * tram, int tram_size);
+
+void byte_unstuff(unsigned char * tram, int tram_size);

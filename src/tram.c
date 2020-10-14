@@ -193,8 +193,38 @@ void process_tram_received(int parse_result, unsigned char *data_to_be_sent, int
     printf("%d Bytes Written\n", res);
 }
 
-void byte_stuff(unsigned char * tram)
-{}
+unsigned char * translate_array(unsigned char * array, int offset, int array_size, int starting_point)
+{
+    unsigned char * new_array = calloc(array_size + offset,1);
 
-void byte_unstuff(unsigned char * tram)
-{}
+    
+    for (int i = 0; i < (array_size + offset); i++)
+    {
+        if (i < starting_point)
+        {
+            new_array[i] = array[i];
+        }
+        else if (offset > 0)
+        {
+            new_array[i + offset] = array[i];
+        }
+        else
+        {
+            new_array[i] = array[i - offset];
+        }
+    }
+    
+    free(array);
+    return new_array;
+}
+
+void byte_stuff(unsigned char * tram, int tram_size)
+{
+    
+}
+
+void byte_unstuff(unsigned char * tram, int tram_size)
+{
+    tram_size = tram_size;
+    tram = tram;
+}
