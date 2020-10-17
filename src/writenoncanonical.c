@@ -73,7 +73,7 @@ unsigned char *splitFileData(unsigned char *fileData, int packet_size)
 int main(int argc, char **argv)
 {
   setup_rs();
-
+  data_bytes_received = 0;
   //int fd,c, res;
   int fd; //, res;
   struct termios oldtio, newtio;
