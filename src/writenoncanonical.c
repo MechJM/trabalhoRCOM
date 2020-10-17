@@ -74,6 +74,7 @@ int main(int argc, char **argv)
 {
   setup_rs();
   data_bytes_received = 0;
+  sender = 1;
   //int fd,c, res;
   int fd; //, res;
   struct termios oldtio, newtio;

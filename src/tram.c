@@ -226,26 +226,28 @@ void process_tram_received(struct parse_results * results, unsigned char *data_t
             response = generate_su_tram(COMM_SEND_REP_REC, UA);
             response_size = 5;
             break;
-        }/*
-        case ACKNOWLEDGE_START:
+        }
+        case UA:
         {
-            response = generate_info_tram(data_to_be_sent, COMM_SEND_REP_REC, data_size);
-            response_size = data_size;
+            if (sender)
+            {
+                response = generate_info_tram(data_to_be_sent, COMM_SEND_REP_REC, data_size);
+                response_size = data_size;
+            }
+            else return;
             break;
-        }*/
-        /*
-        case END_COMMUNICATION:
+        }
+        case DISC:
         {
-            response = generate_su_tram(COMM_SEND_REP_REC, DISC);
+            if (!sender) response = generate_su_tram(COMM_REC_REP_SEND, DISC);
+            else response = generate_su_tram(COMM_REC_REP_SEND, UA);
             response_size = 5;
             break;
-        }*/
-        
+        }
         default:
             fprintf(stderr, "Invalid control field! Value: %d\n", results->control_field);
     }
 
-    //TODO FINISH THIS FUNCTION
     int res = write(port, response, response_size);
     printf("%d Bytes Written\n", res);
 }

@@ -56,6 +56,8 @@ int last_s,last_r;
 
 long int data_bytes_received;
 
+int sender; // boolean that indicates whether the program running is the sender or the receiver 
+
 void setup_rs();
 
 unsigned char *generate_info_tram(unsigned char *data, unsigned char address, int array_size);
