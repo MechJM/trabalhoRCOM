@@ -191,7 +191,7 @@ struct parse_results * parse_tram(unsigned char *tram, int tram_size)
     return result;
 }
 
-void process_tram_received(struct parse_results * results, unsigned char *data_to_be_sent, int data_size, int port)
+void process_tram_received(struct parse_results * results, int port)
 {
     unsigned char *response;
     int response_size = 0;
@@ -231,8 +231,8 @@ void process_tram_received(struct parse_results * results, unsigned char *data_t
         {
             if (sender)
             {
-                response = generate_info_tram(data_to_be_sent, COMM_SEND_REP_REC, data_size);
-                response_size = data_size;
+                response = generate_info_tram(data_to_be_sent, COMM_SEND_REP_REC, to_be_sent_size);
+                response_size = to_be_sent_size + 6;
             }
             else return;
             break;
@@ -244,9 +244,37 @@ void process_tram_received(struct parse_results * results, unsigned char *data_t
             response_size = 5;
             break;
         }
+        case RR:
+        {
+            last_data_sent = data_to_be_sent;
+            response = generate_info_tram(data_to_be_sent, COMM_SEND_REP_REC, to_be_sent_size);
+            response_size = to_be_sent_size + 6;
+            break;
+        }
+        case RR | R_MASK:
+        {
+            last_data_sent = data_to_be_sent;
+            response = generate_info_tram(data_to_be_sent, COMM_SEND_REP_REC, to_be_sent_size);
+            response_size = to_be_sent_size + 6;
+            break;
+        }
+        case REJ:
+        {
+            response = generate_info_tram(last_data_sent, COMM_SEND_REP_REC, last_data_size);
+            response_size = last_data_size + 6;
+            break;
+        }
+        case REJ | R_MASK:
+        {
+            response = generate_info_tram(last_data_sent, COMM_SEND_REP_REC, last_data_size);
+            response_size = last_data_size + 6;
+            break;
+        }
         default:
             fprintf(stderr, "Invalid control field! Value: %d\n", results->control_field);
     }
+
+    //TODO Find better way to figure out which data needs to be/was sent
 
     int res = write(port, response, response_size);
     printf("%d Bytes Written\n", res);

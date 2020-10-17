@@ -4,7 +4,7 @@
 
 #pragma once
 
-enum states
+enum set_states
 {
     start,
     flag_rcv,
@@ -13,8 +13,6 @@ enum states
     bcc_ok,
     stop
 };
-
-enum states state;
 
 // Flag
 #define FLAG 0x7e
@@ -33,6 +31,11 @@ enum states state;
 #define COMM_SEND_REP_REC 0x03
 #define COMM_REC_REP_SEND 0x01
 
+//Escape sequences
+#define ESC_BYTE_1 0x7d
+#define ESC_BYTE_2 0x5e
+#define ESC_BYTE_3 0x5d
+
 //Parse results
 struct parse_results
 {
@@ -45,11 +48,6 @@ struct parse_results
     unsigned char address_field; //value of the address field
 };
 
-//Escape sequences
-#define ESC_BYTE_1 0x7d
-#define ESC_BYTE_2 0x5e
-#define ESC_BYTE_3 0x5d
-
 int r, s;
 
 int last_s,last_r;
@@ -57,6 +55,10 @@ int last_s,last_r;
 long int data_bytes_received;
 
 int sender; // boolean that indicates whether the program running is the sender or the receiver 
+
+unsigned char * last_data_sent, data_to_be_sent;
+
+int last_data_size, to_be_sent_size;
 
 void setup_rs();
 
@@ -66,7 +68,7 @@ unsigned char *generate_su_tram(unsigned char address, unsigned char control);
 
 struct parse_results * parse_tram(unsigned char *tram, int tram_size);
 
-void process_tram_received(struct parse_results * results, unsigned char *data_to_be_sent, int data_size, int port);
+void process_tram_received(struct parse_results * results, int port);
 
 unsigned char * translate_array(unsigned char * array, int offset, int array_size, int starting_point);
 
