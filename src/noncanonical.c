@@ -18,7 +18,7 @@
 
 volatile int STOP = FALSE;
 
-void restoreFile(char *fileName, unsigned char *fileData)
+void restoreSimpleFile(char *fileName, unsigned char *fileData)
 {
   printf("Restoring File...\n");
   FILE *f;
@@ -107,7 +107,7 @@ int main(int argc, char **argv)
 
       res = read(fd, buf, packet_size);
       printf("Received Packet With %d Bytes...\n", res);
-      restoreFile("test_copy.txt", buf);
+      restoreSimpleFile("test_copy.txt", buf);
 
       break;
     }

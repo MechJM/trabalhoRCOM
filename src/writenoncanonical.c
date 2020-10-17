@@ -22,6 +22,9 @@
 volatile int STOP = FALSE;
 
 int timeout;
+long int file_size;
+int packet_size = 127;
+int packet_num;
 
 void sigalrm_handler(int signo)
 {
@@ -41,33 +44,60 @@ unsigned char *readFile(unsigned char *fileName)
     perror("Error Read File!");
   }
   stat((char *)fileName, &metadata);
-  printf("File Size =  %ld Bytes\n", metadata.st_size);
-  fileData = (unsigned char *)malloc(metadata.st_size);
-  fread(fileData, sizeof(unsigned char), metadata.st_size, f);
+  file_size = metadata.st_size;
+  printf("File Size =  %ld Bytes\n", file_size);
+  fileData = (unsigned char *)malloc(file_size);
+  fread(fileData, sizeof(unsigned char), file_size, f);
   fclose(f);
+  /*
   for (unsigned int i = 0; i < sizeof(fileData); i++)
   {
     printf("fileData[%d] = %d\n", i, fileData[i]);
   }
+  */
   return fileData;
 }
 
-void restoreFile(char *fileName, unsigned char *fileData)
+unsigned char *splitFileData(unsigned char *fileData, int x, int packet_size)
 {
+  unsigned char *packet_temp = (unsigned char *)malloc(packet_size);
+  int i;
+  int j;
+  for (j = 0, i = x; i < packet_size; i++, j++)
+  {
+    packet_temp[j] = fileData[i];
+  }
+  return packet_temp;
+}
+
+void savePackets(unsigned char *packet[], unsigned char *fileData)
+{
+  for (int i = 0; i < packet_num; i++)
+  {
+    packet[i] = splitFileData(fileData, packet_size * i, i * packet_size + packet_size);
+    printf("Packet[%d] Saved!\n", i);
+  }
+}
+
+void restoreFile(char *fileName, unsigned char *packet[], int packet_num)
+{
+  printf("Restoring File...\n");
+  FILE *f;
+  f = fopen(fileName, "w");
+  for (int i = 0; i < packet_num; i++)
+  {
+    fputs((const char *)packet[i], f);
+  }
+  fclose(f);
+}
+
+void restoreSimpleFile(char *fileName, unsigned char *fileData)
+{
+  printf("Restoring File...\n");
   FILE *f;
   f = fopen(fileName, "w");
   fputs((const char *)fileData, f);
   fclose(f);
-}
-
-unsigned char *splitFileData(unsigned char *fileData, int packet_size)
-{
-  unsigned char *packet = (unsigned char *)malloc(packet_size);
-  for (int i = 0; i < packet_size; i++)
-  {
-    packet[i] = fileData[i];
-  }
-  return packet;
 }
 
 int main(int argc, char **argv)
@@ -97,8 +127,13 @@ int main(int argc, char **argv)
   }
 
   unsigned char *fileData = readFile((unsigned char *)argv[2]);
-  int packet_size = 650;
-  unsigned char *packet = splitFileData(fileData, packet_size);
+  packet_num = file_size / packet_size;
+  unsigned char *packet[packet_num];
+  printf("Created %d Packets...\n", packet_num);
+  savePackets(packet, fileData);
+  printf("Packets Ready To Be Sent!\n");
+  char *restoredFileName = "copy_test.txt";
+  restoreFile(restoredFileName, packet, packet_num);
 
   /*
     Open serial port device for reading and writing and not as controlling tty
@@ -186,7 +221,7 @@ int main(int argc, char **argv)
 
         // TODO
         printf("Sending Simple Packet With %d Bytes...\n", packet_size);
-        write(fd, packet, packet_size);
+        write(fd, packet[0], packet_size);
 
         j = 3;
         break;
