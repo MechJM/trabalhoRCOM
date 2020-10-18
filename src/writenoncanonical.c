@@ -83,7 +83,7 @@ void restoreFile(char *fileName, unsigned char *packet[], int packet_num)
 {
   printf("Restoring File...\n");
   FILE *f;
-  f = fopen(fileName, "w");
+  f = fopen(fileName, "wb");
   for (int i = 0; i < packet_num; i++)
   {
     fputs((const char *)packet[i], f);
@@ -132,7 +132,7 @@ int main(int argc, char **argv)
   printf("Created %d Packets...\n", packet_num);
   savePackets(packet, fileData);
   printf("Packets Ready To Be Sent!\n");
-  char *restoredFileName = "copy_test.txt";
+  char *restoredFileName = "test_cloned.txt";
   restoreFile(restoredFileName, packet, packet_num);
 
   /*
