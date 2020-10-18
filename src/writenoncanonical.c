@@ -82,21 +82,20 @@ void savePackets(unsigned char *packet[], unsigned char *fileData)
 void restoreFile(char *fileName, unsigned char *packet[], int packet_num)
 {
   printf("Restoring File...\n");
-  FILE *f;
-  f = fopen(fileName, "wb");
+  FILE *f = fopen((char *)fileName, "wb+");
   for (int i = 0; i < packet_num; i++)
   {
-    fputs((const char *)packet[i], f);
+    fwrite((void *)packet[i], 1, packet_size, f);
   }
+  printf("File Restored!\n");
   fclose(f);
 }
 
-void restoreSimpleFile(char *fileName, unsigned char *fileData)
+void restoreSimpleFile(char *fileName, unsigned char *fileData, long int file_size)
 {
-  printf("Restoring File...\n");
-  FILE *f;
-  f = fopen(fileName, "w");
-  fputs((const char *)fileData, f);
+  FILE *f = fopen((char *)fileName, "wb+");
+  fwrite((void *)fileData, 1, file_size, f);
+  printf("New File Created!\n");
   fclose(f);
 }
 
@@ -127,12 +126,20 @@ int main(int argc, char **argv)
   }
 
   unsigned char *fileData = readFile((unsigned char *)argv[2]);
-  packet_num = file_size / packet_size;
+  //restoreSimpleFile("restoreSimpleFile.txt", fileData, file_size);
+  if (file_size % packet_size != 0)
+  {
+    packet_num = file_size / packet_size + 1;
+  }
+  else
+  {
+    packet_num = file_size / packet_size;
+  }
   unsigned char *packet[packet_num];
   printf("Created %d Packets...\n", packet_num);
   savePackets(packet, fileData);
   printf("Packets Ready To Be Sent!\n");
-  char *restoredFileName = "test_cloned.txt";
+  char *restoredFileName = "restoreFile.gif";
   restoreFile(restoredFileName, packet, packet_num);
 
   /*

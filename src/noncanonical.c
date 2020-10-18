@@ -18,12 +18,28 @@
 
 volatile int STOP = FALSE;
 
-void restoreSimpleFile(char *fileName, unsigned char *fileData)
+int timeout;
+long int file_size;
+int packet_size = 127;
+int packet_num;
+
+void restoreFile(char *fileName, unsigned char *packet[], int packet_num)
 {
   printf("Restoring File...\n");
-  FILE *f;
-  f = fopen(fileName, "w");
-  fputs((const char *)fileData, f);
+  FILE *f = fopen((char *)fileName, "wb+");
+  for (int i = 0; i < packet_num; i++)
+  {
+    fwrite((void *)packet[i], 1, packet_size, f);
+  }
+  printf("File Restored!\n");
+  fclose(f);
+}
+
+void restoreSimpleFile(char *fileName, unsigned char *fileData, long int file_size)
+{
+  FILE *f = fopen((char *)fileName, "wb+");
+  fwrite((void *)fileData, 1, file_size, f);
+  printf("New File Created!\n");
   fclose(f);
 }
 
@@ -107,7 +123,7 @@ int main(int argc, char **argv)
 
       res = read(fd, buf, packet_size);
       printf("Received Packet With %d Bytes...\n", res);
-      restoreSimpleFile("test_copy.txt", buf);
+      //restoreSimpleFile("restoreSimpleFile.txt", fileData, file_size);
 
       break;
     }
