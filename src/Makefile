@@ -1,7 +1,7 @@
 CC=gcc
 CFLAGS= -Wall -Wextra -Werror -pedantic -rdynamic
-WRITE_OBJECTS= writenoncanonical.o tram.o
-READ_OBJECTS= noncanonical.o tram.o
+WRITE_OBJECTS= writenoncanonical.o tram.o state_machine.o
+READ_OBJECTS= noncanonical.o tram.o state_machine.o
 
 default: read write lesser_clean
 
@@ -19,6 +19,9 @@ noncanonical.o:	noncanonical.c
 
 writenoncanonical.o: writenoncanonical.c
 	$(CC) $(CFLAGS) -c writenoncanonical.c
+
+state_machine.o: state_machine.c state_machine.h tram.h
+	$(CC) $(CFLAGS) -c state_machine.c
 
 lesser_clean:
 	rm -rf *.o

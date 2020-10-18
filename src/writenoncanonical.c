@@ -12,6 +12,7 @@
 #include <signal.h>
 
 #include "tram.h"
+#include "state_machine.h"
 
 #define BAUDRATE B38400
 #define MODEMDEVICE "/dev/ttyS11"
@@ -20,8 +21,6 @@
 #define TRUE 1
 
 volatile int STOP = FALSE;
-
-int timeout;
 
 void sigalrm_handler(int signo)
 {

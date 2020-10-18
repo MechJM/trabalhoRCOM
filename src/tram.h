@@ -4,16 +4,6 @@
 
 #pragma once
 
-enum set_states
-{
-    start,
-    flag_rcv,
-    a_rcv,
-    c_rcv,
-    bcc_ok,
-    stop
-};
-
 // Flag
 #define FLAG 0x7e
 

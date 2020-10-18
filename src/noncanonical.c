@@ -10,6 +10,7 @@
 #include <string.h>
 
 #include "tram.h"
+#include "state_machine.h"
 
 #define BAUDRATE B38400
 #define _POSIX_SOURCE 1 /* POSIX compliant source */

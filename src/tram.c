@@ -270,8 +270,8 @@ void process_tram_received(struct parse_results * results, int port)
             response_size = last_data_size + 6;
             break;
         }
-        default:
-            fprintf(stderr, "Invalid control field! Value: %d\n", results->control_field);
+        default: break;
+            //fprintf(stderr, "Invalid control field! Value: %d\n", results->control_field);
     }
 
     //TODO Find better way to figure out which data needs to be/was sent
