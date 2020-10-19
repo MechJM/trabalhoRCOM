@@ -26,6 +26,9 @@
 #define ESC_BYTE_2 0x5e
 #define ESC_BYTE_3 0x5d
 
+//Data received
+//unsigned char * packet;
+
 //Parse results
 struct parse_results
 {
@@ -46,7 +49,7 @@ long int data_bytes_received;
 
 int sender; // boolean that indicates whether the program running is the sender or the receiver 
 
-unsigned char * last_data_sent, data_to_be_sent;
+unsigned char * last_data_sent, *data_to_be_sent;
 
 int last_data_size, to_be_sent_size;
 

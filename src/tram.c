@@ -90,7 +90,7 @@ struct parse_results * parse_tram(unsigned char *tram, int tram_size)
 
     unsigned char bcc1 = tram[0] ^ tram[1];
 
-    if (bcc1 != tram[2]) return result->header_validity = 0;
+    if (bcc1 != tram[2]) result->header_validity = 0;
 
     int is_info_tram = 0;
 
@@ -203,7 +203,7 @@ void process_tram_received(struct parse_results * results, int port)
         {
             for (int i = 0; i < results->tram_size - 4; i++)
             {
-                packet[data_bytes_received++] = results->received_data[i];
+                //packet[data_bytes_received++] = results->received_data[i];
             }
         }
         else free(results->received_data);
@@ -214,7 +214,7 @@ void process_tram_received(struct parse_results * results, int port)
     if (results->received_data != NULL && results->header_validity && !results->data_integrity)
     {
         if (!results->duplicate) response = generate_su_tram(COMM_SEND_REP_REC,REJ);
-        else response_size = generate_su_tram(COMM_SEND_REP_REC,RR);
+        else response = generate_su_tram(COMM_SEND_REP_REC,RR);
         response_size = 5;
     }
 
