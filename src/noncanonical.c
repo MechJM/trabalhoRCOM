@@ -10,6 +10,7 @@
 #include <string.h>
 
 #include "tram.h"
+#include "state_machine.h"
 
 #define BAUDRATE B38400
 #define _POSIX_SOURCE 1 /* POSIX compliant source */
@@ -46,6 +47,8 @@ void restoreSimpleFile(char *fileName, unsigned char *fileData, long int file_si
 int main(int argc, char **argv)
 {
   setup_rs();
+  data_bytes_received = 0;
+  sender = 0;
   //int fd,c, res;
   int fd, res;
   struct termios oldtio, newtio;

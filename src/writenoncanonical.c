@@ -12,6 +12,7 @@
 #include <signal.h>
 
 #include "tram.h"
+#include "state_machine.h"
 
 #define BAUDRATE B38400
 #define MODEMDEVICE "/dev/ttyS11"
@@ -102,7 +103,8 @@ void restoreSimpleFile(char *fileName, unsigned char *fileData, long int file_si
 int main(int argc, char **argv)
 {
   setup_rs();
-
+  data_bytes_received = 0;
+  sender = 1;
   //int fd,c, res;
   int fd; //, res;
   struct termios oldtio, newtio;

@@ -4,18 +4,6 @@
 
 #pragma once
 
-enum states
-{
-    start,
-    flag_rcv,
-    a_rcv,
-    c_rcv,
-    bcc_ok,
-    stop
-};
-
-enum states state;
-
 // Flag
 #define FLAG 0x7e
 
@@ -33,23 +21,34 @@ enum states state;
 #define COMM_SEND_REP_REC 0x03
 #define COMM_REC_REP_SEND 0x01
 
-// Parse Output Values
-#define WRONG_HEADER 1
-#define START_COMMUNICATION 2
-#define ACKNOWLEDGE_START 3
-#define DATA_RECEIVED 4
-#define END_COMMUNICATION 5
-#define NO_ISSUE_DATA 6
-#define ISSUE_DATA 7
-#define INTEGRITY_HEADER_FAILED 8
-#define INTEGRITY_DATA_FAILED 9
-
 //Escape sequences
 #define ESC_BYTE_1 0x7d
 #define ESC_BYTE_2 0x5e
 #define ESC_BYTE_3 0x5d
 
+//Parse results
+struct parse_results
+{
+    unsigned char * received_data; //NULL if it's not info tram
+    int tram_size; //size of the tram in bytes
+    int duplicate; //boolean to indicate if the tram received is a duplicate or not
+    int data_integrity; //boolean to indicate if bcc2 checks out
+    int header_validity; //boolean to indicate if bbc1 checks out and the values are valid
+    unsigned char control_field; //value of the control field
+    unsigned char address_field; //value of the address field
+};
+
 int r, s;
+
+int last_s,last_r;
+
+long int data_bytes_received;
+
+int sender; // boolean that indicates whether the program running is the sender or the receiver 
+
+unsigned char * last_data_sent, data_to_be_sent;
+
+int last_data_size, to_be_sent_size;
 
 void setup_rs();
 
@@ -57,9 +56,9 @@ unsigned char *generate_info_tram(unsigned char *data, unsigned char address, in
 
 unsigned char *generate_su_tram(unsigned char address, unsigned char control);
 
-int parse_tram(unsigned char *tram, int tram_size, unsigned char *data_parsed);
+struct parse_results * parse_tram(unsigned char *tram, int tram_size);
 
-void process_tram_received(int parse_result, unsigned char *data_to_be_sent, int data_size, int port);
+void process_tram_received(struct parse_results * results, int port);
 
 unsigned char * translate_array(unsigned char * array, int offset, int array_size, int starting_point);
 
