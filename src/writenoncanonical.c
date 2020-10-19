@@ -23,7 +23,6 @@
 volatile int STOP = FALSE;
 
 long int file_size;
-int packet_size = 127;
 int packet_num;
 
 void sigalrm_handler(int signo)
@@ -101,9 +100,10 @@ void restoreSimpleFile(char *fileName, unsigned char *fileData, long int file_si
 
 int main(int argc, char **argv)
 {
-  setup_rs();
-  data_bytes_received = 0;
+  packet_size = 127;
   sender = 1;
+  setup_initial_values();
+  
   //int fd,c, res;
   int fd; //, res;
   struct termios oldtio, newtio;
@@ -136,9 +136,9 @@ int main(int argc, char **argv)
   {
     packet_num = file_size / packet_size;
   }
-
+  
+  
   packet = calloc(packet_num ,packet_size);
-  //unsigned char *packet[packet_num];
   printf("Created %d Packets...\n", packet_num);
   savePackets(packet, fileData);
   printf("Packets Ready To Be Sent!\n");

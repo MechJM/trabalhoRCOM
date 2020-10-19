@@ -4,7 +4,7 @@
 
 int timeout;
 
-enum set_states
+enum reception_state
 {
     start,
     flag_rcv,

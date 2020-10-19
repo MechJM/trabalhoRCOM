@@ -20,7 +20,7 @@
 volatile int STOP = FALSE;
 
 long int file_size;
-int packet_size = 127;
+
 int packet_num;
 
 void restoreFile(char *fileName, unsigned char *packet[], int packet_num)
@@ -45,15 +45,16 @@ void restoreSimpleFile(char *fileName, unsigned char *fileData, long int file_si
 
 int main(int argc, char **argv)
 {
-  setup_rs();
-  data_bytes_received = 0;
+  packet_size = 127;
   sender = 0;
+  setup_initial_values();
+  
   //int fd,c, res;
   int fd, res;
   struct termios oldtio, newtio;
   int packet_size = 650;
   unsigned char buf[packet_size];
-
+  
   if ((argc < 2) ||
       ((strcmp("/dev/ttyS10", argv[1]) != 0) &&
        (strcmp("/dev/ttyS11", argv[1]) != 0)))

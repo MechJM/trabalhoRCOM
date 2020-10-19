@@ -45,15 +45,19 @@ int r, s;
 
 int last_s,last_r;
 
-long int data_bytes_received;
+long int data_trams_received;
 
 int sender; // boolean that indicates whether the program running is the sender or the receiver 
 
-unsigned char * last_data_sent, *data_to_be_sent;
+unsigned char * last_tram_sent;
 
-int last_data_size, to_be_sent_size;
+int last_tram_sent_size;
 
-void setup_rs();
+int last_packet_index;
+
+int packet_size;
+
+void setup_initial_values();
 
 unsigned char *generate_info_tram(unsigned char *data, unsigned char address, int array_size);
 

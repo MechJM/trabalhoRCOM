@@ -1,11 +1,17 @@
 #include "tram.h"
 
-void setup_rs()
+void setup_initial_values()
 {
     r = 1;
     s = 0;
     last_s = -1;
     last_r = -1;
+    data_trams_received = 0;
+
+    last_tram_sent = calloc(1, 255);
+    last_tram_sent_size = 0;
+    if (!sender) packet = calloc(255, 255);
+    last_packet_index = 0;
 }
 
 unsigned char *generate_info_tram(unsigned char *data, unsigned char address, int array_size)
@@ -38,6 +44,11 @@ unsigned char *generate_info_tram(unsigned char *data, unsigned char address, in
 
     tram[4 + array_size] = bcc2;
     tram[5 + array_size] = FLAG;
+
+
+    //Storing the last info tram sent
+    last_tram_sent = tram;
+    last_tram_sent_size = array_size + 6;
 
     return tram;
 }
@@ -201,10 +212,7 @@ void process_tram_received(struct parse_results * results, int port)
     {
         if (!results->duplicate)
         {
-            for (int i = 0; i < results->tram_size - 4; i++)
-            {
-                //packet[data_bytes_received++] = results->received_data[i];
-            }
+            packet[data_trams_received++] = results->received_data; //May or may not work
         }
         else free(results->received_data);
         response  = generate_su_tram(COMM_SEND_REP_REC,RR);
@@ -231,8 +239,8 @@ void process_tram_received(struct parse_results * results, int port)
         {
             if (sender)
             {
-                response = generate_info_tram(data_to_be_sent, COMM_SEND_REP_REC, to_be_sent_size);
-                response_size = to_be_sent_size + 6;
+                response = generate_info_tram(packet[last_packet_index++], COMM_SEND_REP_REC, packet_size);
+                response_size = packet_size + 6;
             }
             else return;
             break;
@@ -246,28 +254,26 @@ void process_tram_received(struct parse_results * results, int port)
         }
         case RR:
         {
-            last_data_sent = data_to_be_sent;
-            response = generate_info_tram(data_to_be_sent, COMM_SEND_REP_REC, to_be_sent_size);
-            response_size = to_be_sent_size + 6;
+            response = generate_info_tram(packet[last_packet_index++], COMM_SEND_REP_REC, packet_size);
+            response_size = packet_size + 6;
             break;
         }
         case RR | R_MASK:
         {
-            last_data_sent = data_to_be_sent;
-            response = generate_info_tram(data_to_be_sent, COMM_SEND_REP_REC, to_be_sent_size);
-            response_size = to_be_sent_size + 6;
+            response = generate_info_tram(packet[last_packet_index++], COMM_SEND_REP_REC, packet_size);
+            response_size = packet_size + 6;
             break;
         }
         case REJ:
         {
-            response = generate_info_tram(last_data_sent, COMM_SEND_REP_REC, last_data_size);
-            response_size = last_data_size + 6;
+            response = last_tram_sent;
+            response_size = last_tram_sent_size;
             break;
         }
         case REJ | R_MASK:
         {
-            response = generate_info_tram(last_data_sent, COMM_SEND_REP_REC, last_data_size);
-            response_size = last_data_size + 6;
+            response = last_tram_sent;
+            response_size = last_tram_sent_size;
             break;
         }
         default: break;
