@@ -21,8 +21,6 @@ volatile int STOP = FALSE;
 
 long int file_size;
 
-int packet_num;
-
 void restoreFile(char *fileName, unsigned char *packet[], int packet_num)
 {
   printf("Restoring File...\n");

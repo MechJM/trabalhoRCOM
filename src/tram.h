@@ -55,7 +55,7 @@ int last_tram_sent_size;
 
 int last_packet_index;
 
-int packet_size;
+int packet_size, packet_num;
 
 void setup_initial_values();
 

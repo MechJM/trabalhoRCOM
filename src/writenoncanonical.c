@@ -23,7 +23,6 @@
 volatile int STOP = FALSE;
 
 long int file_size;
-int packet_num;
 
 void sigalrm_handler(int signo)
 {

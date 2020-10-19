@@ -254,12 +254,14 @@ void process_tram_received(struct parse_results * results, int port)
         }
         case RR:
         {
+            if (last_packet_index == packet_num) return;
             response = generate_info_tram(packet[last_packet_index++], COMM_SEND_REP_REC, packet_size);
             response_size = packet_size + 6;
             break;
         }
         case RR | R_MASK:
         {
+            if (last_packet_index == packet_num) return;
             response = generate_info_tram(packet[last_packet_index++], COMM_SEND_REP_REC, packet_size);
             response_size = packet_size + 6;
             break;
