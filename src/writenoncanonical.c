@@ -137,8 +137,8 @@ int main(int argc, char **argv)
     packet_num = file_size / packet_size;
   }
 
-  //packet = calloc(packet_num ,packet_size);
-  unsigned char *packet[packet_num];
+  packet = calloc(packet_num ,packet_size);
+  //unsigned char *packet[packet_num];
   printf("Created %d Packets...\n", packet_num);
   savePackets(packet, fileData);
   printf("Packets Ready To Be Sent!\n");

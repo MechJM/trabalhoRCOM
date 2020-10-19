@@ -27,7 +27,7 @@
 #define ESC_BYTE_3 0x5d
 
 //Data received
-//unsigned char * packet;
+unsigned char ** packet;
 
 //Parse results
 struct parse_results
