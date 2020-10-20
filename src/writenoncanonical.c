@@ -10,7 +10,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <signal.h>
-
 #include "tram.h"
 #include "state_machine.h"
 
@@ -19,13 +18,10 @@
 #define _POSIX_SOURCE 1 /* POSIX compliant source */
 #define FALSE 0
 #define TRUE 1
+#define PORT_NAME "/dev/ttyS"
+#define MAX_TRAM_SIZE 2
 
 volatile int STOP = FALSE;
-
-long int file_size;
-int packet_size = 127;
-int packet_num;
-
 void sigalrm_handler(int signo)
 {
   if (signo != SIGALRM)
@@ -33,6 +29,37 @@ void sigalrm_handler(int signo)
   timeout = 0;
 }
 
+/* LINK LAYER */
+typedef struct
+{
+  char *port;
+  int baudRate;
+  unsigned int sequenceNumber;
+  unsigned int timeout;
+  unsigned int numTransmissions;
+  char frame[MAX_TRAM_SIZE];
+} link_layer;
+static link_layer *ll = NULL;
+int init_link_layer(char *port, int baudRate, unsigned int timeout, unsigned int numTransmissions)
+{
+  if (ll == NULL)
+    ll = malloc(sizeof(link_layer));
+  else
+    printf("Link Layer Already Initialized\n");
+  ll->port = port;
+  ll->baudRate = baudRate;
+  ll->timeout = timeout;
+  ll->numTransmissions = numTransmissions;
+  ll->sequenceNumber = 0;
+  printf("Link Layer Initialized!\n");
+  return 0;
+}
+/* -- */
+
+/* APP LAYER FILE HANDLING */
+long int file_size;
+int packet_size = 127;
+int packet_num;
 unsigned char *readFile(unsigned char *fileName)
 {
   printf("Reading File <%s>\n", fileName);
@@ -49,15 +76,8 @@ unsigned char *readFile(unsigned char *fileName)
   fileData = (unsigned char *)malloc(file_size);
   fread(fileData, sizeof(unsigned char), file_size, f);
   fclose(f);
-  /*
-  for (unsigned int i = 0; i < sizeof(fileData); i++)
-  {
-    printf("fileData[%d] = %d\n", i, fileData[i]);
-  }
-  */
   return fileData;
 }
-
 unsigned char *splitFileData(unsigned char *fileData, int x, int packet_size)
 {
   unsigned char *packet_temp = (unsigned char *)malloc(packet_size);
@@ -69,7 +89,6 @@ unsigned char *splitFileData(unsigned char *fileData, int x, int packet_size)
   }
   return packet_temp;
 }
-
 void savePackets(unsigned char *packet[], unsigned char *fileData)
 {
   for (int i = 0; i < packet_num; i++)
@@ -78,7 +97,6 @@ void savePackets(unsigned char *packet[], unsigned char *fileData)
     printf("Packet[%d] Saved!\n", i);
   }
 }
-
 void restoreFile(char *fileName, unsigned char *packet[], int packet_num)
 {
   printf("Restoring File...\n");
@@ -90,7 +108,6 @@ void restoreFile(char *fileName, unsigned char *packet[], int packet_num)
   printf("File Restored!\n");
   fclose(f);
 }
-
 void restoreSimpleFile(char *fileName, unsigned char *fileData, long int file_size)
 {
   FILE *f = fopen((char *)fileName, "wb+");
@@ -98,25 +115,32 @@ void restoreSimpleFile(char *fileName, unsigned char *fileData, long int file_si
   printf("New File Created!\n");
   fclose(f);
 }
+void processFile(unsigned char *fileData)
+{
+  if (file_size % packet_size != 0)
+  {
+    packet_num = file_size / packet_size + 1;
+  }
+  else
+  {
+    packet_num = file_size / packet_size;
+  }
+  packet = calloc(packet_num, packet_size);
+  printf("Created %d Packets...\n", packet_num);
+  savePackets(packet, fileData);
+  printf("Packets Ready To Be Sent!\n");
+}
+/* -- */
 
 int main(int argc, char **argv)
 {
   setup_rs();
   data_bytes_received = 0;
   sender = 1;
-  //int fd,c, res;
-  int fd; //, res;
-  struct termios oldtio, newtio;
-  // TP1
-  // Class 2
+  int fd;
   timeout = 1;
-  //unsigned char * buf_temp = generate_su_tram(COMM_SEND_REP_REC,SET);
-
-  //int n = sizeof(buf_temp)/sizeof(unsigned char);
+  struct termios oldtio, newtio;
   int n = 5;
-
-  //unsigned char buf[n];
-  //int i; // sum = 0, speed = 0;
 
   if ((argc < 2) ||
       ((strcmp("/dev/ttyS10", argv[1]) != 0) &&
@@ -127,30 +151,21 @@ int main(int argc, char **argv)
   }
 
   unsigned char *fileData = readFile((unsigned char *)argv[2]);
-  //restoreSimpleFile("restoreSimpleFile.txt", fileData, file_size);
-  if (file_size % packet_size != 0)
-  {
-    packet_num = file_size / packet_size + 1;
-  }
-  else
-  {
-    packet_num = file_size / packet_size;
-  }
+  processFile(fileData);
 
-  packet = calloc(packet_num ,packet_size);
-  //unsigned char *packet[packet_num];
-  printf("Created %d Packets...\n", packet_num);
-  savePackets(packet, fileData);
-  printf("Packets Ready To Be Sent!\n");
+  init_link_layer(argv[1], data_bytes_received, timeout, n);
+
+  /*
   char *restoredFileName = "restoreFile.gif";
   restoreFile(restoredFileName, packet, packet_num);
+  */
 
   /*
     Open serial port device for reading and writing and not as controlling tty
     because we don't want to get killed if linenoise sends CTRL-C.
   */
 
-  fd = open(argv[1], O_RDWR | O_NOCTTY);
+  fd = open(ll->port, O_RDWR | O_NOCTTY);
   if (fd < 0)
   {
     perror(argv[1]);
@@ -176,7 +191,7 @@ int main(int argc, char **argv)
 
   /* 
     VTIME e VMIN devem ser alterados de forma a proteger com um temporizador a 
-    leitura do(s) pr�ximo(s) caracter(es)
+    leitura do(s) proximo(s) caracter(es)
   */
 
   tcflush(fd, TCIOFLUSH);
@@ -198,8 +213,6 @@ int main(int argc, char **argv)
     fprintf(stderr, "Couldn't install signal handler for SIGALRM.\n");
 
   unsigned char *tram = generate_su_tram(COMM_SEND_REP_REC, SET);
-  //unsigned char *data_to_be_sent = NULL;
-  //int data_size = 0;
 
   for (int j = 0; j < 3; j++)
   {
@@ -207,17 +220,14 @@ int main(int argc, char **argv)
     printf("Writting %d Bytes\n", res);
 
     alarm(3);
-    printf("Attempting to establish connection.\n");
+    printf("Attempting to establish connection...\n");
 
     unsigned char *response = malloc(255 * sizeof(unsigned char));
     while (timeout)
     {
-
       read(fd, response, 1);
-
       if (response[0] == FLAG)
       {
-
         int i = 0;
         do
         {
@@ -225,13 +235,10 @@ int main(int argc, char **argv)
           read(fd, &response[i], 1);
         } while (response[i] != FLAG && timeout);
         response[i + 1] = 0;
-        //unsigned char *received_data = malloc(255 * sizeof(unsigned char));
-        struct parse_results * parse_result = parse_tram(&response[1], i - 2);
+        struct parse_results *parse_result = parse_tram(&response[1], i - 2);
         process_tram_received(parse_result, fd);
 
-        // TODO
-        printf("Sending Simple Packet With %d Bytes...\n", packet_size);
-        write(fd, packet[0], packet_size);
+        // loop que envia packet[i] e verifica trama recebida do recetor
 
         j = 3;
         break;
@@ -239,11 +246,6 @@ int main(int argc, char **argv)
     }
     timeout = 1;
   }
-
-  /* 
-    O ciclo FOR e as instru��es seguintes devem ser alterados de modo a respeitar 
-    o indicado no gui�o 
-  */
 
   if (tcsetattr(fd, TCSANOW, &oldtio) == -1)
   {
