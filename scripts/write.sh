@@ -1,1 +1,1 @@
-./write /dev/ttyS10
+./write /dev/ttyS10 pinguim.gif

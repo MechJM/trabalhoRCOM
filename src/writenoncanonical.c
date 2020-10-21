@@ -40,7 +40,7 @@ typedef struct
   char frame[MAX_TRAM_SIZE];
 } link_layer;
 static link_layer *ll = NULL;
-int init_link_layer(char *port, int baudRate, unsigned int timeout, unsigned int numTransmissions)
+int ll_init(char *port, int baudRate, unsigned int timeout, unsigned int numTransmissions)
 {
   if (ll == NULL)
     ll = malloc(sizeof(link_layer));
@@ -53,6 +53,50 @@ int init_link_layer(char *port, int baudRate, unsigned int timeout, unsigned int
   ll->sequenceNumber = 0;
   printf("Link Layer Initialized!\n");
   return 0;
+}
+int ll_open_serial_port(int fd)
+{
+  struct termios oldtio, newtio;
+  fd = open(ll->port, O_RDWR | O_NOCTTY);
+  if (fd < 0)
+  {
+    perror(ll->port);
+    exit(-1);
+  }
+
+  if (tcgetattr(fd, &oldtio) == -1)
+  { /* save current port settings */
+    perror("tcgetattr");
+    exit(-1);
+  }
+
+  bzero(&newtio, sizeof(newtio));
+  newtio.c_cflag = BAUDRATE | CS8 | CLOCAL | CREAD;
+  newtio.c_iflag = IGNPAR;
+  newtio.c_oflag = 0;
+
+  /* set input mode (non-canonical, no echo,...) */
+  newtio.c_lflag = 0;
+
+  newtio.c_cc[VTIME] = 0; /* inter-character timer unused */
+  newtio.c_cc[VMIN] = 5;  /* blocking read until 5 chars received */
+
+  /* 
+    VTIME e VMIN devem ser alterados de forma a proteger com um temporizador a 
+    leitura do(s) proximo(s) caracter(es)
+  */
+
+  tcflush(fd, TCIOFLUSH);
+
+  if (tcsetattr(fd, TCSANOW, &newtio) == -1)
+  {
+    perror("tcsetattr");
+    exit(-1);
+  }
+
+  printf("New termios structure set\n");
+
+  return fd;
 }
 /* -- */
 
@@ -137,10 +181,10 @@ int main(int argc, char **argv)
   setup_rs();
   data_bytes_received = 0;
   sender = 1;
-  int fd;
+  int fd = 0;
   timeout = 1;
-  struct termios oldtio, newtio;
   int n = 5;
+  int numTransmissions = 3;
 
   if ((argc < 2) ||
       ((strcmp("/dev/ttyS10", argv[1]) != 0) &&
@@ -153,56 +197,19 @@ int main(int argc, char **argv)
   unsigned char *fileData = readFile((unsigned char *)argv[2]);
   processFile(fileData);
 
-  init_link_layer(argv[1], data_bytes_received, timeout, n);
+  ll_init(argv[1], BAUDRATE, timeout, numTransmissions);
 
   /*
   char *restoredFileName = "restoreFile.gif";
   restoreFile(restoredFileName, packet, packet_num);
   */
 
+  fd = ll_open_serial_port(fd);
+
   /*
     Open serial port device for reading and writing and not as controlling tty
     because we don't want to get killed if linenoise sends CTRL-C.
   */
-
-  fd = open(ll->port, O_RDWR | O_NOCTTY);
-  if (fd < 0)
-  {
-    perror(argv[1]);
-    exit(-1);
-  }
-
-  if (tcgetattr(fd, &oldtio) == -1)
-  { /* save current port settings */
-    perror("tcgetattr");
-    exit(-1);
-  }
-
-  bzero(&newtio, sizeof(newtio));
-  newtio.c_cflag = BAUDRATE | CS8 | CLOCAL | CREAD;
-  newtio.c_iflag = IGNPAR;
-  newtio.c_oflag = 0;
-
-  /* set input mode (non-canonical, no echo,...) */
-  newtio.c_lflag = 0;
-
-  newtio.c_cc[VTIME] = 0; /* inter-character timer unused */
-  newtio.c_cc[VMIN] = 5;  /* blocking read until 5 chars received */
-
-  /* 
-    VTIME e VMIN devem ser alterados de forma a proteger com um temporizador a 
-    leitura do(s) proximo(s) caracter(es)
-  */
-
-  tcflush(fd, TCIOFLUSH);
-
-  if (tcsetattr(fd, TCSANOW, &newtio) == -1)
-  {
-    perror("tcsetattr");
-    exit(-1);
-  }
-
-  printf("New termios structure set\n");
 
   struct sigaction action;
   action.sa_handler = sigalrm_handler;
@@ -214,16 +221,16 @@ int main(int argc, char **argv)
 
   unsigned char *tram = generate_su_tram(COMM_SEND_REP_REC, SET);
 
-  for (int j = 0; j < 3; j++)
+  for (unsigned int j = 0; j < ll->numTransmissions; j++)
   {
     int res = write(fd, tram, n);
     printf("Writting %d Bytes\n", res);
 
-    alarm(3);
+    alarm(ll->numTransmissions);
     printf("Attempting to establish connection...\n");
 
     unsigned char *response = malloc(255 * sizeof(unsigned char));
-    while (timeout)
+    while (ll->timeout)
     {
       read(fd, response, 1);
       if (response[0] == FLAG)
@@ -247,6 +254,7 @@ int main(int argc, char **argv)
     timeout = 1;
   }
 
+  struct termios oldtio;
   if (tcsetattr(fd, TCSANOW, &oldtio) == -1)
   {
     perror("tcsetattr");
