@@ -68,6 +68,33 @@ unsigned char *generate_su_tram(unsigned char address, unsigned char control)
     return tram;
 }
 
+void parse_and_process_su_tram(unsigned char * tram, int fd)
+{
+    unsigned char * response;
+    int res;
+
+    switch (tram[1])
+    {
+        case SET:
+        {
+            printf("Received request to start communication. Acknowledging.\n");
+            response = generate_su_tram(COMM_SEND_REP_REC, UA);
+            break;
+        }
+        case UA:
+        {
+            if ()
+            printf("Received request to start communication. Acknowledging.\n");
+            response = generate_su_tram(COMM_SEND_REP_REC, UA);
+            break;
+        }
+        default: printf()
+    }
+
+    res = write(fd,response, NON_INFO_TRAM_SIZE);
+    printf("%d Bytes Written\n", res);
+}
+
 struct parse_results * parse_tram(unsigned char *tram, int tram_size)
 {
     //Tram must be unstuffed before being passed to this function, flags should not be included in the tram passed
@@ -83,14 +110,14 @@ struct parse_results * parse_tram(unsigned char *tram, int tram_size)
     result->address_field = 0;
 
     unsigned char * data_parsed = calloc(tram_size - 4, sizeof(unsigned char));
-    
+    /*
     if ((tram[0] != COMM_SEND_REP_REC && tram[0] != COMM_REC_REP_SEND)                                                                                                                                                  //Checks if the second byte matches one of the possible values for the address field
         || (tram[1] != INFO_CTRL && tram[1] != (INFO_CTRL | S_MASK) && tram[1] != SET && tram[1] != DISC && tram[1] != UA && tram[1] != RR && tram[1] != (RR | R_MASK) && tram[1] != REJ && tram[1] != (REJ | R_MASK))) //Checks if the third byte matches one of the possible values for the control field
         result->header_validity = 0;
 
     unsigned char bcc1 = tram[0] ^ tram[1];
 
-    if (bcc1 != tram[2]) result->header_validity = 0;
+    if (bcc1 != tram[2]) result->header_validity = 0;*/
 
     int is_info_tram = 0;
 

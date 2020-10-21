@@ -26,6 +26,8 @@
 #define ESC_BYTE_2 0x5e
 #define ESC_BYTE_3 0x5d
 
+#define NON_INFO_TRAM_SIZE 5
+
 //Data received
 unsigned char ** packet;
 
@@ -36,7 +38,6 @@ struct parse_results
     int tram_size; //size of the tram in bytes
     int duplicate; //boolean to indicate if the tram received is a duplicate or not
     int data_integrity; //boolean to indicate if bcc2 checks out
-    int header_validity; //boolean to indicate if bbc1 checks out and the values are valid
     unsigned char control_field; //value of the control field
     unsigned char address_field; //value of the address field
 };
@@ -68,3 +69,5 @@ unsigned char * translate_array(unsigned char * array, int offset, int array_siz
 void byte_stuff(unsigned char * tram, int * tram_size);
 
 void byte_unstuff(unsigned char * tram, int * tram_size);
+
+void parse_and_process_su_tram(unsigned char * tram, int fd);
