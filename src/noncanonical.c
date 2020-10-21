@@ -8,7 +8,6 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
-
 #include "tram.h"
 #include "state_machine.h"
 
@@ -21,6 +20,9 @@ volatile int STOP = FALSE;
 
 long int file_size;
 
+int packet_size = 127;
+int packet_num;
+
 void restoreFile(char *fileName, unsigned char *packet[], int packet_num)
 {
   printf("Restoring File...\n");
@@ -32,7 +34,6 @@ void restoreFile(char *fileName, unsigned char *packet[], int packet_num)
   printf("File Restored!\n");
   fclose(f);
 }
-
 void restoreSimpleFile(char *fileName, unsigned char *fileData, long int file_size)
 {
   FILE *f = fopen((char *)fileName, "wb+");
@@ -50,7 +51,7 @@ int main(int argc, char **argv)
   //int fd,c, res;
   int fd, res;
   struct termios oldtio, newtio;
-  int packet_size = 650;
+  int packet_size = 127;
   unsigned char buf[packet_size];
   
   if ((argc < 2) ||
@@ -119,24 +120,15 @@ int main(int argc, char **argv)
       } while (buf[i] != FLAG);
       buf[i + 1] = 0;
       //unsigned char *received_data = malloc(255 * sizeof(unsigned char));
-      struct parse_results * parse_result = parse_tram(&buf[1], i - 2);
+      struct parse_results *parse_result = parse_tram(&buf[1], i - 2);
       process_tram_received(parse_result, fd);
 
       res = read(fd, buf, packet_size);
       printf("Received Packet With %d Bytes...\n", res);
-      //restoreSimpleFile("restoreSimpleFile.txt", fileData, file_size);
 
       break;
     }
-    /*
-    printf(":%s:%d\n", buf, res);
-    if (buf[0] == 'z')
-      STOP = TRUE;*/
   }
-
-  /* 
-    O ciclo WHILE deve ser alterado de modo a respeitar o indicado no gui�o 
-  */
 
   tcsetattr(fd, TCSANOW, &oldtio);
   close(fd);

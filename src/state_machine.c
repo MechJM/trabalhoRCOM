@@ -1,11 +1,17 @@
 #include "state_machine.h"
 
+<<<<<<< HEAD
 //Should work when receiving SET, DISC and UA 
+=======
+//Should work for receiving SET, UA and DISC
+>>>>>>> 0abbd503426315bf5ed7af5c06511beb2de1d419
 unsigned char * receive_tram(int control, int fd)
 {
     // the first parameter of calloc is 3 because right now the function only works for non info trams and the flags aren't included
     unsigned char * result = calloc(3, sizeof(unsigned char));
+    enum set_states state = start;
 
+<<<<<<< HEAD
     
     enum reception_state state = start;
 
@@ -18,6 +24,17 @@ unsigned char * receive_tram(int control, int fd)
         if (res != 1) fprintf(stderr, "Failed to read in receive_tram!\n");
 
         switch (state)
+=======
+    unsigned char currentByte = 0x00;
+    int res, continue_loop = 1;
+    //Make independent of control byte
+    while(continue_loop)
+    {
+        res = read(fd, &currentByte, 1);
+        if (res != 1) fprintf(stderr, "Failed to read in receive_tram!\n");
+
+        switch(state)
+>>>>>>> 0abbd503426315bf5ed7af5c06511beb2de1d419
         {
             case start:
             {
@@ -36,10 +53,12 @@ unsigned char * receive_tram(int control, int fd)
             }
             case a_rcv:
             {
-                if (currentByte == control)
+                if (currentByte == UA || currentByte == DISC || currentByte == SET || currentByte == REJ || currentByte == (REJ | R_MASK) || currentByte == RR || currentByte == (RR|R_MASK))
                 {
                     state = c_rcv;
-                    result[1] = currentByte;
+                    if (currentByte == (RR | R_MASK)) result[1] == RR;
+                    else if (currentByte == (REJ | R_MASK)) result[1] == REJ;
+                    else result[1] = currentByte;
                 }
                 else if (currentByte == FLAG) state = flag_rcv;
                 else state = start;
@@ -72,4 +91,9 @@ unsigned char * receive_tram(int control, int fd)
     }
     
     return result;
+}
+
+void receive_info_tram(int fd)
+{
+
 }
