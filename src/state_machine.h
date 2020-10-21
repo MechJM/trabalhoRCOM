@@ -16,12 +16,12 @@ enum reception_state
 
 enum reception_info_state
 {
-    start,
-    flag_rcv,
-    a_rcv,
-    c_rcv,
-    receiving_data,
-    stop  
+    start_info,
+    flag_rcv_info,
+    a_rcv_info,
+    c_rcv_info,
+    receiving_data_info,
+    stop_info  
 };
 
 unsigned char * receive_tram(int fd);

@@ -119,10 +119,10 @@ int main(int argc, char **argv)
         read(fd, &buf[i], 1);
       } while (buf[i] != FLAG);
       buf[i + 1] = 0;
-      //unsigned char *received_data = malloc(255 * sizeof(unsigned char));
+      /*unsigned char *received_data = malloc(255 * sizeof(unsigned char));
       struct parse_results *parse_result = parse_tram(&buf[1], i - 2);
       process_tram_received(parse_result, fd);
-
+      */
       res = read(fd, buf, packet_size);
       printf("Received Packet With %d Bytes...\n", res);
 

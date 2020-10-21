@@ -37,8 +37,8 @@ unsigned char * receive_tram(int fd)
                 if (currentByte == UA || currentByte == DISC || currentByte == SET || currentByte == REJ || currentByte == (REJ | R_MASK) || currentByte == RR || currentByte == (RR|R_MASK))
                 {
                     state = c_rcv;
-                    if (currentByte == (RR | R_MASK)) result[1] == RR;
-                    else if (currentByte == (REJ | R_MASK)) result[1] == REJ;
+                    if (currentByte == (RR | R_MASK)) result[1] = RR;
+                    else if (currentByte == (REJ | R_MASK)) result[1] = REJ;
                     else result[1] = currentByte;
                 }
                 else if (currentByte == FLAG) state = flag_rcv;
@@ -77,7 +77,7 @@ unsigned char * receive_tram(int fd)
 unsigned char * receive_info_tram(int fd, int *data_size)
 {
     unsigned char * result = calloc(255, sizeof(unsigned char));
-    enum reception_info_state state = start;
+    enum reception_info_state state = start_info;
 
     unsigned char currentByte = 0x00;
     int res, continue_loop = 1, currentIndex = 0;
@@ -89,57 +89,57 @@ unsigned char * receive_info_tram(int fd, int *data_size)
 
         switch(state)
         {
-            case start:
+            case start_info:
             {
-                if (currentByte == FLAG) state = flag_rcv;
+                if (currentByte == FLAG) state = flag_rcv_info;
                 break;
             }
-            case flag_rcv:
+            case flag_rcv_info:
             {
                 if (currentByte == COMM_SEND_REP_REC || currentByte == COMM_REC_REP_SEND)
                 {
-                    state = a_rcv;
+                    state = a_rcv_info;
                     result[0] = currentByte;
                 }
                 else if (currentByte != FLAG) state = start;
                 break;
             }
-            case a_rcv:
+            case a_rcv_info:
             {
                 if (currentByte == UA || currentByte == DISC || currentByte == SET || currentByte == REJ || currentByte == (REJ | R_MASK) || currentByte == RR || currentByte == (RR|R_MASK))
                 {
-                    state = c_rcv;
-                    if (currentByte == (RR | R_MASK)) result[1] == RR;
-                    else if (currentByte == (REJ | R_MASK)) result[1] == REJ;
+                    state = c_rcv_info;
+                    if (currentByte == (RR | R_MASK)) result[1] = RR;
+                    else if (currentByte == (REJ | R_MASK)) result[1] = REJ;
                     else result[1] = currentByte;
                 }
-                else if (currentByte == FLAG) state = flag_rcv;
-                else state = start;
+                else if (currentByte == FLAG) state = flag_rcv_info;
+                else state = start_info;
                 break;
             }
-            case c_rcv:
+            case c_rcv_info:
             {
                 if (currentByte == (result[0] ^ result[1]))
                 {
-                    state = receiving_data;
+                    state = receiving_data_info;
                     result[2] = currentByte;
                     currentIndex = 3;
                 }
-                else if (currentByte == FLAG) state = flag_rcv;
-                else state = start;
+                else if (currentByte == FLAG) state = flag_rcv_info;
+                else state = start_info;
                 break;
             }
-            case receiving_data:
+            case receiving_data_info:
             {
-                if (currentByte == FLAG) state = stop;
+                if (currentByte == FLAG) state = stop_info;
                 else
                 {
-                    result[currentIndex++] = currentIndex;
+                    result[currentIndex++] = currentByte;
                     continue;
                 } 
                 break;
             }
-            case stop:
+            case stop_info:
             {
                 continue_loop = 0;
                 break;

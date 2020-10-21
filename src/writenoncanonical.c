@@ -89,9 +89,10 @@ int main(int argc, char **argv)
           read(fd, &response[i], 1);
         } while (response[i] != FLAG && ll->timeout);
         response[i + 1] = 0;
+        /*
         struct parse_results *parse_result = parse_tram(&response[1], i - 2);
         process_tram_received(parse_result, fd);
-
+        */
         // loop que envia packet[i] e verifica trama recebida do recetor
 
         ll->numTransmissions--;
