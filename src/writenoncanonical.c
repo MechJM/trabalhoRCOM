@@ -199,7 +199,7 @@ int main(int argc, char **argv)
   int fd = 0;
   timeout = 1;
   int n = 5;
-  int numTransmissions = 3;
+  int numTransmissions = 1;
 
   if ((argc < 2) ||
       ((strcmp("/dev/ttyS10", argv[1]) != 0) &&
@@ -245,7 +245,7 @@ int main(int argc, char **argv)
     printf("Attempting to establish connection...\n");
 
     unsigned char *response = malloc(255 * sizeof(unsigned char));
-    while (ll->timeout)
+    while (ll->timeout != 0)
     {
       read(fd, response, 1);
       if (response[0] == FLAG)
@@ -255,18 +255,18 @@ int main(int argc, char **argv)
         {
           i++;
           read(fd, &response[i], 1);
-        } while (response[i] != FLAG && timeout);
+        } while (response[i] != FLAG && ll->timeout);
         response[i + 1] = 0;
         struct parse_results *parse_result = parse_tram(&response[1], i - 2);
         process_tram_received(parse_result, fd);
 
         // loop que envia packet[i] e verifica trama recebida do recetor
 
-        ll->numTransmissions = 3;
+        ll->numTransmissions--;
         break;
       }
     }
-    ll->timeout = 1;
+    ll->timeout--;
   }
 
   llclose();
