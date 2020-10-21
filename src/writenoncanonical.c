@@ -22,6 +22,7 @@
 #define MAX_TRAM_SIZE 2
 
 volatile int STOP = FALSE;
+
 void sigalrm_handler(int signo)
 {
   if (signo != SIGALRM)
@@ -193,10 +194,10 @@ void processFile(unsigned char *fileData)
 
 int main(int argc, char **argv)
 {
-  setup_rs();
-  data_bytes_received = 0;
+  packet_size = 127;
   sender = 1;
   int fd = 0;
+
   timeout = 1;
   int n = 5;
   int numTransmissions = 1;
@@ -210,11 +211,11 @@ int main(int argc, char **argv)
   }
 
   unsigned char *fileData = readFile((unsigned char *)argv[2]);
+
   processFile(fileData);
 
   ll_init(argv[1], BAUDRATE, timeout, numTransmissions);
 
-  /*
   char *restoredFileName = "restoreFile.gif";
   restoreFile(restoredFileName, packet, packet_num);
   */
