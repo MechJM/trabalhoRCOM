@@ -218,7 +218,7 @@ int main(int argc, char **argv)
 
   char *restoredFileName = "restoreFile.gif";
   restoreFile(restoredFileName, packet, packet_num);
-  */
+  
 
   fd = ll_open_serial_port(fd);
 

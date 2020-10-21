@@ -24,6 +24,6 @@ enum reception_info_state
     stop  
 };
 
-unsigned char * receive_tram(int control, int fd);
+unsigned char * receive_tram(int fd);
 
 unsigned char * receive_info_tram(int fd, int *data_size);

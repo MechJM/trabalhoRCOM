@@ -1,7 +1,7 @@
 #include "state_machine.h"
 //Should work for receiving SET, UA and DISC
 
-unsigned char * receive_tram(int control, int fd)
+unsigned char * receive_tram(int fd)
 {
     // the first parameter of calloc is 3 because right now the function only works for non info trams and the flags aren't included
     unsigned char * result = calloc(3, sizeof(unsigned char));
@@ -9,7 +9,7 @@ unsigned char * receive_tram(int control, int fd)
 
     unsigned char currentByte = 0x00;
     int res, continue_loop = 1;
-    //Make independent of control byte
+    
     while(continue_loop)
     {
         res = read(fd, &currentByte, 1);
@@ -81,7 +81,7 @@ unsigned char * receive_info_tram(int fd, int *data_size)
 
     unsigned char currentByte = 0x00;
     int res, continue_loop = 1, currentIndex = 0;
-    //Make independent of control byte
+    
     while(continue_loop)
     {
         res = read(fd, &currentByte, 1);

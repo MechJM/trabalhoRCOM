@@ -7,15 +7,40 @@ int llclose(int fd)
     if (sender)
     {
         unsigned char * new_tram = generate_su_tram(COMM_SEND_REP_REC, DISC);
-        int size = 5;
-        byte_stuff(new_tram, &size);
+        int size = NON_INFO_TRAM_SIZE;
         int res = write(fd, new_tram, size);
-        if (res != 5) fprintf(stderr, "Failed to write on llclose!\n");
-        unsigned char * response = receive_tram(DISC, fd);
-        int response_size = 3;
-        byte_unstuff(response, &response_size);
-        struct parse_results * results = parse_tram(response, response_size);
-        process_tram_received(results,fd);
+        if (res != NON_INFO_TRAM_SIZE)
+        {
+            fprintf(stderr, "Failed to write on llclose!\n");
+            return -1;
+        } 
+
+        unsigned char * response = receive_tram(fd);
+        int result = parse_and_process_su_tram(response, fd);
+        if (result != DO_NOTHING)
+        {
+            fprintf(stderr, "Failed to write on llclose!\n");
+            return -1;
+        } 
+    }
+    else 
+    {
+        unsigned char * end_request = receive_tram(fd);
+        int result = parse_and_process_su_tram(end_request, fd);
+        if (result != DO_NOTHING)
+        {
+            fprintf(stderr, "Failed to write on llclose!\n");
+            return -1;
+        }
+
+        unsigned char * acknowledgment = receive_tram(fd);
+        result = parse_and_process_su_tram(acknowledgment, fd);
+        if (result != DO_NOTHING)
+        {
+            fprintf(stderr, "Failed to write on llclose!\n");
+            return -1;
+        }
+        
     }
     return 1;
 }
