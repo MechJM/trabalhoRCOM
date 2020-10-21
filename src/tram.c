@@ -68,31 +68,54 @@ unsigned char *generate_su_tram(unsigned char address, unsigned char control)
     return tram;
 }
 
-void parse_and_process_su_tram(unsigned char * tram, int fd)
+int parse_and_process_su_tram(unsigned char * tram, int fd)
 {
     unsigned char * response;
     int res;
+    int result = DO_NOTHING; //boolean that indicates if we can start to send data
 
     switch (tram[1])
     {
         case SET:
         {
-            printf("Received request to start communication. Acknowledging.\n");
+            printf("Received request to start communication Acknowledging.\n");
             response = generate_su_tram(COMM_SEND_REP_REC, UA);
             break;
         }
         case UA:
         {
-            if ()
-            printf("Received request to start communication. Acknowledging.\n");
-            response = generate_su_tram(COMM_SEND_REP_REC, UA);
+            if (sender)
+            {
+                printf("Communication start request was acknowledged. Starting to send data.\n");
+                return SEND_DATA;
+            }
+            else
+            {
+                printf("Communication ended.\n");
+                return DO_NOTHING;
+            } 
             break;
         }
-        default: printf()
+        case DISC:
+        {
+            if (sender)
+            {
+                printf("Communication end request was acknowledged. Acknowledging end.\n");
+                response = generate_su_tram(COMM_REC_REP_SEND, UA);
+            }
+            else
+            {
+                printf("Received request to end communication. Ending communication.\n");
+                response = generate_su_tram(COMM_REC_REP_SEND, DISC);
+            }
+            break;
+        }
+        default: printf("Invalid control byte!\n");
     }
-
+    
     res = write(fd,response, NON_INFO_TRAM_SIZE);
     printf("%d Bytes Written\n", res);
+    return result;
 }
 
 struct parse_results * parse_tram(unsigned char *tram, int tram_size)

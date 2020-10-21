@@ -26,7 +26,12 @@
 #define ESC_BYTE_2 0x5e
 #define ESC_BYTE_3 0x5d
 
+//Sizes
 #define NON_INFO_TRAM_SIZE 5
+
+//Process SU tram results
+#define DO_NOTHING 0
+#define SEND_DATA 1
 
 //Data received
 unsigned char ** packet;
@@ -70,4 +75,4 @@ void byte_stuff(unsigned char * tram, int * tram_size);
 
 void byte_unstuff(unsigned char * tram, int * tram_size);
 
-void parse_and_process_su_tram(unsigned char * tram, int fd);
+int parse_and_process_su_tram(unsigned char * tram, int fd);
