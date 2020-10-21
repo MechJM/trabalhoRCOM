@@ -61,6 +61,18 @@ unsigned char *generate_su_tram(unsigned char address, unsigned char control)
 
     unsigned char actual_control = control;
 
+
+    if (control == REJ && last_seq == 1) actual_control = control |= R_MASK;
+    else if (control == RR)
+    {
+        if (last_seq == 1) last_seq--;
+        else
+        {
+            last_seq++;
+            actual_control = control |= R_MASK;
+        }
+    }
+    /*
     if (control == RR || control == REJ)
     {
         if (r > 0)
@@ -71,7 +83,7 @@ unsigned char *generate_su_tram(unsigned char address, unsigned char control)
         else
             r++;
     }
-
+    */
     tram[2] = actual_control;
     tram[3] = address ^ actual_control;
     tram[4] = FLAG;
@@ -168,10 +180,6 @@ struct parse_results * parse_info_tram(unsigned char *tram, int tram_size)
     {
         case INFO_CTRL:
         {
-            //Refactor use of last_s and last_r
-            if (last_s == -1) last_s = 0;
-            else if (last_s == 0) result->duplicate = 1;
-            else last_s = 0;
             for (int i = 3; i < (tram_size + 3 - 4); i++)
             {
                 data_parsed[i - 3] = tram[i];
@@ -181,9 +189,8 @@ struct parse_results * parse_info_tram(unsigned char *tram, int tram_size)
         }
         case (INFO_CTRL | S_MASK):
         {
-            if (last_s == -1) last_s = 1;
-            else if(last_s == 1) result->duplicate = 1;
-            else last_s = 1;
+            if (last_seq == -1) last_seq = 1;
+            else if (last_seq == 0) result->duplicate = 1;
             for (int i = 3; i < (tram_size + 3 - 4); i++)
             {
                 data_parsed[i - 3] = tram[i];
@@ -216,7 +223,7 @@ void process_info_tram_received(struct parse_results * results, int port)
     int response_size = 0;
 
     if (!results->header_validity) return;
-    if (results->received_data != NULL && results->header_validity && results->data_integrity)
+    if (results->header_validity && results->data_integrity)
     {
         if (!results->duplicate)
         {
@@ -227,68 +234,12 @@ void process_info_tram_received(struct parse_results * results, int port)
         response_size = 5;
     }
 
-    if (results->received_data != NULL && results->header_validity && !results->data_integrity)
+    if (results->header_validity && !results->data_integrity)
     {
         if (!results->duplicate) response = generate_su_tram(COMM_SEND_REP_REC,REJ);
         else response = generate_su_tram(COMM_SEND_REP_REC,RR);
         response_size = 5;
     }
-
-    /*
-    switch (results->control_field)
-    {
-        case SET:
-        {
-            response = generate_su_tram(COMM_SEND_REP_REC, UA);
-            response_size = 5;
-            break;
-        }
-        case UA:
-        {
-            if (sender)
-            {
-                response = generate_info_tram(packet[last_packet_index++], COMM_SEND_REP_REC, packet_size);
-                response_size = packet_size + 6;
-            }
-            else return;
-            break;
-        }
-        case DISC:
-        {
-            if (!sender) response = generate_su_tram(COMM_REC_REP_SEND, DISC);
-            else response = generate_su_tram(COMM_REC_REP_SEND, UA);
-            response_size = 5;
-            break;
-        }
-        case RR:
-        {
-            if (last_packet_index == packet_num) return;
-            response = generate_info_tram(packet[last_packet_index++], COMM_SEND_REP_REC, packet_size);
-            response_size = packet_size + 6;
-            break;
-        }
-        case RR | R_MASK:
-        {
-            if (last_packet_index == packet_num) return;
-            response = generate_info_tram(packet[last_packet_index++], COMM_SEND_REP_REC, packet_size);
-            response_size = packet_size + 6;
-            break;
-        }
-        case REJ:
-        {
-            response = last_tram_sent;
-            response_size = last_tram_sent_size;
-            break;
-        }
-        case REJ | R_MASK:
-        {
-            response = last_tram_sent;
-            response_size = last_tram_sent_size;
-            break;
-        }
-        default: break;
-            //fprintf(stderr, "Invalid control field! Value: %d\n", results->control_field);
-    }*/
 
     //TODO Find better way to figure out which data needs to be/was sent
 

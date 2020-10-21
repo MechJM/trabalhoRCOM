@@ -16,4 +16,4 @@ enum reception_state
 
 unsigned char * receive_tram(int control, int fd);
 
-void receive_info_tram(int fd);
+unsigned char * receive_info_tram(int fd);
