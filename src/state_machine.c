@@ -147,6 +147,6 @@ unsigned char * receive_info_tram(int fd, int *data_size)
             default: fprintf(stderr, "Invalid reception state!\n");
         }
     }
-    
+    (*data_size) = currentIndex + 1;
     return result;
 }
