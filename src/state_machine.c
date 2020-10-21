@@ -34,10 +34,12 @@ unsigned char * receive_tram(int control, int fd)
             }
             case a_rcv:
             {
-                if (currentByte == control)
+                if (currentByte == UA || currentByte == DISC || currentByte == SET || currentByte == REJ || currentByte == (REJ | R_MASK) || currentByte == RR || currentByte == (RR|R_MASK))
                 {
                     state = c_rcv;
-                    result[1] = currentByte;
+                    if (currentByte == (RR | R_MASK)) result[1] == RR;
+                    else if (currentByte == (REJ | R_MASK)) result[1] == REJ;
+                    else result[1] = currentByte;
                 }
                 else if (currentByte == FLAG) state = flag_rcv;
                 else state = start;
@@ -70,4 +72,9 @@ unsigned char * receive_tram(int control, int fd)
     }
     
     return result;
+}
+
+void receive_info_tram(int fd)
+{
+
 }
