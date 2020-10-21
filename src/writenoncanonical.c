@@ -30,6 +30,7 @@ void sigalrm_handler(int signo)
 }
 
 /* LINK LAYER */
+struct termios oldtio, newtio;
 typedef struct
 {
   char *port;
@@ -56,7 +57,6 @@ int ll_init(char *port, int baudRate, unsigned int timeout, unsigned int numTran
 }
 int ll_open_serial_port(int fd)
 {
-  struct termios oldtio, newtio;
   fd = open(ll->port, O_RDWR | O_NOCTTY);
   if (fd < 0)
   {
@@ -78,8 +78,8 @@ int ll_open_serial_port(int fd)
   /* set input mode (non-canonical, no echo,...) */
   newtio.c_lflag = 0;
 
-  newtio.c_cc[VTIME] = 0; /* inter-character timer unused */
-  newtio.c_cc[VMIN] = 5;  /* blocking read until 5 chars received */
+  newtio.c_cc[VTIME] = ll->timeout * 10; /* inter-character timer unused */
+  newtio.c_cc[VMIN] = 5;                 /* blocking read until 5 chars received */
 
   /* 
     VTIME e VMIN devem ser alterados de forma a proteger com um temporizador a 
@@ -95,8 +95,23 @@ int ll_open_serial_port(int fd)
   }
 
   printf("New termios structure set\n");
-
   return fd;
+}
+void llclose()
+{
+  // TODO
+  // SEND DISC
+  // READ DISC
+  // SEND UA
+}
+void ll_close_serial_port(int fd)
+{
+  if (tcsetattr(fd, TCSANOW, &oldtio) == -1)
+  {
+    perror("tcsetattr");
+    exit(-1);
+  }
+  close(fd);
 }
 /* -- */
 
@@ -247,20 +262,14 @@ int main(int argc, char **argv)
 
         // loop que envia packet[i] e verifica trama recebida do recetor
 
-        j = 3;
+        ll->numTransmissions = 3;
         break;
       }
     }
-    timeout = 1;
+    ll->timeout = 1;
   }
 
-  struct termios oldtio;
-  if (tcsetattr(fd, TCSANOW, &oldtio) == -1)
-  {
-    perror("tcsetattr");
-    exit(-1);
-  }
-
-  close(fd);
+  llclose();
+  ll_close_serial_port(fd);
   return 0;
 }
