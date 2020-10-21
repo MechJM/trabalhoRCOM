@@ -24,6 +24,7 @@
 #define PORT_NAME "/dev/ttyS"
 
 volatile int STOP = FALSE;
+
 void sigalrm_handler(int signo)
 {
   if (signo != SIGALRM)
@@ -33,11 +34,15 @@ void sigalrm_handler(int signo)
 
 int main(int argc, char **argv)
 {
-  setup_rs();
-  data_bytes_received = 0;
+  packet_size = 127;
   sender = 1;
   int fd = 0;
+<<<<<<< HEAD
   timeout = 5;
+=======
+
+  timeout = 1;
+>>>>>>> 5a03cfe5b979152117c1bdfa264701b7151d4678
   int n = 5;
   int numTransmissions = 1;
 
@@ -50,11 +55,26 @@ int main(int argc, char **argv)
   }
 
   unsigned char *fileData = readFile((unsigned char *)argv[2]);
+
   processFile(fileData);
 
   ll_init(argv[1], BAUDRATE, timeout, numTransmissions);
+<<<<<<< HEAD
   
   fd = llopen(fd);
+=======
+
+  char *restoredFileName = "restoreFile.gif";
+  restoreFile(restoredFileName, packet, packet_num);
+  */
+
+  fd = ll_open_serial_port(fd);
+
+  /*
+    Open serial port device for reading and writing and not as controlling tty
+    because we don't want to get killed if linenoise sends CTRL-C.
+  */
+>>>>>>> 5a03cfe5b979152117c1bdfa264701b7151d4678
 
   struct sigaction action;
   action.sa_handler = sigalrm_handler;

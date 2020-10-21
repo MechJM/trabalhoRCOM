@@ -4,7 +4,7 @@
 
 int timeout;
 
-enum set_states
+enum reception_state
 {
     start,
     flag_rcv,
@@ -14,4 +14,16 @@ enum set_states
     stop
 };
 
+enum reception_info_state
+{
+    start,
+    flag_rcv,
+    a_rcv,
+    c_rcv,
+    receiving_data,
+    stop  
+};
+
 unsigned char * receive_tram(int control, int fd);
+
+unsigned char * receive_info_tram(int fd, int *data_size);
