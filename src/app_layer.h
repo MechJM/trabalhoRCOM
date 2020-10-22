@@ -5,6 +5,8 @@
 #define START 2
 #define END 3
 
+#include "tram.h"
+
 unsigned char *readFile(unsigned char *fileName);
 
 unsigned char *splitFileData(unsigned char *fileData, int x, int packet_size);

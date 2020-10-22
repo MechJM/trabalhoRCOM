@@ -13,7 +13,7 @@
 #include "tram.h"
 #include "state_machine.h"
 #include "app_layer.h"
-#include "link_layer.c"
+#include "link_layer.h"
 
 // POSIX Compliant Source
 #define _POSIX_SOURCE 1
@@ -55,9 +55,9 @@ int main(int argc, char **argv)
 
   ll_init(argv[1], BAUDRATE, timeout, numTransmissions);
   
-  fd = llopen(fd);
+  fd = llopen(fd,-1);
 
-
+  ll = NULL;
   struct sigaction action;
   action.sa_handler = sigalrm_handler;
   sigemptyset(&action.sa_mask);

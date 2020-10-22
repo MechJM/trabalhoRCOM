@@ -1,33 +1,11 @@
 /* LINK LAYER */
 
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <termios.h>
-#include <stdio.h>
-#include <unistd.h>
-#include <strings.h>
-#include <stdlib.h>
-#include <string.h>
-#include <signal.h>
 
-#include "tram.h"
-
-#define MAX_TRAM_SIZE 2
-#define BAUDRATE B38400
+#include "link_layer.h"
 
 struct termios oldtio, newtio;
 
-typedef struct
-{
-  char *port;
-  int baudRate;
-  unsigned int sequenceNumber;
-  unsigned int timeout;
-  unsigned int numTransmissions;
-  char frame[MAX_TRAM_SIZE];
-} link_layer;
-static link_layer *ll = NULL;
+
 int ll_init(char *port, int baudRate, unsigned int timeout, unsigned int numTransmissions)
 {
   if (ll == NULL)
@@ -42,6 +20,7 @@ int ll_init(char *port, int baudRate, unsigned int timeout, unsigned int numTran
   printf("Link Layer Initialized!\n");
   return 0;
 }
+
 int ll_open_serial_port(int fd)
 {
   fd = open(ll->port, O_RDWR | O_NOCTTY);
@@ -85,8 +64,9 @@ int ll_open_serial_port(int fd)
   return fd;
 }
 
-int llopen(int fd)
+int llopen(int fd, int flag)
 {
+  flag=flag; //Just a placeholder to allow the program to compile
   /*
   Open serial port device for reading and writing and not as controlling tty
   because we don't want to get killed if linenoise sends CTRL-C.
