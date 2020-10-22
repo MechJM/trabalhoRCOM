@@ -110,7 +110,7 @@ unsigned char * generate_data_packet(int seq_num, int byte_num, unsigned char * 
     result[2] = l2;
     result[3] = l1;
     
-    for (size_t i = 4; i < (byte_num + 4); i++)
+    for (int i = 4; i < (byte_num + 4); i++)
     {
         result[i] = data[i - 4];
     }
@@ -118,7 +118,31 @@ unsigned char * generate_data_packet(int seq_num, int byte_num, unsigned char * 
     return result;
 }
 
-unsigned char * generate_control_packet()
+unsigned char * generate_control_packet(unsigned char control_field, int param_num, int * t_values, int * l_values, unsigned char ** values)
 {
+    int total_byte_num = 1 + 2 * param_num;
+    for (int i = 0; i < param_num; i++)
+    {
+        total_byte_num += l_values[i];
+    }
 
+    unsigned char * result = calloc(total_byte_num, sizeof(unsigned char));
+
+    result[0] = control_field;
+
+    int nextIndex = 1;
+
+    for (int i = 0; i < param_num; i++)
+    {
+        result[nextIndex++] = t_values[i];
+        result[nextIndex++] = l_values[i];
+        int currentDataSize = l_values[i];
+        for (int j = 0; j < currentDataSize; j++)
+        {
+            result[nextIndex++] = values[i][j];
+        }
+        
+    }
+    
+    return result;
 }
