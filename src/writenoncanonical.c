@@ -12,7 +12,7 @@
 #include <signal.h>
 #include "tram.h"
 #include "state_machine.h"
-#include "app_layer.c"
+#include "app_layer.h"
 #include "link_layer.c"
 
 // POSIX Compliant Source
