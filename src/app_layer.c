@@ -11,6 +11,8 @@
 #include <string.h>
 #include <signal.h>
 
+#include "app_layer.h"
+
 long int file_size;
 int packet_size = 127;
 int packet_num;
@@ -93,4 +95,30 @@ void processFile(unsigned char *fileData)
     char *restoredFileName = "restoreFile.gif";
     restoreFile(restoredFileName, packet, packet_num);
     */
+}
+
+unsigned char * generate_data_packet(int seq_num, int byte_num, unsigned char * data)
+{
+    unsigned char * result = calloc(byte_num + 4, sizeof(unsigned char));
+
+    result[0] = DATA;
+    result[1]  = seq_num;
+
+    int l2 = (int) byte_num / 256;
+    int l1 = byte_num % 256;
+
+    result[2] = l2;
+    result[3] = l1;
+    
+    for (size_t i = 4; i < (byte_num + 4); i++)
+    {
+        result[i] = data[i - 4];
+    }
+    
+    return result;
+}
+
+unsigned char * generate_control_packet()
+{
+
 }
