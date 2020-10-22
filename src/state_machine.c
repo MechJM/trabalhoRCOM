@@ -58,19 +58,20 @@ unsigned char * receive_tram(int fd)
             }
             case bcc_ok:
             {
-                if (currentByte == FLAG) state = stop;
+                if (currentByte == FLAG)
+                {
+                    continue_loop = 0;
+                } 
                 else state = start;
                 break;
             }
-            case stop:
-            {
-                continue_loop = 0;
-                break;
-            }
-            default: fprintf(stderr, "Invalid reception state!\n");
+            default: {fprintf(stderr, "Invalid reception state!\n"); break;}
         }
     }
-    
+
+    printf("First byte: %d\n",result[0]);
+    printf("Second byte: %d\n",result[1]);
+    printf("Third byte: %d\n",result[2]);
     return result;
 }
 
@@ -131,17 +132,12 @@ unsigned char * receive_info_tram(int fd, int *data_size)
             }
             case receiving_data_info:
             {
-                if (currentByte == FLAG) state = stop_info;
+                if (currentByte == FLAG) continue_loop = 0;
                 else
                 {
                     result[currentIndex++] = currentByte;
                     continue;
                 } 
-                break;
-            }
-            case stop_info:
-            {
-                continue_loop = 0;
                 break;
             }
             default: fprintf(stderr, "Invalid reception state!\n");

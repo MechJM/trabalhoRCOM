@@ -10,8 +10,7 @@ enum reception_state
     flag_rcv,
     a_rcv,
     c_rcv,
-    bcc_ok,
-    stop
+    bcc_ok
 };
 
 enum reception_info_state
@@ -20,8 +19,7 @@ enum reception_info_state
     flag_rcv_info,
     a_rcv_info,
     c_rcv_info,
-    receiving_data_info,
-    stop_info  
+    receiving_data_info
 };
 
 unsigned char * receive_tram(int fd);

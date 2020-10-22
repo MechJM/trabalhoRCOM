@@ -38,9 +38,9 @@ int main(int argc, char **argv)
   sender = 1;
   int fd = 0;
   timeout = 1;
-  int n = 5;
+  //int n = 5;
   int numTransmissions = 1;
-
+  ll = NULL;
   if ((argc < 2) ||
       ((strcmp("/dev/ttyS10", argv[1]) != 0) &&
        (strcmp("/dev/ttyS11", argv[1]) != 0)))
@@ -54,10 +54,8 @@ int main(int argc, char **argv)
   processFile(fileData);
 
   ll_init(argv[1], BAUDRATE, timeout, numTransmissions);
-  
-  fd = llopen(fd,-1);
+  fd = llopen(fd,TRANSMITTER);
 
-  ll = NULL;
   struct sigaction action;
   action.sa_handler = sigalrm_handler;
   sigemptyset(&action.sa_mask);
@@ -66,8 +64,8 @@ int main(int argc, char **argv)
   if (sigaction(SIGALRM, &action, NULL) < 0)
     fprintf(stderr, "Couldn't install signal handler for SIGALRM.\n");
 
-  unsigned char *tram = generate_su_tram(COMM_SEND_REP_REC, SET);
-
+  //unsigned char *tram = generate_su_tram(COMM_SEND_REP_REC, SET);
+  /*
   for (unsigned int j = 0; j < ll->numTransmissions; j++)
   {
     int res = write(fd, tram, n);
@@ -89,10 +87,10 @@ int main(int argc, char **argv)
           read(fd, &response[i], 1);
         } while (response[i] != FLAG && ll->timeout);
         response[i + 1] = 0;
-        /*
+        
         struct parse_results *parse_result = parse_tram(&response[1], i - 2);
         process_tram_received(parse_result, fd);
-        */
+        
         // loop que envia packet[i] e verifica trama recebida do recetor
 
         ll->numTransmissions--;
@@ -100,7 +98,7 @@ int main(int argc, char **argv)
       }
     }
     ll->timeout--;
-  }
+  }*/
 
   llclose(fd);
 

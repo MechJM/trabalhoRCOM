@@ -101,7 +101,7 @@ int parse_and_process_su_tram(unsigned char * tram, int fd)
     {
         case SET:
         {
-            printf("Received request to start communication Acknowledging.\n");
+            printf("Received request to start communication. Acknowledging.\n");
             response = generate_su_tram(COMM_SEND_REP_REC, UA);
             break;
         }

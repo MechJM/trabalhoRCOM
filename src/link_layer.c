@@ -66,15 +66,36 @@ int ll_open_serial_port(int fd)
 
 int llopen(int fd, int flag)
 {
-  flag=flag; //Just a placeholder to allow the program to compile
-  /*
-  Open serial port device for reading and writing and not as controlling tty
-  because we don't want to get killed if linenoise sends CTRL-C.
-  */
-  fd = ll_open_serial_port(fd);
-  // TODO
-  // SEND SET
-  // READ UA
+  if (flag == TRANSMITTER)
+  {
+    fd = ll_open_serial_port(fd);
+      unsigned char * first_message = generate_su_tram(COMM_SEND_REP_REC,SET);
+      int res = write(fd,first_message,NON_INFO_TRAM_SIZE);
+      if (res != NON_INFO_TRAM_SIZE)
+      {
+        fprintf(stderr,"Failed to write in llopen!\n");
+        return -1;
+      }
+      unsigned char * response = receive_tram(fd);
+      int result = parse_and_process_su_tram(response,fd);
+      if (result != SEND_NEW_DATA)
+      {
+        fprintf(stderr, "Wrong result in llopen!\n");
+        return -1;
+      }
+  }
+  else
+  {
+      unsigned char * first_request = receive_tram(fd);
+      int result = parse_and_process_su_tram(first_request,fd);
+      
+      if (result != DO_NOTHING)
+      {
+        fprintf(stderr, "Wrong result in llopen!\n");
+        return -1;
+      }
+  }
+  printf("Finished the start process!\n");
   return fd;
 }
 
@@ -131,3 +152,4 @@ int llclose(int fd)
     ll_close_serial_port(fd);
     return 1;
 }
+

@@ -1,7 +1,7 @@
 CC=gcc
 CFLAGS= -Wall -Wextra -Werror -pedantic -rdynamic
 WRITE_OBJECTS= writenoncanonical.o tram.o state_machine.o app_layer.o link_layer.o
-READ_OBJECTS= noncanonical.o tram.o state_machine.o
+READ_OBJECTS= noncanonical.o tram.o state_machine.o link_layer.o
 
 default: read write lesser_clean
 
