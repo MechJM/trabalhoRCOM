@@ -125,7 +125,7 @@ int llclose(int fd)
         int result = parse_and_process_su_tram(response, fd);
         if (result != DO_NOTHING)
         {
-            fprintf(stderr, "Failed to write on llclose!\n");
+            fprintf(stderr, "Processing failed!\n");
             return -1;
         } 
     }
@@ -135,7 +135,7 @@ int llclose(int fd)
         int result = parse_and_process_su_tram(end_request, fd);
         if (result != DO_NOTHING)
         {
-            fprintf(stderr, "Failed to write on llclose!\n");
+            fprintf(stderr, "Processing failed!\n");
             return -1;
         }
 
@@ -143,7 +143,7 @@ int llclose(int fd)
         result = parse_and_process_su_tram(acknowledgment, fd);
         if (result != DO_NOTHING)
         {
-            fprintf(stderr, "Failed to write on llclose!\n");
+            fprintf(stderr, "Processing failed!\n");
             return -1;
         }
         
