@@ -1,10 +1,8 @@
 /* LINK LAYER */
 
-
 #include "link_layer.h"
 
 struct termios oldtio, newtio;
-
 
 int ll_init(char *port, int baudRate, unsigned int timeout, unsigned int numTransmissions)
 {
@@ -69,31 +67,32 @@ int llopen(int fd, int flag)
   if (flag == TRANSMITTER)
   {
     fd = ll_open_serial_port(fd);
-      unsigned char * first_message = generate_su_tram(COMM_SEND_REP_REC,SET);
-      int res = write(fd,first_message,NON_INFO_TRAM_SIZE);
-      if (res != NON_INFO_TRAM_SIZE)
-      {
-        fprintf(stderr,"Failed to write in llopen!\n");
-        return -1;
-      }
-      unsigned char * response = receive_tram(fd);
-      int result = parse_and_process_su_tram(response,fd);
-      if (result != SEND_NEW_DATA)
-      {
-        fprintf(stderr, "Wrong result in llopen!\n");
-        return -1;
-      }
+    unsigned char *first_message = generate_su_tram(COMM_SEND_REP_REC, SET);
+    int res = write(fd, first_message, NON_INFO_TRAM_SIZE);
+    if (res != NON_INFO_TRAM_SIZE)
+    {
+      fprintf(stderr, "Failed to write in llopen!\n");
+      return -1;
+    }
+    unsigned char *response = receive_tram(fd);
+    int result = parse_and_process_su_tram(response, fd);
+    if (result != SEND_NEW_DATA)
+    {
+      fprintf(stderr, "Wrong result in llopen!\n");
+      return -1;
+    }
   }
   else
   {
-      unsigned char * first_request = receive_tram(fd);
-      int result = parse_and_process_su_tram(first_request,fd);
-      
-      if (result != DO_NOTHING)
-      {
-        fprintf(stderr, "Wrong result in llopen!\n");
-        return -1;
-      }
+    fd = ll_open_serial_port(fd);
+    unsigned char *first_request = receive_tram(fd);
+    int result = parse_and_process_su_tram(first_request, fd);
+
+    if (result != DO_NOTHING)
+    {
+      fprintf(stderr, "Wrong result in llopen!\n");
+      return -1;
+    }
   }
   printf("Finished the start process!\n");
   return fd;
@@ -112,44 +111,42 @@ void ll_close_serial_port(int fd)
 int llclose(int fd)
 {
   if (sender)
+  {
+    unsigned char *new_tram = generate_su_tram(COMM_SEND_REP_REC, DISC);
+    int size = NON_INFO_TRAM_SIZE;
+    int res = write(fd, new_tram, size);
+    if (res != NON_INFO_TRAM_SIZE)
     {
-        unsigned char * new_tram = generate_su_tram(COMM_SEND_REP_REC, DISC);
-        int size = NON_INFO_TRAM_SIZE;
-        int res = write(fd, new_tram, size);
-        if (res != NON_INFO_TRAM_SIZE)
-        {
-            fprintf(stderr, "Failed to write on llclose!\n");
-            return -1;
-        } 
-
-        unsigned char * response = receive_tram(fd);
-        int result = parse_and_process_su_tram(response, fd);
-        if (result != DO_NOTHING)
-        {
-            fprintf(stderr, "Processing failed!\n");
-            return -1;
-        } 
+      fprintf(stderr, "Failed to write on llclose!\n");
+      return -1;
     }
-    else 
+
+    unsigned char *response = receive_tram(fd);
+    int result = parse_and_process_su_tram(response, fd);
+    if (result != DO_NOTHING)
     {
-        unsigned char * end_request = receive_tram(fd);
-        int result = parse_and_process_su_tram(end_request, fd);
-        if (result != DO_NOTHING)
-        {
-            fprintf(stderr, "Processing failed!\n");
-            return -1;
-        }
-
-        unsigned char * acknowledgment = receive_tram(fd);
-        result = parse_and_process_su_tram(acknowledgment, fd);
-        if (result != DO_NOTHING)
-        {
-            fprintf(stderr, "Processing failed!\n");
-            return -1;
-        }
-        
+      fprintf(stderr, "Processing failed!\n");
+      return -1;
     }
-    ll_close_serial_port(fd);
-    return 1;
+  }
+  else
+  {
+    unsigned char *end_request = receive_tram(fd);
+    int result = parse_and_process_su_tram(end_request, fd);
+    if (result != DO_NOTHING)
+    {
+      fprintf(stderr, "Processing failed!\n");
+      return -1;
+    }
+
+    unsigned char *acknowledgment = receive_tram(fd);
+    result = parse_and_process_su_tram(acknowledgment, fd);
+    if (result != DO_NOTHING)
+    {
+      fprintf(stderr, "Processing failed!\n");
+      return -1;
+    }
+  }
+  ll_close_serial_port(fd);
+  return 1;
 }
-

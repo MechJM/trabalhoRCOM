@@ -13,47 +13,19 @@
 #include "link_layer.h"
 
 #define BAUDRATE B38400
-#define _POSIX_SOURCE 1 /* POSIX compliant source */
 #define FALSE 0
-#define TRUE 1
 
 volatile int STOP = FALSE;
-
-long int file_size;
-
-int packet_size = 127;
-int packet_num;
-
-void restoreFile(char *fileName, unsigned char *packet[], int packet_num)
-{
-  printf("Restoring File...\n");
-  FILE *f = fopen((char *)fileName, "wb+");
-  for (int i = 0; i < packet_num; i++)
-  {
-    fwrite((void *)packet[i], 1, packet_size, f);
-  }
-  printf("File Restored!\n");
-  fclose(f);
-}
-void restoreSimpleFile(char *fileName, unsigned char *fileData, long int file_size)
-{
-  FILE *f = fopen((char *)fileName, "wb+");
-  fwrite((void *)fileData, 1, file_size, f);
-  printf("New File Created!\n");
-  fclose(f);
-}
 
 int main(int argc, char **argv)
 {
   sender = 0;
   setup_initial_values();
-  
-  //int fd,c, res;
-  int fd;//, res;
-  struct termios oldtio, newtio;
-  //int packet_size = 127;
-  //unsigned char buf[packet_size];
-  
+  int fd = 0;
+  timeout = 1;
+  int numTransmissions = 1;
+  ll = NULL;
+
   if ((argc < 2) ||
       ((strcmp("/dev/ttyS10", argv[1]) != 0) &&
        (strcmp("/dev/ttyS11", argv[1]) != 0)))
@@ -62,53 +34,10 @@ int main(int argc, char **argv)
     exit(1);
   }
 
-  /*
-    Open serial port device for reading and writing and not as controlling tty
-    because we don't want to get killed if linenoise sends CTRL-C.
-  */
+  ll_init(argv[1], BAUDRATE, timeout, numTransmissions);
 
-  ll = ll;
-  
-  fd = open(argv[1], O_RDWR | O_NOCTTY);
-  if (fd < 0)
-  {
-    perror(argv[1]);
-    exit(-1);
-  }
-  
-  if (tcgetattr(fd, &oldtio) == -1)
-  { /* save current port settings */
-    perror("tcgetattr");
-    exit(-1);
-  }
+  fd = llopen(fd, RECEIVER);
 
-  bzero(&newtio, sizeof(newtio));
-  newtio.c_cflag = BAUDRATE | CS8 | CLOCAL | CREAD;
-  newtio.c_iflag = IGNPAR;
-  newtio.c_oflag = 0;
-
-  /* set input mode (non-canonical, no echo,...) */
-  newtio.c_lflag = 0;
-
-  newtio.c_cc[VTIME] = 0; /* inter-character timer unused */
-  newtio.c_cc[VMIN] = 5;  /* blocking read until 5 chars received */
-
-  /* 
-    VTIME e VMIN devem ser alterados de forma a proteger com um temporizador a 
-    leitura do(s) pr�ximo(s) caracter(es)
-  */
-
-  tcflush(fd, TCIOFLUSH);
-
-  if (tcsetattr(fd, TCSANOW, &newtio) == -1)
-  {
-    perror("tcsetattr");
-    exit(-1);
-  }
-
-  printf("New termios structure set\n");
-  fd = llopen(fd,RECEIVER);
-  
   /*
   while (STOP == FALSE)
   {                         
@@ -132,9 +61,10 @@ int main(int argc, char **argv)
 
       break;
     }
-  }*/
-  
-  tcsetattr(fd, TCSANOW, &oldtio);
-  close(fd);
+  }
+  */
+
+  llclose(fd);
+
   return 0;
 }

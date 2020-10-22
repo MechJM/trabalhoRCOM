@@ -15,15 +15,7 @@
 #include "app_layer.h"
 #include "link_layer.h"
 
-// POSIX Compliant Source
-#define _POSIX_SOURCE 1
 #define BAUDRATE B38400
-#define MODEMDEVICE "/dev/ttyS11"
-#define FALSE 0
-#define TRUE 1
-#define PORT_NAME "/dev/ttyS"
-
-volatile int STOP = FALSE;
 
 void sigalrm_handler(int signo)
 {
@@ -32,15 +24,26 @@ void sigalrm_handler(int signo)
   timeout = 0;
 }
 
+void set_sigaction()
+{
+  struct sigaction action;
+  action.sa_handler = sigalrm_handler;
+  sigemptyset(&action.sa_mask);
+  action.sa_flags = 0;
+
+  if (sigaction(SIGALRM, &action, NULL) < 0)
+    fprintf(stderr, "Couldn't install signal handler for SIGALRM.\n");
+}
+
 int main(int argc, char **argv)
 {
   packet_size = 127;
   sender = 1;
   int fd = 0;
   timeout = 1;
-  //int n = 5;
   int numTransmissions = 1;
   ll = NULL;
+
   if ((argc < 2) ||
       ((strcmp("/dev/ttyS10", argv[1]) != 0) &&
        (strcmp("/dev/ttyS11", argv[1]) != 0)))
@@ -54,15 +57,10 @@ int main(int argc, char **argv)
   processFile(fileData);
 
   ll_init(argv[1], BAUDRATE, timeout, numTransmissions);
-  fd = llopen(fd,TRANSMITTER);
 
-  struct sigaction action;
-  action.sa_handler = sigalrm_handler;
-  sigemptyset(&action.sa_mask);
-  action.sa_flags = 0;
+  fd = llopen(fd, TRANSMITTER);
 
-  if (sigaction(SIGALRM, &action, NULL) < 0)
-    fprintf(stderr, "Couldn't install signal handler for SIGALRM.\n");
+  set_sigaction();
 
   //unsigned char *tram = generate_su_tram(COMM_SEND_REP_REC, SET);
   /*
