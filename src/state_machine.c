@@ -98,10 +98,13 @@ unsigned char *receive_info_tram(int fd, int *data_size)
 
     unsigned char currentByte = 0x00;
     int res, continue_loop = 1, currentIndex = 0;
-
+    
     while (continue_loop)
     {
+        //printf("Cheguei aqui\n");
         res = read(fd, &currentByte, 1);
+        
+        printf("%x ",currentByte);
         if (res != 1)
             fprintf(stderr, "Failed to read in receive_tram!\n");
 

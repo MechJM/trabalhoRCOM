@@ -37,6 +37,7 @@ void set_sigaction()
 
 int main(int argc, char **argv)
 {
+  setup_initial_values();
   packet_size = 127;
   sender = 1;
   int fd = 0;
@@ -101,7 +102,7 @@ int main(int argc, char **argv)
     ll->timeout--;
   }*/
 
-  llclose(fd);
+  //llclose(fd);
 
   return 0;
 }

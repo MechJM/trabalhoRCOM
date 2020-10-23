@@ -22,6 +22,7 @@ int main(int argc, char **argv)
 {
   sender = 0;
   setup_initial_values();
+  data_trams_received = 0;
   int fd = 0;
   timeout = 1;
   int numTransmissions = 1;
@@ -40,10 +41,10 @@ int main(int argc, char **argv)
   fd = llopen(fd, RECEIVER);
 
   llread(fd);
-  
   // DEBUG Restaurar 1 packet só
+  
   restoreSimpleFile("teste_read.txt", packet[0], 1);
-
+  
   /*
   while (STOP == FALSE)
   {                         

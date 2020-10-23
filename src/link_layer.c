@@ -101,9 +101,19 @@ int llopen(int fd, int flag)
 
 int llwrite(int fd, unsigned char *packet, int packet_size)
 {
-  unsigned char *tram_i = generate_info_tram(packet, COMM_SEND_REP_REC, packet_size);
-  int res = write(fd, tram_i, INFO_CTRL);
-  if (res != INFO_CTRL)
+  packet_size = 15;
+  unsigned char *tram_i = generate_info_tram(packet, COMM_SEND_REP_REC,packet_size);
+  int new_packet_size = 15 + 6;
+  byte_stuff(tram_i, &new_packet_size);
+  printf("Data being sent: ");
+  for (int i = 0; i < new_packet_size; i++)
+  {
+    printf("%x ", tram_i[i]);
+  }
+  
+  printf("\n");
+  int res = write(fd, tram_i, new_packet_size);
+  if (res != (new_packet_size))
   {
     fprintf(stderr, "Failed to write in llwrite!\n");
     return -1;
@@ -115,9 +125,18 @@ int llwrite(int fd, unsigned char *packet, int packet_size)
 int llread(int fd)
 {
   printf("I Tram Received!\n");
-  unsigned char *request = receive_tram(fd);
+  int size;
+  unsigned char *request = receive_info_tram(fd,&size);
+  printf("Data received: ");
+  for (int i = 0; i < size; i++)
+  {
+    printf("%x ",request[i]);
+  }
+  printf("\n");
+  byte_unstuff(request, &size);
   struct parse_results *result = parse_info_tram(request, fd);
   process_info_tram_received(result, fd);
+  
   return fd;
 }
 

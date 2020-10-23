@@ -1,28 +1,29 @@
 #include "tram.h"
 
 void setup_initial_values()
-{
+{  
+    /*
     r = 1;
     s = 0;
     last_s = -1;
-    last_r = -1;
+    last_r = -1;*/
     last_seq = -1;
 }
 
 unsigned char *generate_info_tram(unsigned char *data, unsigned char address, int array_size)
 {
-    unsigned char *tram = malloc((6 + array_size) * sizeof(unsigned char));
+    unsigned char *tram = calloc((6 + array_size), sizeof(unsigned char));
 
     tram[0] = FLAG;
     tram[1] = address;
 
     unsigned char actual_control = INFO_CTRL;
-
+  
     if (last_seq == -1 || last_seq == 1)
         last_seq = 0;
     else if (last_seq == 0)
         last_seq = 1;
-
+ 
     if (last_seq == 1)
         actual_control |= S_MASK;
     /*
@@ -163,7 +164,7 @@ struct parse_results *parse_info_tram(unsigned char *tram, int tram_size)
 
     struct parse_results *result = calloc(1, sizeof(struct parse_results));
     //Setting default values
-    result->received_data = NULL;
+    //result->received_data = NULL;
     result->tram_size = tram_size;
     result->duplicate = 0;
     result->data_integrity = 1;
@@ -188,6 +189,7 @@ struct parse_results *parse_info_tram(unsigned char *tram, int tram_size)
         for (int i = 3; i < (tram_size + 3 - 4); i++)
         {
             data_parsed[i - 3] = tram[i];
+            result->received_data[i - 3] = tram[i]; 
         }
         printf("Data tram received.\n");
         break;
@@ -201,6 +203,7 @@ struct parse_results *parse_info_tram(unsigned char *tram, int tram_size)
         for (int i = 3; i < (tram_size + 3 - 4); i++)
         {
             data_parsed[i - 3] = tram[i];
+            result->received_data[i - 3] = tram[i]; 
         }
         printf("Data tram received.\n");
         break;
@@ -209,7 +212,7 @@ struct parse_results *parse_info_tram(unsigned char *tram, int tram_size)
         result->header_validity = 0;
     }
 
-    result->received_data = data_parsed;
+    //result->received_data = data_parsed;
 
     unsigned char bcc2 = 0x00;
 
@@ -220,7 +223,7 @@ struct parse_results *parse_info_tram(unsigned char *tram, int tram_size)
 
     if (bcc2 != tram[tram_size - 1])
         result->data_integrity = 0;
-
+    
     return result;
 }
 
