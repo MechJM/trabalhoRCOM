@@ -114,10 +114,10 @@ int llwrite(int fd, unsigned char *packet, int packet_size)
 
 int llread(int fd)
 {
+  printf("I Tram Received!\n");
   unsigned char *request = receive_tram(fd);
   struct parse_results *result = parse_info_tram(request, fd);
-  printf("I Tram Received!\n");
-  printf("sizeof(received_data)=%ld", sizeof(result->received_data));
+  process_info_tram_received(result, fd);
   return fd;
 }
 

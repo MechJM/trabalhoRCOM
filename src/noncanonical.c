@@ -40,6 +40,9 @@ int main(int argc, char **argv)
   fd = llopen(fd, RECEIVER);
 
   llread(fd);
+  
+  // DEBUG Restaurar 1 packet só
+  restoreSimpleFile("teste_read.txt", packet[0], 1);
 
   /*
   while (STOP == FALSE)

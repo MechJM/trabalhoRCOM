@@ -71,6 +71,7 @@ void restoreFile(char *fileName, unsigned char *packet[], int packet_num)
 
 void restoreSimpleFile(char *fileName, unsigned char *fileData, long int file_size)
 {
+    printf("Restoring Simple File...\n");
     FILE *f = fopen((char *)fileName, "wb+");
     fwrite((void *)fileData, 1, file_size, f);
     printf("New File Created!\n");
