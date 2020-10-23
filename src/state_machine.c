@@ -98,82 +98,85 @@ unsigned char *receive_info_tram(int fd, int *data_size)
 
     unsigned char currentByte = 0x00;
     int res, continue_loop = 1, currentIndex = 0;
-    
+    //printf("Byte\tState\n");
     while (continue_loop)
     {
         //printf("Cheguei aqui\n");
         res = read(fd, &currentByte, 1);
         
-        printf("%x ",currentByte);
+        //printf("%x\t",currentByte);
         if (res != 1)
             fprintf(stderr, "Failed to read in receive_tram!\n");
+        //if (currentByte == 0x51) printf("State: %d\n",state);
 
         switch (state)
         {
-        case start_info:
-        {
-            if (currentByte == FLAG)
-                state = flag_rcv_info;
-            break;
-        }
-        case flag_rcv_info:
-        {
-            if (currentByte == COMM_SEND_REP_REC || currentByte == COMM_REC_REP_SEND)
+            case start_info:
             {
-                state = a_rcv_info;
-                result[0] = currentByte;
+                if (currentByte == FLAG)
+                    state = flag_rcv_info;
+                break;
             }
-            else if (currentByte != FLAG)
-                state = start;
-            break;
-        }
-        case a_rcv_info:
-        {
-            if (currentByte == UA || currentByte == DISC || currentByte == SET || currentByte == REJ || currentByte == (REJ | R_MASK) || currentByte == RR || currentByte == (RR | R_MASK))
+            case flag_rcv_info:
             {
-                state = c_rcv_info;
-                if (currentByte == (RR | R_MASK))
-                    result[1] = RR;
-                else if (currentByte == (REJ | R_MASK))
-                    result[1] = REJ;
-                else
+                if (currentByte == COMM_SEND_REP_REC || currentByte == COMM_REC_REP_SEND)
+                {
+                    state = a_rcv_info;
+                    result[0] = currentByte;
+                }
+                else if (currentByte != FLAG)
+                    state = start_info;
+                break;
+            }
+            case a_rcv_info:
+            {
+                if (currentByte == INFO_CTRL || currentByte == (INFO_CTRL | S_MASK))
+                {
+                    state = c_rcv_info;
                     result[1] = currentByte;
+                }
+                else if (currentByte == FLAG)
+                    state = flag_rcv_info;
+                else
+                    state = start_info;
+                break;
             }
-            else if (currentByte == FLAG)
-                state = flag_rcv_info;
-            else
-                state = start_info;
-            break;
-        }
-        case c_rcv_info:
-        {
-            if (currentByte == (result[0] ^ result[1]))
+            case c_rcv_info:
             {
-                state = receiving_data_info;
-                result[2] = currentByte;
-                currentIndex = 3;
+                if (currentByte == (result[0] ^ result[1]))
+                {
+                    state = receiving_data_info;
+                    result[2] = currentByte;
+                    currentIndex = 3;
+                }
+                else if (currentByte == FLAG)
+                    state = flag_rcv_info;
+                else
+                    state = start_info;
+                break;
             }
-            else if (currentByte == FLAG)
-                state = flag_rcv_info;
-            else
-                state = start_info;
-            break;
-        }
-        case receiving_data_info:
-        {
-            if (currentByte == FLAG)
-                continue_loop = 0;
-            else
+            case receiving_data_info:
             {
-                result[currentIndex++] = currentByte;
-                continue;
+                if (currentByte == FLAG)
+                {
+                    continue_loop = 0;
+                }
+                    
+                else
+                {
+                    result[currentIndex++] = currentByte;
+                    continue;
+                }
+                break;
             }
-            break;
+            default:
+            {
+                fprintf(stderr, "Invalid reception state!\n");
+                break;
+            }  
         }
-        default:
-            fprintf(stderr, "Invalid reception state!\n");
-        }
+        //printf("%d\n",state);
     }
-    (*data_size) = currentIndex + 1;
+    (*data_size) = currentIndex;
     return result;
 }

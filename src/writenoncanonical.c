@@ -102,7 +102,7 @@ int main(int argc, char **argv)
     ll->timeout--;
   }*/
 
-  //llclose(fd);
+  llclose(fd);
 
   return 0;
 }
