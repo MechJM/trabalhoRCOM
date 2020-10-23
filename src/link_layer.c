@@ -136,8 +136,8 @@ int llread(int fd)
   printf("\n");*/
 
   byte_unstuff(request, &size);
-
-  struct parse_results *result = parse_info_tram(request, fd);
+  
+  struct parse_results *result = parse_info_tram(request, size);
 
   process_info_tram_received(result, fd);
 

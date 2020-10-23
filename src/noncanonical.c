@@ -39,7 +39,7 @@ int main(int argc, char **argv)
   ll_init(argv[1], BAUDRATE, timeout, numTransmissions);
 
   fd = llopen(fd, RECEIVER);
-
+  packet = calloc(255,255);
   llread(fd);
   // DEBUG Restaurar 1 packet só
   

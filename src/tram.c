@@ -223,7 +223,15 @@ struct parse_results *parse_info_tram(unsigned char *tram, int tram_size)
 
     if (bcc2 != tram[tram_size - 1])
         result->data_integrity = 0;
+    /*
+    printf("Tram size: %d\n",tram_size);
+    printf("Data parsed: ");
+    for (int i = 0; i < tram_size - 4; i++)
+    {
+       printf("%x ",result->received_data[i]);
+    }
     
+    printf("\n");*/
     return result;
 }
 
@@ -238,7 +246,13 @@ void process_info_tram_received(struct parse_results *results, int port)
     {
         if (!results->duplicate)
         {
-            packet[data_trams_received++] = results->received_data; //May or may not work
+            for (int i = 0; i < results->tram_size - 4; i++)
+            {
+                packet[data_trams_received][i] = results->received_data[i];
+            }
+            printf("Cheguei aqui\n");
+            //packet[data_trams_received++] = results->received_data; //May or may not work
+            data_trams_received++;
         }
         else
             free(results->received_data);
