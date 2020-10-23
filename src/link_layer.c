@@ -1,6 +1,7 @@
 /* LINK LAYER */
 
 #include "link_layer.h"
+#include "app_layer.h"
 
 struct termios oldtio, newtio;
 
@@ -95,6 +96,28 @@ int llopen(int fd, int flag)
     }
   }
   printf("Finished the start process!\n");
+  return fd;
+}
+
+int llwrite(int fd, unsigned char *packet, int packet_size)
+{
+  unsigned char *tram_i = generate_info_tram(packet, COMM_SEND_REP_REC, packet_size);
+  int res = write(fd, tram_i, INFO_CTRL);
+  if (res != INFO_CTRL)
+  {
+    fprintf(stderr, "Failed to write in llwrite!\n");
+    return -1;
+  }
+  printf("I Tram Sent...\nWaiting For RR...\n");
+  return fd;
+}
+
+int llread(int fd)
+{
+  unsigned char *request = receive_tram(fd);
+  struct parse_results *result = parse_info_tram(request, fd);
+  printf("I Tram Received!\n");
+  printf("sizeof(received_data)=%ld", sizeof(result->received_data));
   return fd;
 }
 

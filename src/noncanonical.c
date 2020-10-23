@@ -11,6 +11,7 @@
 #include "tram.h"
 #include "state_machine.h"
 #include "link_layer.h"
+#include "app_layer.h"
 
 #define BAUDRATE B38400
 #define FALSE 0
@@ -37,6 +38,8 @@ int main(int argc, char **argv)
   ll_init(argv[1], BAUDRATE, timeout, numTransmissions);
 
   fd = llopen(fd, RECEIVER);
+
+  llread(fd);
 
   /*
   while (STOP == FALSE)

@@ -17,7 +17,7 @@
 #define MAX_TRAM_SIZE 2
 #define BAUDRATE B38400
 
-//Flag values
+// Flag values
 #define TRANSMITTER 0
 #define RECEIVER 1
 
@@ -38,6 +38,10 @@ int ll_init(char *port, int baudRate, unsigned int timeout, unsigned int numTran
 int ll_open_serial_port(int fd);
 
 int llopen(int fd, int flag);
+
+int llwrite(int fd, unsigned char *packet, int packet_size);
+
+int llread(int fd);
 
 void ll_close_serial_port(int fd);
 
