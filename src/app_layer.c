@@ -147,3 +147,47 @@ unsigned char * generate_control_packet(unsigned char control_field, int param_n
     
     return result;
 }
+
+void extract_size_name(unsigned char * tram, unsigned char * size, unsigned char * name)
+{
+    int middle_of_data = 0, extracted_name = 0, extracted_size = 0;
+    int i = 1;
+    int data_index = 0;
+    unsigned char type, length;
+
+    while(!extracted_size || !extracted_name)
+    {
+        if (!middle_of_data)
+        {
+            type = tram[i];
+            length = tram[++i];
+            middle_of_data = 1;
+            data_index = 0;
+        }
+        else
+        {   
+           if (type == FILE_SIZE)
+           {
+               if (length == 0)
+               {
+                   extracted_size = 1;
+                   middle_of_data = 0;
+                   continue;
+               }
+               size[data_index++] = tram[i];
+           }
+           else if (type == FILE_NAME)
+           {
+               if (length == 0)
+               {
+                   extracted_name = 1;
+                   middle_of_data = 0;
+                   continue;
+               }
+               name[data_index++] = tram[i];
+           }
+           length--;
+        }
+        i++;
+    }
+}

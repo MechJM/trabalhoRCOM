@@ -5,6 +5,10 @@
 #define START 2
 #define END 3
 
+//Type field values
+#define FILE_SIZE 0
+#define FILE_NAME 1
+
 #include "tram.h"
 
 unsigned char *readFile(unsigned char *fileName);
