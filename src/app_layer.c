@@ -57,7 +57,7 @@ void savePackets(unsigned char *packet[], unsigned char *fileData)
     }
 }
 
-void restoreFile(char *fileName, unsigned char *packet[], int packet_num)
+void restoreFile(char *fileName, unsigned char *packet[], int packet_size, int packet_num)
 {
     printf("Restoring File...\n");
     FILE *f = fopen((char *)fileName, "wb+");

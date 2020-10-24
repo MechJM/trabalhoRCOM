@@ -250,7 +250,7 @@ void process_info_tram_received(struct parse_results *results, int port)
             {
                 packet[data_trams_received][i] = results->received_data[i];
             }
-            printf("Cheguei aqui\n");
+            //printf("Cheguei aqui\n");
             //packet[data_trams_received++] = results->received_data; //May or may not work
             data_trams_received++;
         }

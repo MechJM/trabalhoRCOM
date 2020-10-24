@@ -40,13 +40,12 @@ int main(int argc, char **argv)
 
   fd = llopen(fd, RECEIVER);
   packet = malloc(sizeof(unsigned char *));
-  *packet = calloc(255,sizeof(unsigned char));
+  *packet = calloc(255, sizeof(unsigned char));
 
   llread(fd);
-  // DEBUG Restaurar 1 packet só
-  
-  restoreSimpleFile("teste_read.txt", packet[0], 1);
-  
+  llread(fd);
+  restoreSimpleFile("teste_read.txt", packet[1], 127);
+
   /*
   while (STOP == FALSE)
   {                         

@@ -1,1 +1,1 @@
-../src/write /dev/ttyS10 smallTest.txt
+../src/write /dev/ttyS10 test.txt

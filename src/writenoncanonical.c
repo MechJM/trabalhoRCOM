@@ -63,8 +63,8 @@ int main(int argc, char **argv)
 
   set_sigaction();
 
-  // Ciclo para todas as packets aqui
   llwrite(fd, packet[0], packet_size);
+  llwrite(fd, packet[1], packet_size);
 
   //unsigned char *tram = generate_su_tram(COMM_SEND_REP_REC, SET);
   /*

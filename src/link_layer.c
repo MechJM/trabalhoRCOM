@@ -101,9 +101,9 @@ int llopen(int fd, int flag)
 
 int llwrite(int fd, unsigned char *packet, int packet_size)
 {
-  packet_size = 15;
-  unsigned char *tram_i = generate_info_tram(packet, COMM_SEND_REP_REC,packet_size);
-  int new_packet_size = 15 + 6;
+  packet_size = 127;
+  unsigned char *tram_i = generate_info_tram(packet, COMM_SEND_REP_REC, packet_size);
+  int new_packet_size = 127 + 6;
   byte_stuff(tram_i, &new_packet_size);
   /*
   printf("Data being sent: ");
@@ -127,16 +127,10 @@ int llread(int fd)
 {
   printf("I Tram Received!\n");
   int size;
-  unsigned char *request = receive_info_tram(fd,&size);
-  /*printf("Data received: ");
-  for (int i = 0; i < size; i++)
-  {
-    printf("%x ",request[i]);
-  }
-  printf("\n");*/
+  unsigned char *request = receive_info_tram(fd, &size);
 
   byte_unstuff(request, &size);
-  
+
   struct parse_results *result = parse_info_tram(request, size);
 
   process_info_tram_received(result, fd);
