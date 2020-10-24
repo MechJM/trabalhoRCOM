@@ -9,79 +9,74 @@ unsigned char *receive_tram(int fd)
 
     unsigned char currentByte = 0x00;
     int res, continue_loop = 1;
-
+    printf("Byte\tState\n");
     while (continue_loop)
     {
         res = read(fd, &currentByte, 1);
-        if (res != 1)
-            fprintf(stderr, "Failed to read in receive_tram!\n");
-
+        if (res != 1) fprintf(stderr, "Failed to read in receive_tram!\n");
+        printf("%x\t",currentByte);
         switch (state)
         {
-        case start:
-        {
-            if (currentByte == FLAG)
-                state = flag_rcv;
-            break;
-        }
-        case flag_rcv:
-        {
-            if (currentByte == COMM_SEND_REP_REC || currentByte == COMM_REC_REP_SEND)
+            case start:
             {
-                state = a_rcv;
-                result[0] = currentByte;
+                if (currentByte == FLAG)
+                    state = flag_rcv;
+                break;
             }
-            else if (currentByte != FLAG)
-                state = start;
-            break;
-        }
-        case a_rcv:
-        {
-            if (currentByte == UA || currentByte == DISC || currentByte == SET || currentByte == REJ || currentByte == (REJ | R_MASK) || currentByte == RR || currentByte == (RR | R_MASK))
+            case flag_rcv:
             {
-                state = c_rcv;
-                if (currentByte == (RR | R_MASK))
-                    result[1] = RR;
-                else if (currentByte == (REJ | R_MASK))
-                    result[1] = REJ;
-                else
+                if (currentByte == COMM_SEND_REP_REC || currentByte == COMM_REC_REP_SEND)
+                {
+                    state = a_rcv;
+                    result[0] = currentByte;
+                }
+                else if (currentByte != FLAG)
+                    state = start;
+                break;
+            }
+            case a_rcv:
+            {
+                if (currentByte == UA || currentByte == DISC || currentByte == SET || currentByte == REJ || currentByte == (REJ | R_MASK) || currentByte == RR || currentByte == (RR | R_MASK))
+                {
+                    state = c_rcv;
                     result[1] = currentByte;
+                }
+                else if (currentByte == FLAG)
+                    state = flag_rcv;
+                else
+                    state = start;
+                break;
             }
-            else if (currentByte == FLAG)
-                state = flag_rcv;
-            else
-                state = start;
-            break;
-        }
-        case c_rcv:
-        {
-            if (currentByte == (result[0] ^ result[1]))
+            case c_rcv:
             {
-                state = bcc_ok;
-                result[2] = currentByte;
+                if (currentByte == (result[0] ^ result[1]))
+                {
+                    state = bcc_ok;
+                    result[2] = currentByte;
+                }
+                else if (currentByte == FLAG)
+                    state = flag_rcv;
+                else
+                    state = start;
+                break;
             }
-            else if (currentByte == FLAG)
-                state = flag_rcv;
-            else
-                state = start;
-            break;
-        }
-        case bcc_ok:
-        {
-            if (currentByte == FLAG)
+            case bcc_ok:
             {
-                continue_loop = 0;
+                if (currentByte == FLAG)
+                {
+                    continue_loop = 0;
+                }
+                else
+                    state = start;
+                break;
             }
-            else
-                state = start;
-            break;
+            default:
+            {
+                fprintf(stderr, "Invalid reception state!\n");
+                break;
+            }
         }
-        default:
-        {
-            fprintf(stderr, "Invalid reception state!\n");
-            break;
-        }
-        }
+        printf("%x\n",state);
     }
     /*
     printf("First byte: %d\n",result[0]);

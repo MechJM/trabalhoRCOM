@@ -69,13 +69,13 @@ int packet_size, packet_num;
 
 void setup_initial_values();
 
-unsigned char *generate_info_tram(unsigned char *data, unsigned char address, int array_size);
+unsigned char *generate_info_tram(char *data, unsigned char address, int array_size);
 
-unsigned char *generate_su_tram(unsigned char address, unsigned char control);
+unsigned char *generate_su_tram(unsigned char address, unsigned char control, int dup);
 
 struct parse_results * parse_info_tram(unsigned char *tram, int tram_size);
 
-void process_info_tram_received(struct parse_results * results, int port);
+char * process_info_tram_received(struct parse_results * results, int port);
 
 unsigned char * translate_array(unsigned char * array, int offset, int array_size, int starting_point);
 

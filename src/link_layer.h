@@ -39,9 +39,9 @@ int ll_open_serial_port(int fd);
 
 int llopen(int fd, int flag);
 
-int llwrite(int fd, unsigned char *packet, int packet_size);
+int llwrite(int fd, char *buffer, int length);
 
-int llread(int fd);
+int llread(int fd, char * buffer);
 
 void ll_close_serial_port(int fd);
 

@@ -16,7 +16,7 @@ void setup_initial_values()
     
 }
 
-unsigned char *generate_info_tram(unsigned char *data, unsigned char address, int array_size)
+unsigned char *generate_info_tram(char *data, unsigned char address, int array_size)
 {
     unsigned char *tram = calloc((6 + array_size), sizeof(unsigned char));
 
@@ -24,12 +24,10 @@ unsigned char *generate_info_tram(unsigned char *data, unsigned char address, in
     tram[1] = address;
 
     unsigned char actual_control = INFO_CTRL;
-  
-    if (last_seq == -1 || last_seq == 1)
-        last_seq = 0;
-    else if (last_seq == 0)
-        last_seq = 1;
- 
+    
+    if (last_seq == -1 || last_seq == 1) last_seq = 0;
+    else if (last_seq == 0) last_seq = 1;
+
     if (last_seq == 1)
         actual_control |= S_MASK;
     /*
@@ -62,7 +60,7 @@ unsigned char *generate_info_tram(unsigned char *data, unsigned char address, in
     return tram;
 }
 
-unsigned char *generate_su_tram(unsigned char address, unsigned char control)
+unsigned char *generate_su_tram(unsigned char address, unsigned char control, int dup)
 {
     unsigned char *tram = malloc(5 * sizeof(unsigned char));
     tram[0] = FLAG;
@@ -74,13 +72,21 @@ unsigned char *generate_su_tram(unsigned char address, unsigned char control)
         actual_control = control |= R_MASK;
     else if (control == RR)
     {
-        if (last_seq == 1)
-            last_seq--;
+        if (!dup)
+        {
+            if (last_seq == 1) last_seq--;
+            else
+            {
+                last_seq++;
+                actual_control = control |= R_MASK;
+            }
+        }
         else
         {
-            last_seq++;
-            actual_control = control |= R_MASK;
+            if (last_seq == 1) actual_control = control |= R_MASK;
         }
+        
+        
     }
     /*
     if (control == RR || control == REJ)
@@ -105,14 +111,14 @@ int parse_and_process_su_tram(unsigned char *tram, int fd)
 {
     unsigned char *response;
     int res;
-    int result = DO_NOTHING; //boolean that indicates if we can start to send data
+    int result = DO_NOTHING; 
 
     switch (tram[1])
     {
     case SET:
     {
         printf("Received request to start communication. Acknowledging.\n");
-        response = generate_su_tram(COMM_SEND_REP_REC, UA);
+        response = generate_su_tram(COMM_SEND_REP_REC, UA,0);
         break;
     }
     case UA:
@@ -134,12 +140,12 @@ int parse_and_process_su_tram(unsigned char *tram, int fd)
         if (sender)
         {
             printf("Communication end request was acknowledged. Acknowledging end.\n");
-            response = generate_su_tram(COMM_REC_REP_SEND, UA);
+            response = generate_su_tram(COMM_REC_REP_SEND, UA,0);
         }
         else
         {
             printf("Received request to end communication. Ending communication.\n");
-            response = generate_su_tram(COMM_REC_REP_SEND, DISC);
+            response = generate_su_tram(COMM_REC_REP_SEND, DISC,0);
         }
         break;
     }
@@ -149,10 +155,22 @@ int parse_and_process_su_tram(unsigned char *tram, int fd)
         return RESEND_DATA;
         break;
     }
+    case (REJ | R_MASK):
+    {
+        printf("Last info packet sent had issues. Resending.\n");
+        return RESEND_DATA;
+        break;
+    }
     case RR:
     {
         printf("Last info packet sent had no issues. Processing.\n");
         return SEND_NEW_DATA;
+        break;
+    }
+    case (RR | R_MASK):
+    {
+        printf("Last info packet sent had issues. Resending.\n");
+        return RESEND_DATA;
         break;
     }
     default:
@@ -233,7 +251,7 @@ struct parse_results *parse_info_tram(unsigned char *tram, int tram_size)
 
     if (bcc2 != tram[tram_size - 1])
         result->data_integrity = 0;
-    
+    /*
     printf("Tram size: %d\n",tram_size);
     printf("Data parsed: ");
     for (int i = 0; i < tram_size - 4; i++)
@@ -241,45 +259,48 @@ struct parse_results *parse_info_tram(unsigned char *tram, int tram_size)
        printf("%x ",result->received_data[i]);
     }
     
-    printf("\n");
+    printf("\n");*/
     return result;
 }
 
-void process_info_tram_received(struct parse_results *results, int port)
+char * process_info_tram_received(struct parse_results *results, int port)
 {
     unsigned char *response;
+    char * result;
+    result = calloc(255,sizeof(unsigned char));
     int response_size = 0;
 
     if (!results->header_validity)
-        return;
+        return NULL;
     if (results->header_validity && results->data_integrity)
     {
-        printf("Duplicate flag: %d\n",results->duplicate);
+        //printf("Duplicate flag: %d\n",results->duplicate);
         if (!results->duplicate)
         {
-            printf("Data after being copied: ");
+            //printf("Data after being copied: ");
             for (int i = 0; i < results->tram_size - 4; i++)
             {
-                packet[data_trams_received][i] = results->received_data[i];
-                printf("%x ",packet[data_trams_received][i]);
+                result[i] = results->received_data[i];
+                //packet[data_trams_received][i] = results->received_data[i];
+                //printf("%x ",packet[data_trams_received][i]);
             }
-            printf("\n");
+            //printf("\n");
             //printf("Cheguei aqui\n");
             //packet[data_trams_received++] = results->received_data; //May or may not work
-            data_trams_received++;
+            //data_trams_received++;
         }
         else
             free(results->received_data);
-        response = generate_su_tram(COMM_SEND_REP_REC, RR);
+        response = generate_su_tram(COMM_SEND_REP_REC, RR,0);
         response_size = 5;
     }
 
     if (results->header_validity && !results->data_integrity)
     {
         if (!results->duplicate)
-            response = generate_su_tram(COMM_SEND_REP_REC, REJ);
+            response = generate_su_tram(COMM_SEND_REP_REC, REJ,0);
         else
-            response = generate_su_tram(COMM_SEND_REP_REC, RR);
+            response = generate_su_tram(COMM_SEND_REP_REC, RR, 1);
         response_size = 5;
     }
 
@@ -287,6 +308,7 @@ void process_info_tram_received(struct parse_results *results, int port)
 
     int res = write(port, response, response_size);
     printf("%d Bytes Written\n", res);
+    return result;
 }
 
 unsigned char *translate_array(unsigned char *array, int offset, int array_size, int starting_point)

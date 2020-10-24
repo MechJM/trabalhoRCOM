@@ -68,7 +68,7 @@ int llopen(int fd, int flag)
   if (flag == TRANSMITTER)
   {
     fd = ll_open_serial_port(fd);
-    unsigned char *first_message = generate_su_tram(COMM_SEND_REP_REC, SET);
+    unsigned char *first_message = generate_su_tram(COMM_SEND_REP_REC, SET,0);
     int res = write(fd, first_message, NON_INFO_TRAM_SIZE);
     if (res != NON_INFO_TRAM_SIZE)
     {
@@ -99,20 +99,81 @@ int llopen(int fd, int flag)
   return fd;
 }
 
+int llwrite(int fd, char * buffer, int length)
+{
+  
+  int tram_length = length + 6;
+  unsigned char * data_tram = generate_info_tram(buffer,COMM_SEND_REP_REC,length);
+  
+ 
+  byte_stuff(data_tram, &tram_length);
+  int res, parse_result;
+
+  int data_sent_success = 0;
+  printf("Cheguei aqui1.5\n");
+  while (!data_sent_success)
+  {
+  	res = write(fd,data_tram,tram_length);
+    if (res != tram_length)
+    {
+      fprintf(stderr, "Failed to write in llwrite!\n");
+      return -1;
+    }
+    printf("Cheguei aqui1.6\n");
+    unsigned char * response = receive_tram(fd);
+    
+    printf("Response: ");
+    for (int i = 0; i < 3; i++)
+    {
+      printf("%x ",response[i]);
+    }
+    
+    printf("\n");
+    
+    parse_result = parse_and_process_su_tram(response,fd);
+    if (parse_result == SEND_NEW_DATA) data_sent_success = 1;
+    else if (parse_result == DO_NOTHING)
+    {
+      fprintf(stderr,"S/U tram processing failed in llwrite!\n");
+      return -1;
+    }
+  }
+
+  printf("Cheguei aqui1.9\n");
+  return res;
+}
+
+int llread(int fd, char * buffer)
+{
+	char * actual_data = NULL;
+	int data_size;
+	while (actual_data == NULL)
+	{
+		unsigned char * data = receive_info_tram(fd,&data_size);
+		byte_unstuff(data,&data_size);
+		struct parse_results * results = parse_info_tram(data, data_size);
+		actual_data = process_info_tram_received(results,fd);
+	}
+	buffer = actual_data;
+  buffer = buffer; //only here because otherwise the compiler throws an error about an unused parameter
+	return (data_size - 4);
+}
+
+/*
 int llwrite(int fd, unsigned char *packet, int packet_size)
 {
   packet_size = 127;
   unsigned char *tram_i = generate_info_tram(packet, COMM_SEND_REP_REC, packet_size);
   int new_packet_size = 127 + 6;
   byte_stuff(tram_i, &new_packet_size);
-  /*
+  
   printf("Data being sent: ");
   for (int i = 0; i < new_packet_size; i++)
   {
     printf("%x ", tram_i[i]);
   }
   
-  printf("\n");*/
+  printf("\n");
   int res = write(fd, tram_i, new_packet_size);
   if (res != (new_packet_size))
   {
@@ -135,7 +196,7 @@ int llwrite(int fd, unsigned char *packet, int packet_size)
   return res;
 }
 
-int llread(int fd/*, char * buffer*/)
+int llread(int fd, char * buffer)
 {
 
   printf("I Tram Received!\n");
@@ -150,7 +211,7 @@ int llread(int fd/*, char * buffer*/)
   
 
   return size;
-}
+}*/
 
 void ll_close_serial_port(int fd)
 {
@@ -166,7 +227,7 @@ int llclose(int fd)
 {
   if (sender)
   {
-    unsigned char *new_tram = generate_su_tram(COMM_SEND_REP_REC, DISC);
+    unsigned char *new_tram = generate_su_tram(COMM_SEND_REP_REC, DISC,0);
     int size = NON_INFO_TRAM_SIZE;
     int res = write(fd, new_tram, size);
     if (res != NON_INFO_TRAM_SIZE)

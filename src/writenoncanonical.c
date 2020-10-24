@@ -62,11 +62,13 @@ int main(int argc, char **argv)
   fd = llopen(fd, TRANSMITTER);
 
   set_sigaction();
-
-  llwrite(fd, packet[0], packet_size);
-  llread(fd);
-  llwrite(fd, packet[1], packet_size);
-  llread(fd);
+  printf("Cheguei aqui\n");
+  llwrite(fd,(char *) packet[0], packet_size);
+  //llread(fd);
+  printf("Cheguei aqui2\n");
+  llwrite(fd,(char *) packet[1], packet_size);
+  //llread(fd);
+  printf("Cheguei aqui3\n");
 
   //unsigned char *tram = generate_su_tram(COMM_SEND_REP_REC, SET);
   /*
