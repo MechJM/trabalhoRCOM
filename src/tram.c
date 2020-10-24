@@ -8,6 +8,12 @@ void setup_initial_values()
     last_s = -1;
     last_r = -1;*/
     last_seq = -1;
+    packet = (unsigned char **) malloc(255 * sizeof(unsigned char *));
+    for (int i = 0; i < 255; i++)
+    {
+        packet[i] = (unsigned char *) malloc(255 * sizeof(unsigned char));
+    }
+    
 }
 
 unsigned char *generate_info_tram(unsigned char *data, unsigned char address, int array_size)
