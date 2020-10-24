@@ -169,8 +169,8 @@ int parse_and_process_su_tram(unsigned char *tram, int fd)
     }
     case (RR | R_MASK):
     {
-        printf("Last info packet sent had issues. Resending.\n");
-        return RESEND_DATA;
+        printf("Last info packet sent had no issues. Processing.\n");
+        return SEND_NEW_DATA;
         break;
     }
     default:

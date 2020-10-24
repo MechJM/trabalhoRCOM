@@ -44,16 +44,30 @@ int main(int argc, char **argv)
 
   *packet = calloc(255, sizeof(unsigned char));
   */
-  printf("Cheguei aqui\n");
+  //printf("Cheguei aqui\n");
   llread(fd,(char*) packet[0]);
   
-  printf("Cheguei aqui2\n");
-  llread(fd,(char*)packet[1]);
-  
-  printf("Cheguei aqui3\n");
+  //printf("Cheguei aqui2\n");
+  llread(fd,(char*) packet[1]);
+  /*
+  printf("Packet 0:\n");
+  for (int i = 0; i < 255; i++)
+  {
+      printf("%x ",packet[0][i]);
+  }
+  printf("\n");
+
+  printf("Packet 1:\n");
+  for (int i = 0; i < 255; i++)
+  {
+      printf("%x ",packet[1][i]);
+  }
+  printf("\n");
+  */
+  //printf("Cheguei aqui3\n");
   restoreSimpleFile("teste_read.txt", packet[1], 127);
   
-  printf("Cheguei aqui4\n");
+  //printf("Cheguei aqui4\n");
   /*
   while (STOP == FALSE)
   {                         

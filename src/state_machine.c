@@ -9,12 +9,12 @@ unsigned char *receive_tram(int fd)
 
     unsigned char currentByte = 0x00;
     int res, continue_loop = 1;
-    printf("Byte\tState\n");
+    //printf("Byte\tState\n");
     while (continue_loop)
     {
         res = read(fd, &currentByte, 1);
         if (res != 1) fprintf(stderr, "Failed to read in receive_tram!\n");
-        printf("%x\t",currentByte);
+        //printf("%x\t",currentByte);
         switch (state)
         {
             case start:
@@ -76,7 +76,7 @@ unsigned char *receive_tram(int fd)
                 break;
             }
         }
-        printf("%x\n",state);
+        //printf("%x\n",state);
     }
     /*
     printf("First byte: %d\n",result[0]);

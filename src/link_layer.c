@@ -110,25 +110,27 @@ int llwrite(int fd, char * buffer, int length)
   int res, parse_result;
 
   int data_sent_success = 0;
-  printf("Cheguei aqui1.5\n");
+  
+
   while (!data_sent_success)
   {
+   
   	res = write(fd,data_tram,tram_length);
     if (res != tram_length)
     {
       fprintf(stderr, "Failed to write in llwrite!\n");
       return -1;
     }
-    printf("Cheguei aqui1.6\n");
+
     unsigned char * response = receive_tram(fd);
-    
+    /*
     printf("Response: ");
     for (int i = 0; i < 3; i++)
     {
       printf("%x ",response[i]);
     }
     
-    printf("\n");
+    printf("\n");*/
     
     parse_result = parse_and_process_su_tram(response,fd);
     if (parse_result == SEND_NEW_DATA) data_sent_success = 1;
@@ -139,7 +141,7 @@ int llwrite(int fd, char * buffer, int length)
     }
   }
 
-  printf("Cheguei aqui1.9\n");
+  
   return res;
 }
 
@@ -151,9 +153,22 @@ int llread(int fd, char * buffer)
 	{
 		unsigned char * data = receive_info_tram(fd,&data_size);
 		byte_unstuff(data,&data_size);
+    /*printf("Data received:");
+    for (int i = 0; i < data_size; i++)
+    {
+      printf("%x ",data[i]);
+    }
+    printf("\n");*/
 		struct parse_results * results = parse_info_tram(data, data_size);
 		actual_data = process_info_tram_received(results,fd);
 	}
+  //printf("actual data:\n");
+  for (int i = 0; i < 255; i++)
+  {
+    //printf("%x ",(unsigned char) actual_data[i]);
+    buffer[i] = actual_data[i];
+  }
+  //printf("\n");
 	buffer = actual_data;
   buffer = buffer; //only here because otherwise the compiler throws an error about an unused parameter
 	return (data_size - 4);
@@ -238,7 +253,7 @@ int llclose(int fd)
 
     unsigned char *response = receive_tram(fd);
     int result = parse_and_process_su_tram(response, fd);
-    printf("Result: %d\n",result);
+    //printf("Result: %d\n",result);
     if (result != DO_NOTHING)
     {
       fprintf(stderr, "Processing failed!\n");
