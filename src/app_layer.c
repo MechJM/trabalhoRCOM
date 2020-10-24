@@ -88,7 +88,9 @@ void processFile(unsigned char *fileData)
     {
         packet_num = file_size / packet_size;
     }
-    packet = calloc(packet_num, packet_size);
+    //packet = calloc(packet_num, packet_size);
+    packet = malloc(sizeof(unsigned char *));
+    *packet = calloc(255,sizeof(unsigned char));
     printf("Created %d Packets...\n", packet_num);
     savePackets(packet, fileData);
     printf("Packets Ready To Be Sent!\n");
