@@ -120,11 +120,24 @@ int llwrite(int fd, unsigned char *packet, int packet_size)
     return -1;
   }
   printf("I Tram Sent...\nWaiting For RR...\n");
-  return fd;
+  unsigned char * response = receive_tram(fd);
+  int result = parse_and_process_su_tram(response,fd);
+  if (result == RESEND_DATA)
+  {
+    res = write(fd, tram_i, new_packet_size);
+    if (res != (new_packet_size))
+    {
+      fprintf(stderr, "Failed to write in llwrite!\n");
+      return -1;
+    }
+  }
+  
+  return res;
 }
 
-int llread(int fd)
+int llread(int fd/*, char * buffer*/)
 {
+
   printf("I Tram Received!\n");
   int size;
   unsigned char *request = receive_info_tram(fd, &size);
@@ -134,8 +147,9 @@ int llread(int fd)
   struct parse_results *result = parse_info_tram(request, size);
 
   process_info_tram_received(result, fd);
+  
 
-  return fd;
+  return size;
 }
 
 void ll_close_serial_port(int fd)
@@ -163,6 +177,7 @@ int llclose(int fd)
 
     unsigned char *response = receive_tram(fd);
     int result = parse_and_process_su_tram(response, fd);
+    printf("Result: %d\n",result);
     if (result != DO_NOTHING)
     {
       fprintf(stderr, "Processing failed!\n");

@@ -8,10 +8,10 @@ void setup_initial_values()
     last_s = -1;
     last_r = -1;*/
     last_seq = -1;
-    packet = (unsigned char **) malloc(255 * sizeof(unsigned char *));
+    packet = (unsigned char **) calloc(255, sizeof(unsigned char *));
     for (int i = 0; i < 255; i++)
     {
-        packet[i] = (unsigned char *) malloc(255 * sizeof(unsigned char));
+        packet[i] = (unsigned char *) calloc(255, sizeof(unsigned char));
     }
     
 }
@@ -151,7 +151,7 @@ int parse_and_process_su_tram(unsigned char *tram, int fd)
     }
     case RR:
     {
-        printf("Last info packet sent had no issues. Proceesing.\n");
+        printf("Last info packet sent had no issues. Processing.\n");
         return SEND_NEW_DATA;
         break;
     }
@@ -192,6 +192,10 @@ struct parse_results *parse_info_tram(unsigned char *tram, int tram_size)
     {
     case INFO_CTRL:
     {
+        if (last_seq == -1)
+            last_seq = 0;
+        else if (last_seq == 1)
+            result->duplicate = 1;
         for (int i = 3; i < (tram_size + 3 - 4); i++)
         {
             data_parsed[i - 3] = tram[i];
@@ -229,7 +233,7 @@ struct parse_results *parse_info_tram(unsigned char *tram, int tram_size)
 
     if (bcc2 != tram[tram_size - 1])
         result->data_integrity = 0;
-    /*
+    
     printf("Tram size: %d\n",tram_size);
     printf("Data parsed: ");
     for (int i = 0; i < tram_size - 4; i++)
@@ -237,7 +241,7 @@ struct parse_results *parse_info_tram(unsigned char *tram, int tram_size)
        printf("%x ",result->received_data[i]);
     }
     
-    printf("\n");*/
+    printf("\n");
     return result;
 }
 
@@ -250,12 +254,16 @@ void process_info_tram_received(struct parse_results *results, int port)
         return;
     if (results->header_validity && results->data_integrity)
     {
+        printf("Duplicate flag: %d\n",results->duplicate);
         if (!results->duplicate)
         {
+            printf("Data after being copied: ");
             for (int i = 0; i < results->tram_size - 4; i++)
             {
                 packet[data_trams_received][i] = results->received_data[i];
+                printf("%x ",packet[data_trams_received][i]);
             }
+            printf("\n");
             //printf("Cheguei aqui\n");
             //packet[data_trams_received++] = results->received_data; //May or may not work
             data_trams_received++;
