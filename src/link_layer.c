@@ -169,7 +169,7 @@ int llread(int fd, char * buffer)
     buffer[i] = actual_data[i];
   }
   //printf("\n");
-	buffer = actual_data;
+	//buffer = actual_data;
   buffer = buffer; //only here because otherwise the compiler throws an error about an unused parameter
 	return (data_size - 4);
 }
