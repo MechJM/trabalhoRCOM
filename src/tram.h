@@ -79,8 +79,8 @@ char * process_info_tram_received(struct parse_results * results, int port);
 
 unsigned char * translate_array(unsigned char * array, int offset, int array_size, int starting_point);
 
-void byte_stuff(unsigned char * tram, int * tram_size);
+unsigned char * byte_stuff(unsigned char * tram, int * tram_size);
 
-void byte_unstuff(unsigned char * tram, int * tram_size);
+unsigned char * byte_unstuff(unsigned char * tram, int * tram_size);
 
 int parse_and_process_su_tram(unsigned char * tram, int fd);
