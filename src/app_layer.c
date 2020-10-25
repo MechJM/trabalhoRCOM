@@ -10,11 +10,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <signal.h>
-
 #include "app_layer.h"
 
-long int file_size;
-int packet_size = 2742;
+long int file_size = 1272;
+int packet_size = 127;
 int packet_num;
 
 unsigned char *readFile(unsigned char *fileName)
@@ -63,7 +62,13 @@ void restoreFile(char *fileName, unsigned char *packet[], int packet_size, int p
     FILE *f = fopen((char *)fileName, "wb+");
     for (int i = 0; i < packet_num; i++)
     {
-        fwrite((void *)packet[i], 1, packet_size, f);
+        // Last Packet
+        if (i == (packet_num - 1))
+        {
+            fwrite((void *)packet[i], 1, (file_size % packet_size), f);
+        }
+        else
+            fwrite((void *)packet[i], 1, packet_size, f);
     }
     printf("File Restored!\n");
     fclose(f);
@@ -72,11 +77,16 @@ void restoreFile(char *fileName, unsigned char *packet[], int packet_size, int p
 void restoreSimpleFile(char *fileName, unsigned char *fileData, long int file_size)
 {
     printf("Restoring Simple File...\n");
-    FILE *f = fopen((char *)fileName, "wb+");
+    FILE *f = fopen((char *)fileName, "ab+");
     fwrite((void *)fileData, 1, file_size, f);
     printf("New File Created!\n");
     fclose(f);
 }
+
+void deleteFile(char *fileName)
+{
+    FILE *output = fopen(fileName, "w");
+    fclose(output);}
 
 void processFile(unsigned char *fileData)
 {
@@ -102,28 +112,28 @@ void processFile(unsigned char *fileData)
     */
 }
 
-unsigned char * generate_data_packet(int seq_num, int byte_num, unsigned char * data)
+unsigned char *generate_data_packet(int seq_num, int byte_num, unsigned char *data)
 {
-    unsigned char * result = calloc(byte_num + 4, sizeof(unsigned char));
+    unsigned char *result = calloc(byte_num + 4, sizeof(unsigned char));
 
     result[0] = DATA;
-    result[1]  = seq_num;
+    result[1] = seq_num;
 
-    int l2 = (int) byte_num / 256;
+    int l2 = (int)byte_num / 256;
     int l1 = byte_num % 256;
 
     result[2] = l2;
     result[3] = l1;
-    
+
     for (int i = 4; i < (byte_num + 4); i++)
     {
         result[i] = data[i - 4];
     }
-    
+
     return result;
 }
 
-unsigned char * generate_control_packet(unsigned char control_field, int param_num, int * t_values, int * l_values, unsigned char ** values)
+unsigned char *generate_control_packet(unsigned char control_field, int param_num, int *t_values, int *l_values, unsigned char **values)
 {
     int total_byte_num = 1 + 2 * param_num;
     for (int i = 0; i < param_num; i++)
@@ -131,7 +141,7 @@ unsigned char * generate_control_packet(unsigned char control_field, int param_n
         total_byte_num += l_values[i];
     }
 
-    unsigned char * result = calloc(total_byte_num, sizeof(unsigned char));
+    unsigned char *result = calloc(total_byte_num, sizeof(unsigned char));
 
     result[0] = control_field;
 
@@ -146,20 +156,19 @@ unsigned char * generate_control_packet(unsigned char control_field, int param_n
         {
             result[nextIndex++] = values[i][j];
         }
-        
     }
-    
+
     return result;
 }
 
-void extract_size_name(unsigned char * tram, unsigned char * size, unsigned char * name)
+void extract_size_name(unsigned char *tram, unsigned char *size, unsigned char *name)
 {
     int middle_of_data = 0, extracted_name = 0, extracted_size = 0;
     int i = 1;
     int data_index = 0;
     unsigned char type, length;
 
-    while(!extracted_size || !extracted_name)
+    while (!extracted_size || !extracted_name)
     {
         if (!middle_of_data)
         {
@@ -169,28 +178,28 @@ void extract_size_name(unsigned char * tram, unsigned char * size, unsigned char
             data_index = 0;
         }
         else
-        {   
-           if (type == FILE_SIZE)
-           {
-               if (length == 0)
-               {
-                   extracted_size = 1;
-                   middle_of_data = 0;
-                   continue;
-               }
-               size[data_index++] = tram[i];
-           }
-           else if (type == FILE_NAME)
-           {
-               if (length == 0)
-               {
-                   extracted_name = 1;
-                   middle_of_data = 0;
-                   continue;
-               }
-               name[data_index++] = tram[i];
-           }
-           length--;
+        {
+            if (type == FILE_SIZE)
+            {
+                if (length == 0)
+                {
+                    extracted_size = 1;
+                    middle_of_data = 0;
+                    continue;
+                }
+                size[data_index++] = tram[i];
+            }
+            else if (type == FILE_NAME)
+            {
+                if (length == 0)
+                {
+                    extracted_name = 1;
+                    middle_of_data = 0;
+                    continue;
+                }
+                name[data_index++] = tram[i];
+            }
+            length--;
         }
         i++;
     }

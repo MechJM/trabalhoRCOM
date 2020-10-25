@@ -53,7 +53,21 @@ int main(int argc, char **argv)
     llread(fd, (char *)packet[i]);
   }
 
-  restoreFile("test_clone.txt", packet, packet_size, data_trams_received);
+  restoreFile("test_clone.txt", packet, packet_size, packet_num);
+
+  /*
+  deleteFile("test_clone.txt");
+  for (int i = 0; i < packet_num; i++)
+  {
+    // Last Packet
+    if (i == (packet_num - 1))
+    {
+      restoreSimpleFile("test_clone.txt", packet[10], 2);
+    }
+    else
+      restoreSimpleFile("test_clone.txt", packet[i], 127);
+  }
+  */
 
   //printf("Cheguei aqui4\n");
   /*

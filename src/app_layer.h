@@ -21,6 +21,8 @@ void restoreFile(char *fileName, unsigned char *packet[], int packet_size, int p
 
 void restoreSimpleFile(char *fileName, unsigned char *fileData, long int file_size);
 
+void deleteFile(char *fileName);
+
 void processFile(unsigned char *fileData);
 
 unsigned char * generate_data_packet(int seq_num, int byte_num, unsigned char * data);
