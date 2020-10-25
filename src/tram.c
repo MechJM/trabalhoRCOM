@@ -290,7 +290,10 @@ char * process_info_tram_received(struct parse_results *results, int port)
             //data_trams_received++;
         }
         else
+        {
             free(results->received_data);
+        }
+            
         response = generate_su_tram(COMM_SEND_REP_REC, RR,0);
         response_size = 5;
     }
@@ -330,12 +333,12 @@ unsigned char *translate_array(unsigned char *array, int offset, int array_size,
             new_array[i] = array[i - offset];
         }
     }
-
-    free(array);
+    //printf("offset: %d,array_size: %d,starting_point: %d\n",offset,array_size,starting_point);
+    //free(array);
     return new_array;
 }
 
-void byte_stuff(unsigned char *tram, int *tram_size)
+unsigned char * byte_stuff(unsigned char *tram, int *tram_size)
 {
     for (int i = 4; i < ((*tram_size) - 1); i++)
     {
@@ -345,6 +348,13 @@ void byte_stuff(unsigned char *tram, int *tram_size)
             (*tram_size)++;
             tram[i] = ESC_BYTE_1;
             tram[++i] = ESC_BYTE_2;
+            /*
+            printf("After modification:\n");
+            for (int j = 0; j < (*tram_size); j++)
+            {
+                printf("%x ",tram[j]);
+            }
+            printf("\n");*/
         }
         else if (tram[i] == ESC_BYTE_1)
         {
@@ -354,9 +364,17 @@ void byte_stuff(unsigned char *tram, int *tram_size)
             tram[++i] = ESC_BYTE_3;
         }
     }
+    /*
+    printf("End of stuffing function:\n");
+    for (int j = 0; j < (*tram_size); j++)
+    {
+        printf("%x ",tram[j]);
+    }
+    printf("\n");*/
+    return tram;
 }
 
-void byte_unstuff(unsigned char *tram, int *tram_size)
+unsigned char * byte_unstuff(unsigned char *tram, int *tram_size)
 {
     for (int i = 3; i < (*tram_size); i++)
     {
@@ -373,4 +391,5 @@ void byte_unstuff(unsigned char *tram, int *tram_size)
             tram[i] = ESC_BYTE_1;
         }
     }
+    return tram;
 }

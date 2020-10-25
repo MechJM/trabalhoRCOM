@@ -104,8 +104,21 @@ int llwrite(int fd, char *buffer, int length)
 
   int tram_length = length + 6;
   unsigned char *data_tram = generate_info_tram(buffer, COMM_SEND_REP_REC, length);
-
-  byte_stuff(data_tram, &tram_length);
+  /*printf("Data being sent before stuffing:\n");
+  for (int i = 0; i < length + 6; i++)
+  {
+    printf("%x ",data_tram[i]);
+  }
+  printf("\n");
+  */
+  data_tram = byte_stuff(data_tram, &tram_length);
+  /*printf("Data being sent after stuffing:\n");
+  for (int i = 0; i < length + 6; i++)
+  {
+    printf("%x ",data_tram[i]);
+  }
+  printf("\n");
+  */
   int res, parse_result;
 
   int data_sent_success = 0;
@@ -150,8 +163,9 @@ int llread(int fd, char *buffer)
   while (actual_data == NULL)
   {
     unsigned char *data = receive_info_tram(fd, &data_size);
-    byte_unstuff(data, &data_size);
-    /*printf("Data received:");
+    data = byte_unstuff(data, &data_size);
+    /*
+    printf("Data received after :\n");
     for (int i = 0; i < data_size; i++)
     {
       printf("%x ",data[i]);
@@ -159,6 +173,7 @@ int llread(int fd, char *buffer)
     printf("\n");*/
     struct parse_results *results = parse_info_tram(data, data_size);
     actual_data = process_info_tram_received(results, fd);
+   
   }
   //printf("actual data:\n");
   for (int i = 0; i < 255; i++)

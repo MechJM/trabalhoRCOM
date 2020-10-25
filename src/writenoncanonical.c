@@ -70,11 +70,42 @@ int main(int argc, char **argv)
   llwrite(fd,(char *) packet[3], packet_size);
   llwrite(fd,(char *) packet[4], packet_size);
   */
-
+  
   for (int i = 0; i < packet_num; i++)
   {
     llwrite(fd, (char *)packet[i], packet_size);
   }
+  /*
+  unsigned char * arr = calloc(5,sizeof(unsigned char));
+  arr[0] = 0x01;
+  arr[1] = 0x02;
+  arr[2] = 0x03;
+  arr[3] = 0x04;
+  arr[4] = 0x05;
+  arr = translate_array(arr,-2,5,1);
+  for (size_t i = 0; i < 5; i++)
+  {
+    printf("%x ",arr[i]);
+  }
+  printf("\n");*/
+  /*
+  unsigned char * packet_3 = packet[2];
+  
+  printf("Before stuffing:\n");
+  for (int i = 0; i < packet_size; i++)
+  {
+    printf("%x ",packet_3[i]);
+  }
+  printf("\n");
+  int size = packet_size;
+  packet_3 = byte_stuff(packet_3,&size);
+  printf("After stuffing:\n");
+  for (int i = 0; i < size; i++)
+  {
+    printf("%x ",packet_3[i]);
+  }
+  printf("\n");
+  */
 
   //unsigned char *tram = generate_su_tram(COMM_SEND_REP_REC, SET);
   /*
