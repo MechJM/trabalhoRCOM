@@ -14,7 +14,7 @@
 #include "app_layer.h"
 
 long int file_size;
-int packet_size = 127;
+int packet_size = 2742;
 int packet_num;
 
 unsigned char *readFile(unsigned char *fileName)
@@ -92,7 +92,7 @@ void processFile(unsigned char *fileData)
     /*
     packet = malloc(sizeof(unsigned char *));
     *packet = calloc(255,sizeof(unsigned char));
-        */
+    */
     printf("Created %d Packets...\n", packet_num);
     savePackets(packet, fileData);
     printf("Packets Ready To Be Sent!\n");

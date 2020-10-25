@@ -27,6 +27,7 @@ int main(int argc, char **argv)
   timeout = 1;
   int numTransmissions = 1;
   ll = NULL;
+  packet_size = 127;
 
   if ((argc < 2) ||
       ((strcmp("/dev/ttyS10", argv[1]) != 0) &&
@@ -45,28 +46,15 @@ int main(int argc, char **argv)
   *packet = calloc(255, sizeof(unsigned char));
   */
   //printf("Cheguei aqui\n");
-  llread(fd,(char*) packet[0]);
-  
-  //printf("Cheguei aqui2\n");
-  llread(fd,(char*) packet[1]);
-  /*
-  printf("Packet 0:\n");
-  for (int i = 0; i < 255; i++)
-  {
-      printf("%x ",packet[0][i]);
-  }
-  printf("\n");
 
-  printf("Packet 1:\n");
-  for (int i = 0; i < 255; i++)
+  int packet_num = 2;
+  for (int i = 0; i < packet_num; i++)
   {
-      printf("%x ",packet[1][i]);
+    llread(fd, (char *)packet[i]);
   }
-  printf("\n");
-  */
-  //printf("Cheguei aqui3\n");
-  restoreSimpleFile("teste_read.txt", packet[1], 127);
-  
+
+  restoreFile("pinguim_clone.gif", packet, packet_size, data_trams_received);
+
   //printf("Cheguei aqui4\n");
   /*
   while (STOP == FALSE)
