@@ -291,7 +291,6 @@ char * process_info_tram_received(struct parse_results *results, int port)
         }
         else
         {
-            printf("Estou no process_info_tram\n");
             free(results->received_data);
         }
             
@@ -334,8 +333,8 @@ unsigned char *translate_array(unsigned char *array, int offset, int array_size,
             new_array[i] = array[i - offset];
         }
     }
-    printf("Estou no translate_array\n");
-    free(array);
+    //printf("offset: %d,array_size: %d,starting_point: %d\n",offset,array_size,starting_point);
+    //free(array);
     return new_array;
 }
 

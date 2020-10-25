@@ -47,7 +47,7 @@ int main(int argc, char **argv)
   */
   //printf("Cheguei aqui\n");
 
-  int packet_num = 11;
+  int packet_num = 87;
   for (int i = 0; i < packet_num; i++)
   {
     llread(fd, (char *)packet[i]);
