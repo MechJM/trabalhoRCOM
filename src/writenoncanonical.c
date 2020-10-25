@@ -71,7 +71,7 @@ int main(int argc, char **argv)
   llwrite(fd,(char *) packet[4], packet_size);
   */
 
-  for (int i = 0; i < 2; i++)
+  for (int i = 0; i < packet_num; i++)
   {
     llwrite(fd, (char *)packet[i], packet_size);
   }

@@ -47,13 +47,13 @@ int main(int argc, char **argv)
   */
   //printf("Cheguei aqui\n");
 
-  int packet_num = 2;
+  int packet_num = 11;
   for (int i = 0; i < packet_num; i++)
   {
     llread(fd, (char *)packet[i]);
   }
 
-  restoreFile("pinguim_clone.gif", packet, packet_size, data_trams_received);
+  restoreFile("test_clone.txt", packet, packet_size, data_trams_received);
 
   //printf("Cheguei aqui4\n");
   /*
