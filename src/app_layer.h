@@ -28,3 +28,7 @@ void processFile(unsigned char *fileData);
 unsigned char * generate_data_packet(int seq_num, int byte_num, unsigned char * data);
 
 unsigned char * generate_control_packet(unsigned char control_field, int param_num, int * t_values, int * l_values, unsigned char ** values);
+
+void extract_size_name(unsigned char *tram, unsigned char *size, unsigned char *name);
+
+void extract_seq_size_data(unsigned char * tram, int * seq, int * size, unsigned char * data);

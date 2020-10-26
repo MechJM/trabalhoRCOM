@@ -204,3 +204,14 @@ void extract_size_name(unsigned char *tram, unsigned char *size, unsigned char *
         i++;
     }
 }
+
+void extract_seq_size_data(unsigned char * tram, int * seq, int * size, unsigned char * data)
+{
+    (*seq) = tram[1];
+    (*size)= tram[2] * 256 + tram[3];
+
+    for (int i = 0; i < (*size); i++)
+    {
+        data[i] = tram[i + 4];
+    }
+}
