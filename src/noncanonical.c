@@ -41,6 +41,9 @@ int main(int argc, char **argv)
   // First Control Packet
   unsigned char *control_packet_received = (unsigned char *)calloc(8, sizeof(unsigned char));
   llread(fd, (char *)control_packet_received);
+  unsigned char *size = (unsigned char *)calloc(3, sizeof(unsigned char));
+  unsigned char *name = (unsigned char *)calloc(3, sizeof(unsigned char));
+  extract_size_name(control_packet_received, size, name);
 
   // File Packets
   int packet_num = 87;

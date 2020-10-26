@@ -71,7 +71,7 @@ int main(int argc, char **argv)
   unsigned char **values = (unsigned char **)calloc(1, sizeof(unsigned char *));
   values[0] = (unsigned char *)calloc(file_size, sizeof(unsigned char));
   values[1] = (unsigned char *)file_name;
-  unsigned char *control_packet = generate_control_packet(START, 1, t_values, l_values, values);
+  unsigned char *control_packet = generate_control_packet(START, 2, t_values, l_values, values);
 
   // First Control Packet
   llwrite(fd, (char *)control_packet, packet_size);
