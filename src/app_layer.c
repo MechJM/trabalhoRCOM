@@ -12,8 +12,8 @@
 #include <signal.h>
 #include "app_layer.h"
 
-long int file_size = 1272;
-int packet_size = 127;
+long int file_size;
+int packet_size;
 int packet_num;
 
 unsigned char *readFile(unsigned char *fileName)

@@ -38,6 +38,8 @@ void set_sigaction()
 int main(int argc, char **argv)
 {
   setup_initial_values();
+  long file_size = 10968;
+  char *file_name = "pinguim_clone.gif";
   packet_size = 127;
   sender = 1;
   int fd = 0;
@@ -59,22 +61,29 @@ int main(int argc, char **argv)
 
   ll_init(argv[1], BAUDRATE, timeout, numTransmissions);
 
-  fd = llopen(fd, TRANSMITTER);
+  fd = llopen(TRANSMITTER);
 
   set_sigaction();
 
-  /*
-  llwrite(fd,(char *) packet[0], packet_size);
-  llwrite(fd,(char *) packet[1], packet_size);
-  llwrite(fd,(char *) packet[2], packet_size);
-  llwrite(fd,(char *) packet[3], packet_size);
-  llwrite(fd,(char *) packet[4], packet_size);
-  */
-  
+  int *t_values = calloc(1, sizeof(int));
+  t_values[0] = FILE_SIZE;
+  t_values[1] = FILE_NAME;
+  int *l_values = calloc(1, sizeof(int));
+  l_values[0] = sizeof(file_size);
+  l_values[1] = 1;
+  unsigned char **values = (unsigned char **)calloc(1, sizeof(unsigned char *));
+  values[0] = (unsigned char *)calloc(file_size, sizeof(unsigned char));
+  values[1] = (unsigned char *)file_name;
+  unsigned char *control_packet = generate_control_packet(START, 1, t_values, l_values, values);
+
+  llwrite(fd, (char *)control_packet, packet_size);
+
+  // File Packets
   for (int i = 0; i < packet_num; i++)
   {
     llwrite(fd, (char *)packet[i], packet_size);
   }
+
   /*
   unsigned char * arr = calloc(5,sizeof(unsigned char));
   arr[0] = 0x01;

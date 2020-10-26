@@ -63,8 +63,9 @@ int ll_open_serial_port(int fd)
   return fd;
 }
 
-int llopen(int fd, int flag)
+int llopen(int flag)
 {
+  int fd = 0;
   if (flag == TRANSMITTER)
   {
     fd = ll_open_serial_port(fd);

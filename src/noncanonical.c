@@ -39,7 +39,7 @@ int main(int argc, char **argv)
 
   ll_init(argv[1], BAUDRATE, timeout, numTransmissions);
 
-  fd = llopen(fd, RECEIVER);
+  fd = llopen(RECEIVER);
   /*
   packet = malloc(sizeof(unsigned char *));
 
@@ -47,13 +47,16 @@ int main(int argc, char **argv)
   */
   //printf("Cheguei aqui\n");
 
+  unsigned char *control_packet_received = (unsigned char *)calloc(1, sizeof(unsigned char));
+  llread(fd, (char *)control_packet_received);
+
   int packet_num = 87;
   for (int i = 0; i < packet_num; i++)
   {
     llread(fd, (char *)packet[i]);
   }
 
-  restoreFile("test_clone.txt", packet, packet_size, packet_num);
+  restoreFile("pinguim_clone.gif", packet, packet_size, packet_num);
 
   /*
   deleteFile("test_clone.txt");
