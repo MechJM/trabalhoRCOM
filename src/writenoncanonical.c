@@ -44,7 +44,6 @@ int main(int argc, char **argv)
   sender = 1;
   int fd = 0;
   timeout = 1;
-  int numTransmissions = 1;
   ll = NULL;
 
   if ((argc < 2) ||
@@ -59,9 +58,7 @@ int main(int argc, char **argv)
 
   processFile(fileData);
 
-  ll_init(argv[1], BAUDRATE, timeout, numTransmissions);
-
-  fd = llopen(TRANSMITTER);
+  fd = llopen(argv[1], TRANSMITTER);
 
   set_sigaction();
 
@@ -76,6 +73,7 @@ int main(int argc, char **argv)
   values[1] = (unsigned char *)file_name;
   unsigned char *control_packet = generate_control_packet(START, 1, t_values, l_values, values);
 
+  // First Control Packet
   llwrite(fd, (char *)control_packet, packet_size);
 
   // File Packets
@@ -83,6 +81,9 @@ int main(int argc, char **argv)
   {
     llwrite(fd, (char *)packet[i], packet_size);
   }
+
+  // Last Control Packet
+  llwrite(fd, (char *)control_packet, packet_size);
 
   /*
   unsigned char * arr = calloc(5,sizeof(unsigned char));

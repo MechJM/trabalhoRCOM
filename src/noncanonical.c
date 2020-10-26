@@ -25,7 +25,6 @@ int main(int argc, char **argv)
   data_trams_received = 0;
   int fd = 0;
   timeout = 1;
-  int numTransmissions = 1;
   ll = NULL;
   packet_size = 127;
 
@@ -37,26 +36,21 @@ int main(int argc, char **argv)
     exit(1);
   }
 
-  ll_init(argv[1], BAUDRATE, timeout, numTransmissions);
+  fd = llopen(argv[1], RECEIVER);
 
-  fd = llopen(RECEIVER);
-  /*
-  packet = malloc(sizeof(unsigned char *));
-
-  *packet = calloc(255, sizeof(unsigned char));
-  */
-  //printf("Cheguei aqui\n");
-
-  unsigned char *control_packet_received = (unsigned char *)calloc(1, sizeof(unsigned char));
+  // First Control Packet
+  unsigned char *control_packet_received = (unsigned char *)calloc(8, sizeof(unsigned char));
   llread(fd, (char *)control_packet_received);
 
+  // File Packets
   int packet_num = 87;
   for (int i = 0; i < packet_num; i++)
   {
     llread(fd, (char *)packet[i]);
   }
 
-  restoreFile("pinguim_clone.gif", packet, packet_size, packet_num);
+  // Last Control Packet
+  llread(fd, (char *)control_packet_received);
 
   /*
   deleteFile("test_clone.txt");
@@ -100,6 +94,8 @@ int main(int argc, char **argv)
   */
 
   llclose(fd);
+
+  restoreFile("pinguim_clone.gif", packet, packet_size, packet_num);
 
   return 0;
 }
