@@ -67,7 +67,7 @@ int llopen(int port, int flag)
 {
   char * actual_port = calloc(12, sizeof(char));
   sprintf(actual_port,"/dev/ttyS%d",port);
-  printf("actual_port: %s\n",actual_port);
+  //printf("actual_port: %s\n",actual_port);
   ll_init(actual_port, BAUDRATE, timeout, 1);
   int fd = 0;
   if (flag == TRANSMITTER)
