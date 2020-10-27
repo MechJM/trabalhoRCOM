@@ -117,7 +117,7 @@ int llwrite(int fd, char *buffer, int length)
   printf("\n");
   */
   data_tram = byte_stuff(data_tram, &tram_length);
-  /*printf("Data being sent after stuffing:\n");
+  /*printf("Data being sent:\n");
   for (int i = 0; i < length + 6; i++)
   {
     printf("%x ",data_tram[i]);
@@ -178,7 +178,7 @@ int llread(int fd, char *buffer)
     unsigned char *data = receive_info_tram(fd, &data_size);
     data = byte_unstuff(data, &data_size);
     /*
-    printf("Data received after :\n");
+    printf("Data received:\n");
     for (int i = 0; i < data_size; i++)
     {
       printf("%x ",data[i]);

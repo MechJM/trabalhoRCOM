@@ -42,18 +42,38 @@ int main(int argc, char **argv)
   // First Control Packet
   unsigned char *control_packet_received = (unsigned char *)calloc(255, sizeof(unsigned char));
   llread(fd, (char *)control_packet_received);
-  
+
   unsigned char *size = (unsigned char *)calloc(8, sizeof(unsigned char));
   unsigned char *name = (unsigned char *)calloc(255, sizeof(unsigned char));
   extract_size_name(control_packet_received, size, name);
-  long received_size =  *((long*)size);
-  
-  received_size=received_size; //just so the compiler doesn't complain
-  // File Packets
-  int packet_num = 87;
+  long received_size = *((long *)size);
+
+  // Read File Packets Based On Received_Size
+  int packet_num;
+  if (received_size % packet_size != 0)
+    packet_num = received_size / packet_size + 1;
+  else
+    packet_num = received_size / packet_size;
+
   for (int i = 0; i < packet_num; i++)
   {
-    llread(fd, (char *)packet[i]);
+    unsigned char* tram = (unsigned char *)calloc(255, sizeof(unsigned char));
+    llread(fd, (char *)tram);
+    int seq;
+    int packet_size_2;
+    /*printf("i: %d,tram received:\n",i);
+    for (size_t j = 0; j < 270; j++)
+    {
+        printf("%x ",tram[j]);
+    }
+    printf("\n");*/
+    extract_seq_size_data(tram, &seq, &packet_size_2, packet[i]);
+    /*printf("packet[%d]:\n",i);
+    for (size_t j = 0; j < 255; j++)
+    {
+      printf("%x ",packet[i][j]);
+    }
+    printf("\n");*/
   }
 
   // Last Control Packet
@@ -102,7 +122,7 @@ int main(int argc, char **argv)
 
   llclose(fd);
 
-  restoreFile("pinguim_clone.gif", packet, packet_size, packet_num);
+  restoreFile((char *)name, packet, packet_size, packet_num);
 
   return 0;
 }

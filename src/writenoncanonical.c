@@ -72,6 +72,7 @@ int main(int argc, char **argv)
   values[0] = (unsigned char *) &file_size;
   values[1] = (unsigned char *)file_name;
   unsigned char *control_packet = generate_control_packet(START, 2, t_values, l_values, values);
+
   /*printf("control packet:\n");
   for (int i = 0; i < (1 + 4 + l_values[0] + l_values[1]); i++)
   {
@@ -79,6 +80,7 @@ int main(int argc, char **argv)
   }
   
   printf("\n");*/
+  
   // First Control Packet
   set_sigaction();
 
@@ -87,10 +89,27 @@ int main(int argc, char **argv)
   // File Packets
   for (int i = 0; i < packet_num; i++)
   {
-    llwrite(fd, (char *)packet[i], packet_size);
+    /*
+    printf("packet[%d] being sent:\n",i);
+    for (size_t j = 0; j < 255; j++)
+    {
+      printf("%x ",packet[i][j]);
+    }
+    
+    printf("\n");*/
+    unsigned char *data_packet = generate_data_packet(i, 255, packet[i]);
+    /*printf("data packet generated for packet[%d]:\n",i);
+    for (size_t j = 0; j < 270; j++)
+    {
+      printf("%x ",data_packet[j]);
+    }
+    printf("\n");
+    */
+    llwrite(fd, (char *)data_packet, packet_size + 4);
   }
-  control_packet[0] = END;
+
   // Last Control Packet
+  control_packet[0] = END;
   llwrite(fd, (char *)control_packet, packet_size);
 
   /*
