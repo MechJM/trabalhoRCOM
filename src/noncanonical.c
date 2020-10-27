@@ -70,7 +70,7 @@ int main(int argc, char **argv)
   llread(fd, (char *)last_control_packet_received);
   extract_size_name(last_control_packet_received, size, name);
 
-  if (size == last_size && name == last_name)
+  if (size == last_size && name == last_name && last_control_packet_received[0] == END)
   {
       printf("Last Control Packet Checked!\n");
   }
