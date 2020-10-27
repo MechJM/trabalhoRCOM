@@ -1,4 +1,5 @@
 #include "tram.h"
+#include "state_machine.h"
 
 void setup_initial_values()
 {  
@@ -8,12 +9,8 @@ void setup_initial_values()
     last_s = -1;
     last_r = -1;*/
     last_seq = -1;
-    packet = (unsigned char **) calloc(255, sizeof(unsigned char *));
-    for (int i = 0; i < 255; i++)
-    {
-        packet[i] = (unsigned char *) calloc(255, sizeof(unsigned char));
-    }
-    
+    reached_timeout = 0;
+    if (!sender) data_trams_received = 0;
 }
 
 unsigned char *generate_info_tram(char *data, unsigned char address, int array_size)
@@ -109,6 +106,8 @@ unsigned char *generate_su_tram(unsigned char address, unsigned char control, in
 
 int parse_and_process_su_tram(unsigned char *tram, int fd)
 {
+    if (tram == NULL) return TIMED_OUT;
+
     unsigned char *response;
     int res;
     int result = DO_NOTHING; 

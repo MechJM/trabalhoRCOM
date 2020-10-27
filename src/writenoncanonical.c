@@ -19,9 +19,8 @@
 
 void sigalrm_handler(int signo)
 {
-  if (signo != SIGALRM)
-    fprintf(stderr, "This signal handler shouldn't have been called. signo: %d\n", signo);
-  timeout = 0;
+  if (signo != SIGALRM) fprintf(stderr, "This signal handler shouldn't have been called. signo: %d\n", signo);
+  reached_timeout = 1;
 }
 
 void set_sigaction()
@@ -31,19 +30,23 @@ void set_sigaction()
   sigemptyset(&action.sa_mask);
   action.sa_flags = 0;
 
-  if (sigaction(SIGALRM, &action, NULL) < 0)
-    fprintf(stderr, "Couldn't install signal handler for SIGALRM.\n");
+  if (sigaction(SIGALRM, &action, NULL) < 0) fprintf(stderr, "Couldn't install signal handler for SIGALRM.\n");
 }
 
 int main(int argc, char **argv)
 {
-  setup_initial_values();
   long file_size = 10968;
   char *file_name = "pinguim_clone.gif";
   packet_size = 127;
-  sender = 1;
   int fd = 0;
   timeout = 1;
+  //Initialize packet
+  packet = (unsigned char **) calloc(255, sizeof(unsigned char *));
+  for (int i = 0; i < 255; i++)
+  {
+      packet[i] = (unsigned char *) calloc(255, sizeof(unsigned char));
+  }
+
   ll = NULL;
 
   if ((argc < 2) ||
@@ -83,6 +86,8 @@ int main(int argc, char **argv)
   printf("\n");*/
   
   // First Control Packet
+  set_sigaction();
+
   llwrite(fd, (char *)control_packet, packet_size);
 
   // File Packets

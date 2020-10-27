@@ -4,6 +4,8 @@
 
 int timeout;
 
+int reached_timeout;
+
 enum reception_state
 {
     start,
