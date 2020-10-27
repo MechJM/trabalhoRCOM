@@ -88,8 +88,23 @@ int main(int argc, char **argv)
   // File Packets
   for (int i = 0; i < packet_num; i++)
   {
-    unsigned char *data_packet = generate_data_packet(DATA, i, packet[i]);
-    llwrite(fd, (char *)data_packet, packet_size);
+    /*
+    printf("packet[%d] being sent:\n",i);
+    for (size_t j = 0; j < 255; j++)
+    {
+      printf("%x ",packet[i][j]);
+    }
+    
+    printf("\n");*/
+    unsigned char *data_packet = generate_data_packet(i, 255, packet[i]);
+    /*printf("data packet generated for packet[%d]:\n",i);
+    for (size_t j = 0; j < 270; j++)
+    {
+      printf("%x ",data_packet[j]);
+    }
+    printf("\n");
+    */
+    llwrite(fd, (char *)data_packet, packet_size + 4);
   }
 
   // Last Control Packet

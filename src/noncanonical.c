@@ -60,7 +60,19 @@ int main(int argc, char **argv)
     llread(fd, (char *)tram);
     int seq;
     int packet_size_2;
+    /*printf("i: %d,tram received:\n",i);
+    for (size_t j = 0; j < 270; j++)
+    {
+        printf("%x ",tram[j]);
+    }
+    printf("\n");*/
     extract_seq_size_data(tram, &seq, &packet_size_2, packet[i]);
+    /*printf("packet[%d]:\n",i);
+    for (size_t j = 0; j < 255; j++)
+    {
+      printf("%x ",packet[i][j]);
+    }
+    printf("\n");*/
   }
 
   // Last Control Packet
