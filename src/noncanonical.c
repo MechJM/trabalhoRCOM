@@ -56,27 +56,29 @@ int main(int argc, char **argv)
 
   for (int i = 0; i < packet_num; i++)
   {
-    unsigned char* tram = (unsigned char *)calloc(255, sizeof(unsigned char));
+    unsigned char *tram = (unsigned char *)calloc(255, sizeof(unsigned char));
     llread(fd, (char *)tram);
     int seq;
-    int packet_size_2;
-    /*printf("i: %d,tram received:\n",i);
-    for (size_t j = 0; j < 270; j++)
-    {
-        printf("%x ",tram[j]);
-    }
-    printf("\n");*/
-    extract_seq_size_data(tram, &seq, &packet_size_2, packet[i]);
-    /*printf("packet[%d]:\n",i);
-    for (size_t j = 0; j < 255; j++)
-    {
-      printf("%x ",packet[i][j]);
-    }
-    printf("\n");*/
+    int stored_packet_size;
+    extract_seq_size_data(tram, &seq, &stored_packet_size, packet[i]);
   }
 
   // Last Control Packet
-  llread(fd, (char *)control_packet_received);
+  unsigned char *last_control_packet_received = (unsigned char *)calloc(255, sizeof(unsigned char));
+  unsigned char *last_size = (unsigned char *)calloc(8, sizeof(unsigned char));
+  unsigned char *last_name = (unsigned char *)calloc(255, sizeof(unsigned char));
+  llread(fd, (char *)last_control_packet_received);
+  extract_size_name(last_control_packet_received, size, name);
+
+  if (size == last_size)
+  {
+    if (name == last_name)
+      printf("Last Control Packet Checked!\n");
+  }
+
+  llclose(fd);
+  
+  restoreFile((char *)name, packet, packet_size, packet_num);
 
   /*
   deleteFile("test_clone.txt");
@@ -118,10 +120,6 @@ int main(int argc, char **argv)
     }
   }
   */
-
-  llclose(fd);
-
-  restoreFile((char *)name, packet, packet_size, packet_num);
 
   return 0;
 }
