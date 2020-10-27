@@ -20,14 +20,18 @@ volatile int STOP = FALSE;
 
 int main(int argc, char **argv)
 {
-  sender = 0;
-  setup_initial_values();
-  data_trams_received = 0;
+  
   int fd = 0;
-  reached_timeout = 0;
   timeout = 1;
   ll = NULL;
   packet_size = 127;
+
+  //Initialize packet
+  packet = (unsigned char **) calloc(255, sizeof(unsigned char *));
+  for (int i = 0; i < 255; i++)
+  {
+      packet[i] = (unsigned char *) calloc(255, sizeof(unsigned char));
+  }
 
   if ((argc < 2) ||
       ((strcmp("/dev/ttyS10", argv[1]) != 0) &&

@@ -65,6 +65,7 @@ int ll_open_serial_port(int fd)
 
 int llopen(int port, int flag)
 {
+  
   char * actual_port = calloc(12, sizeof(char));
   sprintf(actual_port,"/dev/ttyS%d",port);
   //printf("actual_port: %s\n",actual_port);
@@ -72,24 +73,47 @@ int llopen(int port, int flag)
   int fd = 0;
   if (flag == TRANSMITTER)
   {
+    sender = 1;
+    setup_initial_values();
+
+
+    int sent_success = 0;
+
     fd = ll_open_serial_port(fd);
     unsigned char *first_message = generate_su_tram(COMM_SEND_REP_REC, SET, 0);
-    int res = write(fd, first_message, NON_INFO_TRAM_SIZE);
-    if (res != NON_INFO_TRAM_SIZE)
+    int res,result;
+    int attempts = 0;
+    unsigned char *response;
+    while (!sent_success && attempts < TIMEOUT_ATTEMPTS)
     {
-      fprintf(stderr, "Failed to write in llopen!\n");
-      return -1;
+      res = write(fd, first_message, NON_INFO_TRAM_SIZE);
+      if (res != NON_INFO_TRAM_SIZE)
+      {
+        fprintf(stderr, "Failed to write in llopen!\n");
+        return -1;
+      }
+      alarm(timeout);
+      response = receive_tram(fd);
+      result = parse_and_process_su_tram(response, fd);
+      if (result == TIMED_OUT) attempts++;
+      else if (result == SEND_NEW_DATA)
+      {
+        alarm(0);
+        sent_success = 1;
+      }
+      else
+      {
+        fprintf(stderr, "Wrong result in llopen!\n");
+        return -1;
+      }
+      
     }
-    unsigned char *response = receive_tram(fd);
-    int result = parse_and_process_su_tram(response, fd);
-    if (result != SEND_NEW_DATA)
-    {
-      fprintf(stderr, "Wrong result in llopen!\n");
-      return -1;
-    }
+    if (attempts == TIMEOUT_ATTEMPTS) return -1;
   }
   else
   {
+    sender = 0;
+    setup_initial_values();
     fd = ll_open_serial_port(fd);
     unsigned char *first_request = receive_tram(fd);
     int result = parse_and_process_su_tram(first_request, fd);
@@ -128,9 +152,10 @@ int llwrite(int fd, char *buffer, int length)
 
   int data_sent_success = 0;
 
-  int attempts_failed_timeout = 0;
+  int attempts = 0;
+  unsigned char * response;
 
-  while (!data_sent_success && attempts_failed_timeout < TIMEOUT_ATTEMPTS)
+  while (!data_sent_success && attempts < TIMEOUT_ATTEMPTS)
   {
 
     res = write(fd, data_tram, tram_length);
@@ -140,7 +165,7 @@ int llwrite(int fd, char *buffer, int length)
       return -1;
     }
     alarm(timeout);
-    unsigned char *response = receive_tram(fd);
+    response = receive_tram(fd);
     /*
     printf("Response: ");
     for (int i = 0; i < 3; i++)
@@ -161,10 +186,10 @@ int llwrite(int fd, char *buffer, int length)
       fprintf(stderr, "S/U tram processing failed in llwrite!\n");
       return -1;
     }
-    else if (parse_result == TIMED_OUT) attempts_failed_timeout++;
+    else if (parse_result == TIMED_OUT) attempts++;
   }
 
-  if (attempts_failed_timeout == TIMEOUT_ATTEMPTS) return -1;
+  if (attempts == TIMEOUT_ATTEMPTS) return -1;
 
   return res;
 }
@@ -201,61 +226,6 @@ int llread(int fd, char *buffer)
   return (data_size - 4);
 }
 
-/*
-int llwrite(int fd, unsigned char *packet, int packet_size)
-{
-  packet_size = 127;
-  unsigned char *tram_i = generate_info_tram(packet, COMM_SEND_REP_REC, packet_size);
-  int new_packet_size = 127 + 6;
-  byte_stuff(tram_i, &new_packet_size);
-  
-  printf("Data being sent: ");
-  for (int i = 0; i < new_packet_size; i++)
-  {
-    printf("%x ", tram_i[i]);
-  }
-  
-  printf("\n");
-  int res = write(fd, tram_i, new_packet_size);
-  if (res != (new_packet_size))
-  {
-    fprintf(stderr, "Failed to write in llwrite!\n");
-    return -1;
-  }
-  printf("I Tram Sent...\nWaiting For RR...\n");
-  unsigned char * response = receive_tram(fd);
-  int result = parse_and_process_su_tram(response,fd);
-  if (result == RESEND_DATA)
-  {
-    res = write(fd, tram_i, new_packet_size);
-    if (res != (new_packet_size))
-    {
-      fprintf(stderr, "Failed to write in llwrite!\n");
-      return -1;
-    }
-  }
-  
-  return res;
-}
-
-int llread(int fd, char * buffer)
-{
-
-  printf("I Tram Received!\n");
-  int size;
-  unsigned char *request = receive_info_tram(fd, &size);
-
-  byte_unstuff(request, &size);
-
-  struct parse_results *result = parse_info_tram(request, size);
-
-  process_info_tram_received(result, fd);
-  
-
-  return size;
-}
-*/
-
 void ll_close_serial_port(int fd)
 {
   if (tcsetattr(fd, TCSANOW, &oldtio) == -1)
@@ -272,21 +242,33 @@ int llclose(int fd)
   {
     unsigned char *new_tram = generate_su_tram(COMM_SEND_REP_REC, DISC, 0);
     int size = NON_INFO_TRAM_SIZE;
-    int res = write(fd, new_tram, size);
-    if (res != NON_INFO_TRAM_SIZE)
+    int res, result;
+    int sent_success = 0, attempts = 0;
+    while (!sent_success && attempts < TIMEOUT_ATTEMPTS)
     {
-      fprintf(stderr, "Failed to write on llclose!\n");
-      return -1;
+      res = write(fd, new_tram, size);
+      if (res != NON_INFO_TRAM_SIZE)
+      {
+        fprintf(stderr, "Failed to write on llclose!\n");
+        return -1;
+      }
+      alarm(timeout);
+      unsigned char *response = receive_tram(fd);
+      result = parse_and_process_su_tram(response, fd);
+      //printf("Result: %d\n",result);
+      if (result == TIMED_OUT) attempts++;
+      else if (result == DO_NOTHING)
+      {
+        alarm(0);
+        sent_success = 1;
+      }
+      else
+      {
+        fprintf(stderr, "Processing failed!\n");
+        return -1;
+      }
     }
-
-    unsigned char *response = receive_tram(fd);
-    int result = parse_and_process_su_tram(response, fd);
-    //printf("Result: %d\n",result);
-    if (result != DO_NOTHING)
-    {
-      fprintf(stderr, "Processing failed!\n");
-      return -1;
-    }
+    if (attempts == TIMEOUT_ATTEMPTS) return -1;
   }
   else
   {

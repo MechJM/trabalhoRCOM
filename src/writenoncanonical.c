@@ -35,14 +35,18 @@ void set_sigaction()
 
 int main(int argc, char **argv)
 {
-  setup_initial_values();
   long file_size = 10968;
   char *file_name = "pinguim_clone.gif";
   packet_size = 127;
-  sender = 1;
   int fd = 0;
   timeout = 1;
-  reached_timeout = 0;
+  //Initialize packet
+  packet = (unsigned char **) calloc(255, sizeof(unsigned char *));
+  for (int i = 0; i < 255; i++)
+  {
+      packet[i] = (unsigned char *) calloc(255, sizeof(unsigned char));
+  }
+
   ll = NULL;
 
   if ((argc < 2) ||
