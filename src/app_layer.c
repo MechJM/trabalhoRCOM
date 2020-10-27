@@ -157,7 +157,15 @@ unsigned char *generate_control_packet(unsigned char control_field, int param_nu
             result[nextIndex++] = values[i][j];
         }
     }
-
+    /*
+    printf("before returning:\n");
+    for (int i = 0; i < total_byte_num; i++)
+    {
+        printf("%x ",result[i]);
+    }
+    
+    printf("\n");
+    */
     return result;
 }
 

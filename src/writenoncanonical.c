@@ -67,12 +67,19 @@ int main(int argc, char **argv)
   t_values[1] = FILE_NAME;
   int *l_values = calloc(1, sizeof(int));
   l_values[0] = sizeof(file_size);
-  l_values[1] = 1;
+  l_values[1] = strlen(file_name);
   unsigned char **values = (unsigned char **)calloc(1, sizeof(unsigned char *));
-  values[0] = (unsigned char *)calloc(file_size, sizeof(unsigned char));
+  //values[0] = (unsigned char *)calloc(file_size, sizeof(unsigned char));
+  values[0] = (unsigned char *) &file_size;
   values[1] = (unsigned char *)file_name;
   unsigned char *control_packet = generate_control_packet(START, 2, t_values, l_values, values);
-
+  /*printf("control packet:\n");
+  for (int i = 0; i < (1 + 4 + l_values[0] + l_values[1]); i++)
+  {
+    printf("%x ",control_packet[i]);
+  }
+  
+  printf("\n");*/
   // First Control Packet
   llwrite(fd, (char *)control_packet, packet_size);
 
@@ -81,7 +88,7 @@ int main(int argc, char **argv)
   {
     llwrite(fd, (char *)packet[i], packet_size);
   }
-
+  control_packet[0] = END;
   // Last Control Packet
   llwrite(fd, (char *)control_packet, packet_size);
 

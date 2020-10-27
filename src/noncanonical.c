@@ -39,12 +39,15 @@ int main(int argc, char **argv)
   fd = llopen(11, RECEIVER);
 
   // First Control Packet
-  unsigned char *control_packet_received = (unsigned char *)calloc(8, sizeof(unsigned char));
+  unsigned char *control_packet_received = (unsigned char *)calloc(255, sizeof(unsigned char));
   llread(fd, (char *)control_packet_received);
-  unsigned char *size = (unsigned char *)calloc(3, sizeof(unsigned char));
-  unsigned char *name = (unsigned char *)calloc(3, sizeof(unsigned char));
+  
+  unsigned char *size = (unsigned char *)calloc(8, sizeof(unsigned char));
+  unsigned char *name = (unsigned char *)calloc(255, sizeof(unsigned char));
   extract_size_name(control_packet_received, size, name);
-
+  long received_size =  *((long*)size);
+  
+  received_size=received_size; //just so the compiler doesn't complain
   // File Packets
   int packet_num = 87;
   for (int i = 0; i < packet_num; i++)
