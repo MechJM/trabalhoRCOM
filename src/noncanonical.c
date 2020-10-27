@@ -24,6 +24,7 @@ int main(int argc, char **argv)
   setup_initial_values();
   data_trams_received = 0;
   int fd = 0;
+  reached_timeout = 0;
   timeout = 1;
   ll = NULL;
   packet_size = 127;

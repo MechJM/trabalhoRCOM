@@ -29,10 +29,14 @@
 //Sizes
 #define NON_INFO_TRAM_SIZE 5
 
+//Number of attempts
+#define TIMEOUT_ATTEMPTS 3
+
 //Process SU tram results
 #define DO_NOTHING 0
 #define SEND_NEW_DATA 1
 #define RESEND_DATA 2
+#define TIMED_OUT 3
 
 //Last sequential number received/sent
 int last_seq;

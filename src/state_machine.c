@@ -10,7 +10,7 @@ unsigned char *receive_tram(int fd)
     unsigned char currentByte = 0x00;
     int res, continue_loop = 1;
     //printf("Byte\tState\n");
-    while (continue_loop)
+    while (continue_loop && !reached_timeout)
     {
         res = read(fd, &currentByte, 1);
         if (res != 1) fprintf(stderr, "Failed to read in receive_tram!\n");
@@ -78,6 +78,8 @@ unsigned char *receive_tram(int fd)
         }
         //printf("%x\n",state);
     }
+
+    if (reached_timeout) return NULL;
     /*
     printf("First byte: %d\n",result[0]);
     printf("Second byte: %d\n",result[1]);

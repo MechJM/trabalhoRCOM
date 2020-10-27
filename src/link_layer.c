@@ -124,11 +124,13 @@ int llwrite(int fd, char *buffer, int length)
   }
   printf("\n");
   */
-  int res, parse_result;
+  int res = -1, parse_result;
 
   int data_sent_success = 0;
 
-  while (!data_sent_success)
+  int attempts_failed_timeout = 0;
+
+  while (!data_sent_success && attempts_failed_timeout < TIMEOUT_ATTEMPTS)
   {
 
     res = write(fd, data_tram, tram_length);
@@ -137,7 +139,7 @@ int llwrite(int fd, char *buffer, int length)
       fprintf(stderr, "Failed to write in llwrite!\n");
       return -1;
     }
-
+    alarm(timeout);
     unsigned char *response = receive_tram(fd);
     /*
     printf("Response: ");
@@ -150,13 +152,19 @@ int llwrite(int fd, char *buffer, int length)
 
     parse_result = parse_and_process_su_tram(response, fd);
     if (parse_result == SEND_NEW_DATA)
+    {
       data_sent_success = 1;
+      alarm(0);
+    }
     else if (parse_result == DO_NOTHING)
     {
       fprintf(stderr, "S/U tram processing failed in llwrite!\n");
       return -1;
     }
+    else if (parse_result == TIMED_OUT) attempts_failed_timeout++;
   }
+
+  if (attempts_failed_timeout == TIMEOUT_ATTEMPTS) return -1;
 
   return res;
 }

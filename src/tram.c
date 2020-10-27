@@ -109,6 +109,8 @@ unsigned char *generate_su_tram(unsigned char address, unsigned char control, in
 
 int parse_and_process_su_tram(unsigned char *tram, int fd)
 {
+    if (tram == NULL) return TIMED_OUT;
+
     unsigned char *response;
     int res;
     int result = DO_NOTHING; 
