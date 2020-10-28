@@ -28,6 +28,7 @@
 
 //Sizes
 #define NON_INFO_TRAM_SIZE 5
+#define MAX_ARRAY_SIZE 10000
 
 //Number of attempts
 #define TIMEOUT_ATTEMPTS 3
@@ -47,7 +48,7 @@ unsigned char ** packet;
 //Parse results
 struct parse_results
 {
-    unsigned char received_data[255]; //NULL if it's not info tram
+    unsigned char received_data[MAX_ARRAY_SIZE]; //NULL if it's not info tram
     int tram_size; //size of the tram in bytes
     int duplicate; //boolean to indicate if the tram received is a duplicate or not
     int data_integrity; //boolean to indicate if bcc2 checks out

@@ -24,31 +24,31 @@ int main(int argc, char **argv)
   int fd = 0;
   timeout = 1;
   ll = NULL;
-  packet_size = 127;
+  packet_size = 500;
 
   //Initialize packet
-  packet = (unsigned char **) calloc(255, sizeof(unsigned char *));
-  for (int i = 0; i < 255; i++)
+  packet = (unsigned char **) calloc(MAX_ARRAY_SIZE, sizeof(unsigned char *));
+  for (int i = 0; i < MAX_ARRAY_SIZE; i++)
   {
-      packet[i] = (unsigned char *) calloc(255, sizeof(unsigned char));
+      packet[i] = (unsigned char *) calloc(MAX_ARRAY_SIZE, sizeof(unsigned char));
   }
 
   if ((argc < 2) ||
-      ((strcmp("/dev/ttyS10", argv[1]) != 0) &&
-       (strcmp("/dev/ttyS11", argv[1]) != 0)))
+      ((strcmp("/dev/ttyS0", argv[1]) != 0) &&
+       (strcmp("/dev/ttyS1", argv[1]) != 0)))
   {
-    printf("Usage:\tnserial SerialPort\n\tex: nserial /dev/ttyS11\n");
+    printf("Usage:\tnserial SerialPort\n\tex: nserial /dev/ttyS1\n");
     exit(1);
   }
 
-  fd = llopen(11, RECEIVER);
+  fd = llopen(0, RECEIVER);
 
   // First Control Packet
-  unsigned char *control_packet_received = (unsigned char *)calloc(255, sizeof(unsigned char));
+  unsigned char *control_packet_received = (unsigned char *)calloc(MAX_ARRAY_SIZE, sizeof(unsigned char));
   llread(fd, (char *)control_packet_received);
 
   unsigned char *size = (unsigned char *)calloc(8, sizeof(unsigned char));
-  unsigned char *name = (unsigned char *)calloc(255, sizeof(unsigned char));
+  unsigned char *name = (unsigned char *)calloc(MAX_ARRAY_SIZE, sizeof(unsigned char));
   extract_size_name(control_packet_received, size, name);
   long received_size = *((long *)size);
 
@@ -59,9 +59,10 @@ int main(int argc, char **argv)
   else
     packet_num = received_size / packet_size;
 
+  unsigned char *tram;
   for (int i = 0; i < packet_num; i++)
   {
-    unsigned char *tram = (unsigned char *)calloc(255, sizeof(unsigned char));
+    tram = (unsigned char *)calloc(MAX_ARRAY_SIZE, sizeof(unsigned char));
     llread(fd, (char *)tram);
     int seq;
     int stored_packet_size;
@@ -69,12 +70,12 @@ int main(int argc, char **argv)
   }
 
   // Last Control Packet
-  unsigned char *last_control_packet_received = (unsigned char *)calloc(255, sizeof(unsigned char));
+  unsigned char *last_control_packet_received = (unsigned char *)calloc(MAX_ARRAY_SIZE, sizeof(unsigned char));
   unsigned char *last_size = (unsigned char *)calloc(8, sizeof(unsigned char));
-  unsigned char *last_name = (unsigned char *)calloc(255, sizeof(unsigned char));
+  unsigned char *last_name = (unsigned char *)calloc(MAX_ARRAY_SIZE, sizeof(unsigned char));
   llread(fd, (char *)last_control_packet_received);
   extract_size_name(last_control_packet_received, size, name);
-
+  
   if (size == last_size && name == last_name && last_control_packet_received[0] == END)
   {
       printf("Last Control Packet Checked!\n");
@@ -113,7 +114,7 @@ int main(int argc, char **argv)
         read(fd, &buf[i], 1);
       } while (buf[i] != FLAG);
       buf[i + 1] = 0;
-      unsigned char *received_data = malloc(255 * sizeof(unsigned char));
+      unsigned char *received_data = malloc(MAX_ARRAY_SIZE * sizeof(unsigned char));
       struct parse_results *parse_result = parse_tram(&buf[1], i - 2);
       process_tram_received(parse_result, fd);
       

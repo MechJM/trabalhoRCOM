@@ -266,7 +266,7 @@ char * process_info_tram_received(struct parse_results *results, int port)
 {
     unsigned char *response;
     char * result;
-    result = calloc(255,sizeof(unsigned char));
+    result = calloc(MAX_ARRAY_SIZE,sizeof(unsigned char));
     int response_size = 0;
 
     if (!results->header_validity)

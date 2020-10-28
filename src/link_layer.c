@@ -7,8 +7,12 @@ struct termios oldtio, newtio;
 
 int ll_init(char *port, int baudRate, unsigned int timeout, unsigned int numTransmissions)
 {
+
   if (ll == NULL)
+  {
     ll = malloc(sizeof(link_layer));
+  }
+    
   else
     printf("Link Layer Already Initialized\n");
   ll->port = port;
@@ -214,7 +218,7 @@ int llread(int fd, char *buffer)
    
   }
   //printf("actual data:\n");
-  for (int i = 0; i < 255; i++)
+  for (int i = 0; i < MAX_ARRAY_SIZE; i++)
   {
     //printf("%x ",(unsigned char) actual_data[i]);
     buffer[i] = actual_data[i];

@@ -90,7 +90,7 @@ unsigned char *receive_tram(int fd)
 
 unsigned char *receive_info_tram(int fd, int *data_size)
 {
-    unsigned char *result = calloc(255, sizeof(unsigned char));
+    unsigned char *result = calloc(MAX_ARRAY_SIZE, sizeof(unsigned char));
     enum reception_info_state state = start_info;
 
     unsigned char currentByte = 0x00;

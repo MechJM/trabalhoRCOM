@@ -35,25 +35,25 @@ void set_sigaction()
 
 int main(int argc, char **argv)
 {
-  long file_size = 10968;
-  char *file_name = "pinguim_clone.gif";
-  packet_size = 127;
+  long file_size = 533211;
+  char *file_name = "pinguim_clone.jpg";
+  packet_size = 500;
   int fd = 0;
   timeout = 1;
   //Initialize packet
-  packet = (unsigned char **) calloc(255, sizeof(unsigned char *));
-  for (int i = 0; i < 255; i++)
+  packet = (unsigned char **) calloc(MAX_ARRAY_SIZE, sizeof(unsigned char *));
+  for (int i = 0; i < MAX_ARRAY_SIZE; i++)
   {
-      packet[i] = (unsigned char *) calloc(255, sizeof(unsigned char));
+      packet[i] = (unsigned char *) calloc(MAX_ARRAY_SIZE, sizeof(unsigned char));
   }
 
   ll = NULL;
 
   if ((argc < 2) ||
-      ((strcmp("/dev/ttyS10", argv[1]) != 0) &&
-       (strcmp("/dev/ttyS11", argv[1]) != 0)))
+      ((strcmp("/dev/ttyS0", argv[1]) != 0) &&
+       (strcmp("/dev/ttyS1", argv[1]) != 0)))
   {
-    printf("Usage:\tnserial SerialPort\n\tex: nserial /dev/ttyS11\n");
+    printf("Usage:\tnserial SerialPort\n\tex: nserial /dev/ttyS1\n");
     exit(1);
   }
 
@@ -61,7 +61,7 @@ int main(int argc, char **argv)
 
   processFile(fileData);
 
-  fd = llopen(10, TRANSMITTER);
+  fd = llopen(0, TRANSMITTER);
 
   set_sigaction();
 
@@ -95,13 +95,13 @@ int main(int argc, char **argv)
   {
     /*
     printf("packet[%d] being sent:\n",i);
-    for (size_t j = 0; j < 255; j++)
+    for (size_t j = 0; j < MAX_ARRAY_SIZE; j++)
     {
       printf("%x ",packet[i][j]);
     }
     
     printf("\n");*/
-    unsigned char *data_packet = generate_data_packet(i, 255, packet[i]);
+    unsigned char *data_packet = generate_data_packet(i, MAX_ARRAY_SIZE, packet[i]);
     /*printf("data packet generated for packet[%d]:\n",i);
     for (size_t j = 0; j < 270; j++)
     {
@@ -158,7 +158,7 @@ int main(int argc, char **argv)
     alarm(ll->numTransmissions);
     printf("Attempting to establish connection...\n");
 
-    unsigned char *response = malloc(255 * sizeof(unsigned char));
+    unsigned char *response = malloc(MAX_ARRAY_SIZE * sizeof(unsigned char));
     while (ll->timeout != 0)
     {
       read(fd, response, 1);
