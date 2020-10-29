@@ -129,6 +129,7 @@ int llopen(int port, int flag)
       fprintf(stderr, "Wrong result in llopen!\n");
       return -1;
     }
+    free(first_request);
   }
   free(actual_port);
   free(ll);
@@ -219,7 +220,9 @@ int llread(int fd, char *buffer)
     }
     printf("\n");*/
     struct parse_results *results = parse_info_tram(data, data_size);
+    free(data);
     actual_data = process_info_tram_received(results, fd);
+    free(results);
     //printf("Data trams received: %ld\n",data_trams_received);
   }
   //printf("actual data:\n");
@@ -228,6 +231,7 @@ int llread(int fd, char *buffer)
     //printf("%x ",(unsigned char) actual_data[i]);
     buffer[i] = actual_data[i];
   }
+  free(actual_data);
   //printf("\n");
   //buffer = actual_data;
   buffer = buffer; //only here because otherwise the compiler throws an error about an unused parameter
@@ -291,7 +295,7 @@ int llclose(int fd)
       fprintf(stderr, "Processing failed!\n");
       return -1;
     }
-
+    free(end_request);
     unsigned char *acknowledgment = receive_tram(fd);
     result = parse_and_process_su_tram(acknowledgment, fd);
     if (result != DO_NOTHING)
@@ -299,6 +303,7 @@ int llclose(int fd)
       fprintf(stderr, "Processing failed!\n");
       return -1;
     }
+    free(acknowledgment);
   }
   ll_close_serial_port(fd);
   return 1;

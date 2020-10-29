@@ -195,7 +195,7 @@ struct parse_results *parse_info_tram(unsigned char *tram, int tram_size)
     result->control_bit = 0;
     result->header_validity = 1;
 
-    unsigned char *data_parsed = calloc(tram_size - 4, sizeof(unsigned char));
+    //unsigned char *data_parsed = calloc(tram_size - 4, sizeof(unsigned char));
 
     if ((tram[0] != COMM_SEND_REP_REC)                                //Checks if the second byte matches one of the possible values for the address field
         || (tram[1] != INFO_CTRL && tram[1] != (INFO_CTRL | S_MASK))) //Checks if the third byte matches one of the possible values for the control field
@@ -216,7 +216,7 @@ struct parse_results *parse_info_tram(unsigned char *tram, int tram_size)
             result->duplicate = 1;
         for (int i = 3; i < (tram_size + 3 - 4); i++)
         {
-            data_parsed[i - 3] = tram[i];
+            //data_parsed[i - 3] = tram[i];
             result->received_data[i - 3] = tram[i]; 
         }
         printf("Data tram received.\n");
@@ -230,7 +230,7 @@ struct parse_results *parse_info_tram(unsigned char *tram, int tram_size)
             result->duplicate = 1;
         for (int i = 3; i < (tram_size + 3 - 4); i++)
         {
-            data_parsed[i - 3] = tram[i];
+            //data_parsed[i - 3] = tram[i];
             result->received_data[i - 3] = tram[i]; 
         }
         printf("Data tram received.\n");
@@ -310,6 +310,7 @@ char * process_info_tram_received(struct parse_results *results, int port)
     //TODO Find better way to figure out which data needs to be/was sent
 
     int res = write(port, response, response_size);
+    free(response);
     printf("%d Bytes Written\n", res);
     return result;
 }

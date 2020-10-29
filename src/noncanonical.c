@@ -50,8 +50,9 @@ int main(int argc, char **argv)
   unsigned char *size = (unsigned char *)calloc(8, sizeof(unsigned char));
   unsigned char *name = (unsigned char *)calloc(MAX_ARRAY_SIZE, sizeof(unsigned char));
   extract_size_name(control_packet_received, size, name);
+  free(control_packet_received);
   long received_size = *((long *)size);
-
+  free(size);
   // Read File Packets Based On Received_Size
   int packet_num;
   if (received_size % packet_size != 0)
@@ -66,6 +67,7 @@ int main(int argc, char **argv)
     tram = (unsigned char *)calloc(MAX_ARRAY_SIZE, sizeof(unsigned char));
     stored_packet_size = llread(fd, (char *)tram);
     extract_seq_size_data(tram, &seq, &stored_packet_size, packet[i]);
+    free(tram);
   }
 
   // Last Control Packet
@@ -73,16 +75,28 @@ int main(int argc, char **argv)
   unsigned char *last_size = (unsigned char *)calloc(8, sizeof(unsigned char));
   unsigned char *last_name = (unsigned char *)calloc(MAX_ARRAY_SIZE, sizeof(unsigned char));
   llread(fd, (char *)last_control_packet_received);
-  extract_size_name(last_control_packet_received, size, name);
-  
-  if (size == last_size && name == last_name && last_control_packet_received[0] == END)
+  extract_size_name(last_control_packet_received, last_size, name);
+  long final_received_size = *((long *)last_size);
+  free(last_size);
+
+  if (received_size == final_received_size && strcmp((char*)name,(char *) last_name) == 0 && last_control_packet_received[0] == END)
   {
       printf("Last Control Packet Checked!\n");
   }
-
+  
   llclose(fd);
   
   restoreFile((char *)name, packet, packet_size, packet_num);
+
+  free(name);
+  free(last_control_packet_received);
+  free(last_name);
+
+  for (int i = 0; i < MAX_PACKET_ELEMS; i++)
+  {
+      free(packet[i]);
+  }
+  free(packet);
 
   return 0;
 }
