@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS= -Wall -Wextra -Werror -pedantic -rdynamic
+CFLAGS= -Wall -Wextra -Werror -pedantic -rdynamic -g -O0
 WRITE_OBJECTS= writenoncanonical.o tram.o state_machine.o app_layer.o link_layer.o
 READ_OBJECTS= noncanonical.o tram.o state_machine.o app_layer.o link_layer.o
 

@@ -30,7 +30,7 @@
 #define NON_INFO_TRAM_SIZE 5
 #define MAX_ARRAY_SIZE 150
 #define MAX_PACKET_ELEMS 100000
-#define MAX_PACKET_SIZE 127
+#define MAX_PACKET_SIZE 128
 
 //Number of attempts
 #define TIMEOUT_ATTEMPTS 3
@@ -73,6 +73,7 @@ int last_tram_sent_size;
 int last_packet_index;
 
 int packet_size, packet_num;
+long int file_size;
 
 void setup_initial_values();
 

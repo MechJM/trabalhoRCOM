@@ -12,9 +12,9 @@
 #include <signal.h>
 #include "app_layer.h"
 
-long int file_size;
-int packet_size;
-int packet_num;
+//long int file_size;
+//int packet_size;
+//int packet_num;
 
 unsigned char *readFile(unsigned char *fileName)
 {
@@ -29,7 +29,7 @@ unsigned char *readFile(unsigned char *fileName)
     stat((char *)fileName, &metadata);
     file_size = metadata.st_size;
     printf("File Size =  %ld Bytes\n", file_size);
-    fileData = (unsigned char *)malloc(file_size);
+    fileData = (unsigned char *)calloc(file_size,1);
     fread(fileData, sizeof(unsigned char), file_size, f);
     fclose(f);
     return fileData;
@@ -37,11 +37,12 @@ unsigned char *readFile(unsigned char *fileName)
 
 unsigned char *splitFileData(unsigned char *fileData, int x, int packet_size)
 {
-    unsigned char *packet_temp = (unsigned char *)malloc(packet_size * sizeof(unsigned char));
+    unsigned char *packet_temp = (unsigned char *)calloc(packet_size, sizeof(unsigned char));
     int i;
     int j;
     for (j = 0, i = x; i < packet_size; i++, j++)
     {
+        if (i >= file_size) break;
         packet_temp[j] = fileData[i];
     }
     return packet_temp;

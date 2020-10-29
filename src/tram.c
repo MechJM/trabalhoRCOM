@@ -59,7 +59,7 @@ unsigned char *generate_info_tram(char *data, unsigned char address, int array_s
 
 unsigned char *generate_su_tram(unsigned char address, unsigned char control, int dup)
 {
-    unsigned char *tram = malloc(5 * sizeof(unsigned char));
+    unsigned char *tram = calloc(5 , sizeof(unsigned char));
     tram[0] = FLAG;
     tram[1] = address;
 

@@ -10,7 +10,7 @@ int ll_init(char *port, int baudRate, unsigned int timeout, unsigned int numTran
 
   if (ll == NULL)
   {
-    ll = malloc(sizeof(link_layer));
+    ll = calloc(1,sizeof(link_layer));
   }
     
   else

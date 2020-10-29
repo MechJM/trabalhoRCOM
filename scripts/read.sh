@@ -1,1 +1,1 @@
-../src/read /dev/ttyS11
+valgrind --leak-check=yes ../src/read /dev/ttyS11

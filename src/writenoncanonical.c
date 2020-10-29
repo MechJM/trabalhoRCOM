@@ -41,7 +41,7 @@ int main(int argc, char **argv)
     fprintf(stderr, "Couldn't get file data!\n");
   }
 
-  long file_size = file_data.st_size;
+  file_size = file_data.st_size;
 
   char *file_name = "pinguim_clone.jpg";
   packet_size = MAX_PACKET_SIZE;
@@ -70,7 +70,7 @@ int main(int argc, char **argv)
 
   fd = llopen(10, TRANSMITTER);
 
-  set_sigaction();
+  //set_sigaction();
 
   int *t_values = calloc(1, sizeof(int));
   t_values[0] = FILE_SIZE;
