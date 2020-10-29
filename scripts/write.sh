@@ -1,1 +1,1 @@
-../src/write /dev/ttyS10 pinguim.gif
+../src/write /dev/ttyS10 $1

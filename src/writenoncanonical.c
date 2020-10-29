@@ -61,7 +61,7 @@ int main(int argc, char **argv)
 
   processFile(fileData);
 
-  fd = llopen(0, TRANSMITTER);
+  fd = llopen(10, TRANSMITTER);
 
   set_sigaction();
 

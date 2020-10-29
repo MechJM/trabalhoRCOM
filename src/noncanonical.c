@@ -41,7 +41,7 @@ int main(int argc, char **argv)
     exit(1);
   }
 
-  fd = llopen(0, RECEIVER);
+  fd = llopen(11, RECEIVER);
 
   // First Control Packet
   unsigned char *control_packet_received = (unsigned char *)calloc(MAX_ARRAY_SIZE, sizeof(unsigned char));
