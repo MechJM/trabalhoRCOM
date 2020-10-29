@@ -25,7 +25,7 @@ void deleteFile(char *fileName);
 
 void processFile(unsigned char *fileData);
 
-unsigned char * generate_data_packet(int seq_num, int byte_num, unsigned char * data);
+unsigned char * generate_data_packet(int seq_num, int byte_num,const unsigned char * data);
 
 unsigned char * generate_control_packet(unsigned char control_field, int param_num, int * t_values, int * l_values, unsigned char ** values);
 

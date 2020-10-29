@@ -113,7 +113,7 @@ void processFile(unsigned char *fileData)
     */
 }
 
-unsigned char *generate_data_packet(int seq_num, int byte_num, unsigned char *data)
+unsigned char *generate_data_packet(int seq_num, int byte_num,const unsigned char *data)
 {
     unsigned char *result = calloc(byte_num + 4, sizeof(unsigned char));
 
@@ -125,7 +125,7 @@ unsigned char *generate_data_packet(int seq_num, int byte_num, unsigned char *da
 
     result[2] = l2;
     result[3] = l1;
-
+    
     for (int i = 4; i < (byte_num + 4); i++)
     {
         result[i] = data[i - 4];

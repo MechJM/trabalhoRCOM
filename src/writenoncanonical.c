@@ -71,8 +71,6 @@ int main(int argc, char **argv)
   free(fileData);
   fd = llopen(10, TRANSMITTER);
 
-  //set_sigaction();
-
   int *t_values = calloc(2, sizeof(int));
   t_values[0] = FILE_SIZE;
   t_values[1] = FILE_NAME;
@@ -80,24 +78,14 @@ int main(int argc, char **argv)
   l_values[0] = sizeof(file_size);
   l_values[1] = strlen(file_name);
   unsigned char **values = (unsigned char **)calloc(2, sizeof(unsigned char *));
-  //values[0] = (unsigned char *)calloc(sizeof(file_size), sizeof(unsigned char));
-  //values[1] = (unsigned char *)calloc(strlen(file_name) + 1, sizeof(unsigned char));
+
   values[0] = (unsigned char *) &file_size;
   values[1] = (unsigned char *) file_name;
   unsigned char *control_packet = generate_control_packet(START, 2, t_values, l_values, values);
   long control_packet_size = 1 + l_values[0] + l_values[1] + 4;
   free(t_values);
   free(l_values);
-  //free(values[0]);
-  //free(values[1]);
   free(values);
-  /*printf("control packet:\n");
-  for (int i = 0; i < (1 + 4 + l_values[0] + l_values[1]); i++)
-  {
-    printf("%x ",control_packet[i]);
-  }
-  
-  printf("\n");*/
   
   // First Control Packet
   set_sigaction();
@@ -107,22 +95,7 @@ int main(int argc, char **argv)
   // File Packets
   for (int i = 0; i < packet_num; i++)
   {
-    /*
-    printf("packet[%d] being sent:\n",i);
-    for (size_t j = 0; j < MAX_ARRAY_SIZE; j++)
-    {
-      printf("%x ",packet[i][j]);
-    }
-    
-    printf("\n");*/
     unsigned char *data_packet = generate_data_packet(i, packet_size, packet[i]);
-    /*printf("data packet generated for packet[%d]:\n",i);
-    for (size_t j = 0; j < 270; j++)
-    {
-      printf("%x ",data_packet[j]);
-    }
-    printf("\n");
-    */
     llwrite(fd, (char *)data_packet, packet_size + 4);
     free(data_packet);
   }

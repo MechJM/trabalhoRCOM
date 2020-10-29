@@ -326,11 +326,12 @@ unsigned char *translate_array(unsigned char *array, int offset, int array_size,
         }
         else if (offset > 0)
         {
-            //if (offset == 1 && array_size == 138 && starting_point == 28) printf("i: %d\n",i);
             new_array[i + offset] = array[i];
         }
         else
         {
+            //if (offset == -1 && array_size == 137 && starting_point == 27) printf("i: %d\n",i);
+            if (i == (array_size + offset)) break;
             new_array[i] = array[i - offset];
         }
     }

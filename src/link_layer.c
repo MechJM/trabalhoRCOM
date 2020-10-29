@@ -74,6 +74,7 @@ int llopen(int port, int flag)
   sprintf(actual_port,"/dev/ttyS%d",port);
   //printf("actual_port: %s\n",actual_port);
   ll_init(actual_port, BAUDRATE, timeout, 1);
+  
   int fd = 0;
   if (flag == TRANSMITTER)
   {
@@ -129,6 +130,8 @@ int llopen(int port, int flag)
       return -1;
     }
   }
+  free(actual_port);
+  free(ll);
   printf("Finished the start process!\n");
   return fd;
 }
