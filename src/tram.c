@@ -178,6 +178,7 @@ int parse_and_process_su_tram(unsigned char *tram, int fd)
 
     res = write(fd, response, NON_INFO_TRAM_SIZE);
     printf("%d Bytes Written\n", res);
+    free(response);
     return result;
 }
 
@@ -334,7 +335,7 @@ unsigned char *translate_array(unsigned char *array, int offset, int array_size,
         }
     }
     
-    //free(array);
+    free(array);
     return new_array;
 }
 

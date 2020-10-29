@@ -53,6 +53,7 @@ int main(int argc, char **argv)
   {
       packet[i] = (unsigned char *) calloc(MAX_ARRAY_SIZE, sizeof(unsigned char));
   }
+  
 
   ll = NULL;
 
@@ -67,7 +68,7 @@ int main(int argc, char **argv)
   unsigned char *fileData = readFile((unsigned char *)argv[2]);
 
   processFile(fileData);
-
+  free(fileData);
   fd = llopen(10, TRANSMITTER);
 
   //set_sigaction();
@@ -79,11 +80,17 @@ int main(int argc, char **argv)
   l_values[0] = sizeof(file_size);
   l_values[1] = strlen(file_name);
   unsigned char **values = (unsigned char **)calloc(2, sizeof(unsigned char *));
-  //values[0] = (unsigned char *)calloc(file_size, sizeof(unsigned char));
+  values[0] = (unsigned char *)calloc(sizeof(file_size), sizeof(unsigned char));
+  values[1] = (unsigned char *)calloc(strlen(file_name) + 1, sizeof(unsigned char));
   values[0] = (unsigned char *) &file_size;
-  values[1] = (unsigned char *)file_name;
+  values[1] = (unsigned char *) file_name;
   unsigned char *control_packet = generate_control_packet(START, 2, t_values, l_values, values);
   long control_packet_size = 1 + l_values[0] + l_values[1] + 4;
+  free(t_values);
+  free(l_values);
+  free(values[0]);
+  free(values[1]);
+  free(values);
   /*printf("control packet:\n");
   for (int i = 0; i < (1 + 4 + l_values[0] + l_values[1]); i++)
   {
@@ -117,13 +124,20 @@ int main(int argc, char **argv)
     printf("\n");
     */
     llwrite(fd, (char *)data_packet, packet_size + 4);
+    free(data_packet);
   }
 
   // Last Control Packet
   control_packet[0] = END;
   llwrite(fd, (char *)control_packet, control_packet_size);
-
+  free(control_packet);
   llclose(fd);
+
+  for (int i = 0; i < MAX_PACKET_ELEMS; i++)
+  {
+      free(packet[i]);
+  }
+  free(packet);
 
   return 0;
 }

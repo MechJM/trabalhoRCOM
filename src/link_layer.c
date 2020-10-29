@@ -110,8 +110,9 @@ int llopen(int port, int flag)
         fprintf(stderr, "Wrong result in llopen!\n");
         return -1;
       }
-      
+      free(response);
     }
+    free(first_message);
     if (attempts == TIMEOUT_ATTEMPTS) return -1;
   }
   else
@@ -180,6 +181,7 @@ int llwrite(int fd, char *buffer, int length)
     printf("\n");*/
 
     parse_result = parse_and_process_su_tram(response, fd);
+    free(response);
     if (parse_result == SEND_NEW_DATA)
     {
       data_sent_success = 1;
@@ -192,7 +194,7 @@ int llwrite(int fd, char *buffer, int length)
     }
     else if (parse_result == TIMED_OUT) attempts++;
   }
-
+  free(data_tram);
   if (attempts == TIMEOUT_ATTEMPTS) return -1;
 
   return res;
@@ -260,6 +262,7 @@ int llclose(int fd)
       alarm(timeout);
       unsigned char *response = receive_tram(fd);
       result = parse_and_process_su_tram(response, fd);
+      free(response);
       //printf("Result: %d\n",result);
       if (result == TIMED_OUT) attempts++;
       else if (result == DO_NOTHING)
@@ -273,6 +276,7 @@ int llclose(int fd)
         return -1;
       }
     }
+    free(new_tram);
     if (attempts == TIMEOUT_ATTEMPTS) return -1;
   }
   else
