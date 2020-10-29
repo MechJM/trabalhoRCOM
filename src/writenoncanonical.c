@@ -49,11 +49,12 @@ int main(int argc, char **argv)
   timeout = 1;
   //Initialize packet
   packet = (unsigned char **) calloc(MAX_PACKET_ELEMS, sizeof(unsigned char *));
+  /*
   for (int i = 0; i < MAX_PACKET_ELEMS; i++)
   {
       packet[i] = (unsigned char *) calloc(MAX_ARRAY_SIZE, sizeof(unsigned char));
   }
-  
+  */
 
   ll = NULL;
 
@@ -111,6 +112,6 @@ int main(int argc, char **argv)
       free(packet[i]);
   }
   free(packet);
-
+  
   return 0;
 }
