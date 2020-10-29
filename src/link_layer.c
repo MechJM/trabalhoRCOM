@@ -215,7 +215,7 @@ int llread(int fd, char *buffer)
     printf("\n");*/
     struct parse_results *results = parse_info_tram(data, data_size);
     actual_data = process_info_tram_received(results, fd);
-   
+    //printf("Data trams received: %ld\n",data_trams_received);
   }
   //printf("actual data:\n");
   for (int i = 0; i < MAX_ARRAY_SIZE; i++)

@@ -27,8 +27,8 @@ int main(int argc, char **argv)
   packet_size = MAX_PACKET_SIZE;
 
   //Initialize packet
-  packet = (unsigned char **) calloc(MAX_ARRAY_SIZE, sizeof(unsigned char *));
-  for (int i = 0; i < MAX_ARRAY_SIZE; i++)
+  packet = (unsigned char **) calloc(MAX_PACKET_ELEMS, sizeof(unsigned char *));
+  for (int i = 0; i < MAX_PACKET_ELEMS; i++)
   {
       packet[i] = (unsigned char *) calloc(MAX_ARRAY_SIZE, sizeof(unsigned char));
   }
@@ -84,47 +84,6 @@ int main(int argc, char **argv)
   llclose(fd);
   
   restoreFile((char *)name, packet, packet_size, packet_num);
-
-  /*
-  deleteFile("test_clone.txt");
-  for (int i = 0; i < packet_num; i++)
-  {
-    // Last Packet
-    if (i == (packet_num - 1))
-    {
-      restoreSimpleFile("test_clone.txt", packet[10], 2);
-    }
-    else
-      restoreSimpleFile("test_clone.txt", packet[i], 127);
-  }
-  */
-
-  //printf("Cheguei aqui4\n");
-  /*
-  while (STOP == FALSE)
-  {                         
-    res = read(fd, buf, 1);
-    buf[res] = 0;           
-    if (buf[0] == FLAG)
-    {
-      int i = 0;
-      do
-      {
-        i++;
-        read(fd, &buf[i], 1);
-      } while (buf[i] != FLAG);
-      buf[i + 1] = 0;
-      unsigned char *received_data = malloc(MAX_ARRAY_SIZE * sizeof(unsigned char));
-      struct parse_results *parse_result = parse_tram(&buf[1], i - 2);
-      process_tram_received(parse_result, fd);
-      
-      res = read(fd, buf, packet_size);
-      printf("Received Packet With %d Bytes...\n", res);
-
-      break;
-    }
-  }
-  */
 
   return 0;
 }

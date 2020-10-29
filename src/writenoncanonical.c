@@ -35,14 +35,21 @@ void set_sigaction()
 
 int main(int argc, char **argv)
 {
-  long file_size = 533211;
+  struct stat file_data;
+  if (stat(argv[2],&file_data) < 0)
+  {
+    fprintf(stderr, "Couldn't get file data!\n");
+  }
+
+  long file_size = file_data.st_size;
+
   char *file_name = "pinguim_clone.jpg";
   packet_size = MAX_PACKET_SIZE;
   int fd = 0;
   timeout = 1;
   //Initialize packet
-  packet = (unsigned char **) calloc(MAX_ARRAY_SIZE, sizeof(unsigned char *));
-  for (int i = 0; i < MAX_ARRAY_SIZE; i++)
+  packet = (unsigned char **) calloc(MAX_PACKET_ELEMS, sizeof(unsigned char *));
+  for (int i = 0; i < MAX_PACKET_ELEMS; i++)
   {
       packet[i] = (unsigned char *) calloc(MAX_ARRAY_SIZE, sizeof(unsigned char));
   }
@@ -115,74 +122,6 @@ int main(int argc, char **argv)
   // Last Control Packet
   control_packet[0] = END;
   llwrite(fd, (char *)control_packet, packet_size);
-
-  /*
-  unsigned char * arr = calloc(5,sizeof(unsigned char));
-  arr[0] = 0x01;
-  arr[1] = 0x02;
-  arr[2] = 0x03;
-  arr[3] = 0x04;
-  arr[4] = 0x05;
-  arr = translate_array(arr,-2,5,1);
-  for (size_t i = 0; i < 5; i++)
-  {
-    printf("%x ",arr[i]);
-  }
-  printf("\n");*/
-  /*
-  unsigned char * packet_3 = packet[2];
-  
-  printf("Before stuffing:\n");
-  for (int i = 0; i < packet_size; i++)
-  {
-    printf("%x ",packet_3[i]);
-  }
-  printf("\n");
-  int size = packet_size;
-  packet_3 = byte_stuff(packet_3,&size);
-  printf("After stuffing:\n");
-  for (int i = 0; i < size; i++)
-  {
-    printf("%x ",packet_3[i]);
-  }
-  printf("\n");
-  */
-
-  //unsigned char *tram = generate_su_tram(COMM_SEND_REP_REC, SET);
-  /*
-  for (unsigned int j = 0; j < ll->numTransmissions; j++)
-  {
-    int res = write(fd, tram, n);
-    printf("Writting %d Bytes\n", res);
-
-    alarm(ll->numTransmissions);
-    printf("Attempting to establish connection...\n");
-
-    unsigned char *response = malloc(MAX_ARRAY_SIZE * sizeof(unsigned char));
-    while (ll->timeout != 0)
-    {
-      read(fd, response, 1);
-      if (response[0] == FLAG)
-      {
-        int i = 0;
-        do
-        {
-          i++;
-          read(fd, &response[i], 1);
-        } while (response[i] != FLAG && ll->timeout);
-        response[i + 1] = 0;
-        
-        struct parse_results *parse_result = parse_tram(&response[1], i - 2);
-        process_tram_received(parse_result, fd);
-        
-        // loop que envia packet[i] e verifica trama recebida do recetor
-
-        ll->numTransmissions--;
-        break;
-      }
-    }
-    ll->timeout--;
-  }*/
 
   llclose(fd);
 
