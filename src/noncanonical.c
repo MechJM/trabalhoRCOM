@@ -60,12 +60,11 @@ int main(int argc, char **argv)
     packet_num = received_size / packet_size;
 
   unsigned char *tram;
+  int stored_packet_size,seq;
   for (int i = 0; i < packet_num; i++)
   {
     tram = (unsigned char *)calloc(MAX_ARRAY_SIZE, sizeof(unsigned char));
-    llread(fd, (char *)tram);
-    int seq;
-    int stored_packet_size;
+    stored_packet_size = llread(fd, (char *)tram);
     extract_seq_size_data(tram, &seq, &stored_packet_size, packet[i]);
   }
 

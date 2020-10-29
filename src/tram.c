@@ -316,8 +316,8 @@ char * process_info_tram_received(struct parse_results *results, int port)
 unsigned char *translate_array(unsigned char *array, int offset, int array_size, int starting_point)
 {
     unsigned char *new_array = calloc(array_size + offset, sizeof(unsigned char));
-
-    for (int i = 0; i < (array_size + offset); i++)
+    //printf("offset: %d,array_size: %d,starting_point: %d\n",offset,array_size,starting_point);
+    for (int i = 0; i < (array_size); i++)
     {
         if (i < starting_point)
         {
@@ -325,6 +325,7 @@ unsigned char *translate_array(unsigned char *array, int offset, int array_size,
         }
         else if (offset > 0)
         {
+            //if (offset == 1 && array_size == 138 && starting_point == 28) printf("i: %d\n",i);
             new_array[i + offset] = array[i];
         }
         else
@@ -332,7 +333,7 @@ unsigned char *translate_array(unsigned char *array, int offset, int array_size,
             new_array[i] = array[i - offset];
         }
     }
-    //printf("offset: %d,array_size: %d,starting_point: %d\n",offset,array_size,starting_point);
+    
     //free(array);
     return new_array;
 }

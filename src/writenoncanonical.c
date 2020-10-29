@@ -72,18 +72,18 @@ int main(int argc, char **argv)
 
   //set_sigaction();
 
-  int *t_values = calloc(1, sizeof(int));
+  int *t_values = calloc(2, sizeof(int));
   t_values[0] = FILE_SIZE;
   t_values[1] = FILE_NAME;
-  int *l_values = calloc(1, sizeof(int));
+  int *l_values = calloc(2, sizeof(int));
   l_values[0] = sizeof(file_size);
   l_values[1] = strlen(file_name);
-  unsigned char **values = (unsigned char **)calloc(1, sizeof(unsigned char *));
+  unsigned char **values = (unsigned char **)calloc(2, sizeof(unsigned char *));
   //values[0] = (unsigned char *)calloc(file_size, sizeof(unsigned char));
   values[0] = (unsigned char *) &file_size;
   values[1] = (unsigned char *)file_name;
   unsigned char *control_packet = generate_control_packet(START, 2, t_values, l_values, values);
-
+  long control_packet_size = 1 + l_values[0] + l_values[1] + 4;
   /*printf("control packet:\n");
   for (int i = 0; i < (1 + 4 + l_values[0] + l_values[1]); i++)
   {
@@ -95,7 +95,7 @@ int main(int argc, char **argv)
   // First Control Packet
   set_sigaction();
 
-  llwrite(fd, (char *)control_packet, packet_size);
+  llwrite(fd, (char *)control_packet, control_packet_size);
 
   // File Packets
   for (int i = 0; i < packet_num; i++)
@@ -108,7 +108,7 @@ int main(int argc, char **argv)
     }
     
     printf("\n");*/
-    unsigned char *data_packet = generate_data_packet(i, MAX_ARRAY_SIZE, packet[i]);
+    unsigned char *data_packet = generate_data_packet(i, packet_size, packet[i]);
     /*printf("data packet generated for packet[%d]:\n",i);
     for (size_t j = 0; j < 270; j++)
     {
@@ -121,7 +121,7 @@ int main(int argc, char **argv)
 
   // Last Control Packet
   control_packet[0] = END;
-  llwrite(fd, (char *)control_packet, packet_size);
+  llwrite(fd, (char *)control_packet, control_packet_size);
 
   llclose(fd);
 
