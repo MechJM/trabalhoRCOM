@@ -1,3 +1,4 @@
 *.o
 read
 write
+scripts/huge_image.jpg
