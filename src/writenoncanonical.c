@@ -37,7 +37,7 @@ int main(int argc, char **argv)
 {
   long file_size = 533211;
   char *file_name = "pinguim_clone.jpg";
-  packet_size = 500;
+  packet_size = MAX_PACKET_SIZE;
   int fd = 0;
   timeout = 1;
   //Initialize packet
@@ -50,10 +50,10 @@ int main(int argc, char **argv)
   ll = NULL;
 
   if ((argc < 2) ||
-      ((strcmp("/dev/ttyS0", argv[1]) != 0) &&
-       (strcmp("/dev/ttyS1", argv[1]) != 0)))
+      ((strcmp("/dev/ttyS10", argv[1]) != 0) &&
+       (strcmp("/dev/ttyS11", argv[1]) != 0)))
   {
-    printf("Usage:\tnserial SerialPort\n\tex: nserial /dev/ttyS1\n");
+    printf("Usage:\tnserial SerialPort\n\tex: nserial /dev/ttyS11\n");
     exit(1);
   }
 

@@ -29,6 +29,7 @@
 //Sizes
 #define NON_INFO_TRAM_SIZE 5
 #define MAX_ARRAY_SIZE 10000
+#define MAX_PACKET_SIZE 127
 
 //Number of attempts
 #define TIMEOUT_ATTEMPTS 3
