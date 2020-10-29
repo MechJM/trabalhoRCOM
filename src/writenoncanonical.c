@@ -88,7 +88,7 @@ int main(int argc, char **argv)
   long control_packet_size = 1 + l_values[0] + l_values[1] + 4;
   free(t_values);
   free(l_values);
-  free(values[0]);
+  free(&file_size);
   free(values[1]);
   free(values);
   /*printf("control packet:\n");
