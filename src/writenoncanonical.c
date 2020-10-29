@@ -80,16 +80,16 @@ int main(int argc, char **argv)
   l_values[0] = sizeof(file_size);
   l_values[1] = strlen(file_name);
   unsigned char **values = (unsigned char **)calloc(2, sizeof(unsigned char *));
-  values[0] = (unsigned char *)calloc(sizeof(file_size), sizeof(unsigned char));
-  values[1] = (unsigned char *)calloc(strlen(file_name) + 1, sizeof(unsigned char));
+  //values[0] = (unsigned char *)calloc(sizeof(file_size), sizeof(unsigned char));
+  //values[1] = (unsigned char *)calloc(strlen(file_name) + 1, sizeof(unsigned char));
   values[0] = (unsigned char *) &file_size;
   values[1] = (unsigned char *) file_name;
   unsigned char *control_packet = generate_control_packet(START, 2, t_values, l_values, values);
   long control_packet_size = 1 + l_values[0] + l_values[1] + 4;
   free(t_values);
   free(l_values);
-  free(&file_size);
-  free(values[1]);
+  //free(values[0]);
+  //free(values[1]);
   free(values);
   /*printf("control packet:\n");
   for (int i = 0; i < (1 + 4 + l_values[0] + l_values[1]); i++)
