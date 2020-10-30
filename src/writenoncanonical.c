@@ -43,7 +43,7 @@ int main(int argc, char **argv)
 
   file_size = file_data.st_size;
 
-  char *file_name = "pinguim_clone.jpg";
+  char *file_name = "pinguim_clone.gif";
   packet_size = MAX_PACKET_SIZE;
   int fd = 0;
   timeout = 1;
@@ -92,6 +92,8 @@ int main(int argc, char **argv)
   set_sigaction();
 
   llwrite(fd, (char *)control_packet, control_packet_size);
+
+  printf("packet_num = %d", packet_num);
 
   // File Packets
   for (int i = 0; i < packet_num; i++)

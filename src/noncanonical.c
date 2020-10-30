@@ -77,16 +77,16 @@ int main(int argc, char **argv)
   llread(fd, (char *)last_control_packet_received);
   extract_size_name(last_control_packet_received, last_size, name);
   long final_received_size = *((long *)last_size);
-  free(last_size);
+  //free(last_size);
 
   if (received_size == final_received_size && strcmp((char*)name,(char *) last_name) == 0 && last_control_packet_received[0] == END)
   {
       printf("Last Control Packet Checked!\n");
   }
-  
+
   llclose(fd);
-  
-  restoreFile((char *)name, packet, packet_size, packet_num);
+
+  restoreFile((char *)name, packet, packet_size, packet_num, final_received_size);
 
   free(name);
   free(last_control_packet_received);

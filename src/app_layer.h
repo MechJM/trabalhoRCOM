@@ -17,7 +17,7 @@ unsigned char *splitFileData(unsigned char *fileData, int x, int packet_size);
 
 void savePackets(unsigned char *packet[], unsigned char *fileData);
 
-void restoreFile(char *fileName, unsigned char *packet[], int packet_size, int packet_num);
+void restoreFile(char *fileName, unsigned char *packet[], int packet_size, int packet_num, long int file_size);
 
 void restoreSimpleFile(char *fileName, unsigned char *fileData, long int file_size);
 

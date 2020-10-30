@@ -12,7 +12,7 @@
 #include <signal.h>
 #include "app_layer.h"
 
-//long int file_size;
+//long int file_size = 10968;
 //int packet_size;
 //int packet_num;
 
@@ -57,7 +57,7 @@ void savePackets(unsigned char *packet[], unsigned char *fileData)
     }
 }
 
-void restoreFile(char *fileName, unsigned char *packet[], int packet_size, int packet_num)
+void restoreFile(char *fileName, unsigned char *packet[], int packet_size, int packet_num, long int file_size)
 {
     printf("Restoring File...\n");
     FILE *f = fopen((char *)fileName, "wb+");
