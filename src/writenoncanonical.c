@@ -95,7 +95,7 @@ int main(int argc, char **argv)
 
   llwrite(fd, (char *)control_packet, control_packet_size);
 
-  printf("packet_num = %d", packet_num);
+  printf("packet_num = %d\n", packet_num);
 
   // File Packets
   for (int i = 0; i < packet_num; i++)
