@@ -20,17 +20,17 @@ volatile int STOP = FALSE;
 
 int main(int argc, char **argv)
 {
-  
+
   int fd = 0;
   timeout = 1;
   ll = NULL;
   packet_size = MAX_PACKET_SIZE;
 
   //Initialize packet
-  packet = (unsigned char **) calloc(MAX_PACKET_ELEMS, sizeof(unsigned char *));
+  packet = (unsigned char **)calloc(MAX_PACKET_ELEMS, sizeof(unsigned char *));
   for (int i = 0; i < MAX_PACKET_ELEMS; i++)
   {
-      packet[i] = (unsigned char *) calloc(MAX_ARRAY_SIZE, sizeof(unsigned char));
+    packet[i] = (unsigned char *)calloc(MAX_ARRAY_SIZE, sizeof(unsigned char));
   }
 
   if ((argc < 2) ||
@@ -61,11 +61,17 @@ int main(int argc, char **argv)
     packet_num = received_size / packet_size;
 
   unsigned char *tram;
-  int stored_packet_size,seq;
+  int stored_packet_size, seq;
+
   for (int i = 0; i < packet_num; i++)
   {
     tram = (unsigned char *)calloc(MAX_ARRAY_SIZE, sizeof(unsigned char));
     stored_packet_size = llread(fd, (char *)tram);
+    if (tram[0] != 1)
+    {
+      free(tram);
+      break;
+    }
     extract_seq_size_data(tram, &seq, &stored_packet_size, packet[i]);
     free(tram);
   }
@@ -74,14 +80,15 @@ int main(int argc, char **argv)
   unsigned char *last_control_packet_received = (unsigned char *)calloc(MAX_ARRAY_SIZE, sizeof(unsigned char));
   unsigned char *last_size = (unsigned char *)calloc(8, sizeof(unsigned char));
   unsigned char *last_name = (unsigned char *)calloc(MAX_ARRAY_SIZE, sizeof(unsigned char));
+  // Tram[0] = 1, should be 3
   llread(fd, (char *)last_control_packet_received);
   extract_size_name(last_control_packet_received, last_size, name);
   long final_received_size = *((long *)last_size);
   //free(last_size);
 
-  if (received_size == final_received_size && strcmp((char*)name,(char *) last_name) == 0 && last_control_packet_received[0] == END)
+  if (received_size == final_received_size && strcmp((char *)name, (char *)last_name) == 0 && last_control_packet_received[0] == END)
   {
-      printf("Last Control Packet Checked!\n");
+    printf("Last Control Packet Checked!\n");
   }
 
   llclose(fd);
@@ -94,7 +101,7 @@ int main(int argc, char **argv)
 
   for (int i = 0; i < MAX_PACKET_ELEMS; i++)
   {
-      free(packet[i]);
+    free(packet[i]);
   }
   free(packet);
 
