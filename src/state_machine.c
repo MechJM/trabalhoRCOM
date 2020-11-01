@@ -46,6 +46,8 @@ unsigned char * receive_tram(int fd)
         if (current_byte != FLAG) result = NULL;
     }
 
+    free(first_tram_part);
+
     if (reached_timeout) result = NULL;
 
     return result;
