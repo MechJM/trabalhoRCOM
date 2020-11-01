@@ -1,6 +1,57 @@
 #include "state_machine.h"
-//Should work for receiving SET, UA and DISC
 
+unsigned char * receive_tram(int fd)
+{
+    unsigned char * first_tram_part = calloc(4, sizeof(unsigned char));
+    unsigned char * result;
+    int res;
+
+    res = read(fd, first_tram_part, 4);
+    if (res != 4) fprintf(stderr, "Failed to read initial packet part in receive_tram function!\n");
+    
+    if ((first_tram_part[0] != FLAG)
+    || (first_tram_part[1] != COMM_REC_REP_SEND && first_tram_part[1] != COMM_SEND_REP_REC) 
+    || (first_tram_part[2] != SET && first_tram_part[2] != DISC && first_tram_part[2] != UA && first_tram_part[2] != RR && first_tram_part[2] != (RR | R_MASK) && first_tram_part[2] != REJ && first_tram_part[2] != (REJ | R_MASK) && first_tram_part[2] != INFO_CTRL && first_tram_part[2] != (INFO_CTRL | S_MASK))
+    || (first_tram_part[3] != (first_tram_part[1] ^ first_tram_part[2]))
+    ) 
+    result = NULL;
+
+    unsigned char current_byte = 0x00;
+
+    if (first_tram_part[2] == INFO_CTRL || first_tram_part[2] == (INFO_CTRL | S_MASK))
+    {
+        result = calloc(MAX_ARRAY_SIZE, sizeof(unsigned char));
+        int current_index = 3;
+        for (int i = 0; i < 3; i++)
+        {
+            result[i] = first_tram_part[i + 1];
+        }
+        while (!reached_timeout)
+        {
+            res = read(fd, &current_byte, 1);
+            if (res != 1) fprintf(stderr, "Failed to read while trying to receive info tram in receive_tram function!\n");
+            if (current_byte == FLAG) break;
+            else result[current_index++] = current_byte;
+        }
+    }
+    else
+    {
+        result = calloc(3, sizeof(unsigned char));
+        for (int i = 0; i < 3; i++)
+        {
+            result[i] = first_tram_part[i + 1];
+        }
+        res = read(fd, &current_byte, 1);
+        if (res != 1) fprintf(stderr, "Failed to read while trying to receive terminating FLAG of S/U tram in receive_tram function!\n");
+        if (current_byte != FLAG) result = NULL;
+    }
+
+    if (reached_timeout) result = NULL;
+
+    return result;
+}
+/*
+//Should work for receiving SET, UA and DISC
 unsigned char *receive_tram(int fd)
 {
     // the first parameter of calloc is 3 because right now the function only works for non info trams and the flags aren't included
@@ -80,13 +131,9 @@ unsigned char *receive_tram(int fd)
     }
 
     if (reached_timeout) return NULL;
-    /*
-    printf("First byte: %d\n",result[0]);
-    printf("Second byte: %d\n",result[1]);
-    printf("Third byte: %d\n",result[2]);
-    */
+    
     return result;
-}
+}*/
 
 unsigned char *receive_info_tram(int fd, int *data_size)
 {
