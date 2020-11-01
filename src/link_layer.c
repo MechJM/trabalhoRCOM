@@ -212,29 +212,16 @@ int llread(int fd, char *buffer)
   {
     unsigned char *data = receive_info_tram(fd, &data_size);
     data = byte_unstuff(data, &data_size);
-    /*
-    printf("Data received:\n");
-    for (int i = 0; i < data_size; i++)
-    {
-      printf("%x ",data[i]);
-    }
-    printf("\n");*/
+    
     struct parse_results *results = parse_info_tram(data, data_size);
     free(data);
     actual_data = process_info_tram_received(results, fd);
     free(results);
-    //printf("Data trams received: %ld\n",data_trams_received);
   }
-  //printf("actual data:\n");
-  for (int i = 0; i < MAX_ARRAY_SIZE; i++)
-  {
-    //printf("%x ",(unsigned char) actual_data[i]);
-    buffer[i] = actual_data[i];
-  }
+ 
+  memcpy(buffer,actual_data,MAX_ARRAY_SIZE);
   free(actual_data);
-  //printf("\n");
-  //buffer = actual_data;
-  buffer = buffer; //only here because otherwise the compiler throws an error about an unused parameter
+
   data_trams_received = data_trams_received + 1;
   
   return (data_size - 4);

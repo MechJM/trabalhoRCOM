@@ -214,11 +214,7 @@ struct parse_results *parse_info_tram(unsigned char *tram, int tram_size)
             last_seq = 0;
         else if (last_seq == 1)
             result->duplicate = 1;
-        for (int i = 3; i < (tram_size + 3 - 4); i++)
-        {
-            //data_parsed[i - 3] = tram[i];
-            result->received_data[i - 3] = tram[i]; 
-        }
+        memcpy(result->received_data,&tram[3],(tram_size + 3 - 4));
         printf("Data tram received.\n");
         break;
     }
@@ -228,11 +224,7 @@ struct parse_results *parse_info_tram(unsigned char *tram, int tram_size)
             last_seq = 1;
         else if (last_seq == 0)
             result->duplicate = 1;
-        for (int i = 3; i < (tram_size + 3 - 4); i++)
-        {
-            //data_parsed[i - 3] = tram[i];
-            result->received_data[i - 3] = tram[i]; 
-        }
+        memcpy(result->received_data,&tram[3],(tram_size + 3 - 4));
         printf("Data tram received.\n");
         break;
     }
@@ -306,8 +298,6 @@ char * process_info_tram_received(struct parse_results *results, int port)
             response = generate_su_tram(COMM_SEND_REP_REC, RR, 1);
         response_size = 5;
     }
-
-    //TODO Find better way to figure out which data needs to be/was sent
 
     int res = write(port, response, response_size);
     free(response);
