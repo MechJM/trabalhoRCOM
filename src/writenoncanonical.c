@@ -43,7 +43,8 @@ int main(int argc, char **argv)
 
   file_size = file_data.st_size;
 
-  char *file_name = "pinguim_clone.txt";
+  char *file_name = "pinguim_clone.gif";
+  //char *file_name = argv[2];
   packet_size = MAX_PACKET_SIZE;
   int fd = 0;
   timeout = 1;

@@ -2,5 +2,5 @@
 read
 write
 scripts/huge_image.jpg
-scripts/pinguim*.txt
-scripts/pinguim*.jpg
+scripts/*clone*
+scripts/*clone*

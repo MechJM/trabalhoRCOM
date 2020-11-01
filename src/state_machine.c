@@ -1,5 +1,5 @@
 #include "state_machine.h"
-
+/*
 unsigned char * receive_tram(int fd)
 {
     unsigned char * first_tram_part = calloc(4, sizeof(unsigned char));
@@ -52,7 +52,7 @@ unsigned char * receive_tram(int fd)
 
     return result;
 }
-/*
+*/
 //Should work for receiving SET, UA and DISC
 unsigned char *receive_tram(int fd)
 {
@@ -135,7 +135,7 @@ unsigned char *receive_tram(int fd)
     if (reached_timeout) return NULL;
     
     return result;
-}*/
+}
 
 unsigned char *receive_info_tram(int fd, int *data_size)
 {
