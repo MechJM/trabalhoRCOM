@@ -185,7 +185,6 @@ int parse_and_process_su_tram(unsigned char *tram, int fd)
 struct parse_results *parse_info_tram(unsigned char *tram, int tram_size)
 {
     //Tram must be unstuffed before being passed to this function, flags should not be included in the tram passed
-
     struct parse_results *result = calloc(1, sizeof(struct parse_results));
     //Setting default values
     //result->received_data = NULL;
@@ -266,20 +265,10 @@ char * process_info_tram_received(struct parse_results *results, int port)
         return NULL;
     if (results->header_validity && results->data_integrity)
     {
-        //printf("Duplicate flag: %d\n",results->duplicate);
+        
         if (!results->duplicate)
         {
-            //printf("Data after being copied: ");
-            for (int i = 0; i < results->tram_size - 4; i++)
-            {
-                result[i] = results->received_data[i];
-                //packet[data_trams_received][i] = results->received_data[i];
-                //printf("%x ",packet[data_trams_received][i]);
-            }
-            //printf("\n");
-            //printf("Cheguei aqui\n");
-            //packet[data_trams_received++] = results->received_data; //May or may not work
-            //data_trams_received++;
+            memcpy(result, results->received_data, results->tram_size - 4);
         }
         else
         {
@@ -293,9 +282,16 @@ char * process_info_tram_received(struct parse_results *results, int port)
     if (results->header_validity && !results->data_integrity)
     {
         if (!results->duplicate)
+        {
             response = generate_su_tram(COMM_SEND_REP_REC, REJ,0);
+            fprintf(stderr, "Data had errors, responding with REJ.\n");
+        }
         else
+        {
             response = generate_su_tram(COMM_SEND_REP_REC, RR, 1);
+            fprintf(stderr, "Data had errors but was duplicate, responding with RR.\n");
+        }
+        result = NULL; 
         response_size = 5;
     }
 

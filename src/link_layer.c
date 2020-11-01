@@ -2,6 +2,7 @@
 
 #include "link_layer.h"
 #include "app_layer.h"
+#include <time.h>
 
 struct termios oldtio, newtio;
 
@@ -139,24 +140,15 @@ int llopen(int port, int flag)
 
 int llwrite(int fd, char *buffer, int length)
 {
-
   int tram_length = length + 6;
   unsigned char *data_tram = generate_info_tram(buffer, COMM_SEND_REP_REC, length);
-  /*printf("Data being sent before stuffing:\n");
-  for (int i = 0; i < length + 6; i++)
-  {
-    printf("%x ",data_tram[i]);
-  }
-  printf("\n");
-  */
+  /*
+  unsigned char copy_100 = data_tram[100];
+  unsigned char copy_101 = data_tram[101];
+  unsigned char copy_102 = data_tram[102];
+  srand(time(NULL));*/
   data_tram = byte_stuff(data_tram, &tram_length);
-  /*printf("Data being sent:\n");
-  for (int i = 0; i < length + 6; i++)
-  {
-    printf("%x ",data_tram[i]);
-  }
-  printf("\n");
-  */
+ 
   int res = -1, parse_result;
 
   int data_sent_success = 0;
@@ -166,6 +158,21 @@ int llwrite(int fd, char *buffer, int length)
 
   while (!data_sent_success && attempts < TIMEOUT_ATTEMPTS)
   {
+    /*
+    if ((rand() % 2000) < 1000)
+    {
+      
+      data_tram[100] = 9;
+      data_tram[101] = 9;
+      data_tram[102] = 9;
+    }
+    else
+    {
+      data_tram[100] = copy_100;
+      data_tram[101] = copy_101;
+      data_tram[102] = copy_102;
+    }*/
+    
 
     res = write(fd, data_tram, tram_length);
     if (res != tram_length)
@@ -175,14 +182,6 @@ int llwrite(int fd, char *buffer, int length)
     }
     alarm(timeout);
     response = receive_tram(fd);
-    /*
-    printf("Response: ");
-    for (int i = 0; i < 3; i++)
-    {
-      printf("%x ",response[i]);
-    }
-    
-    printf("\n");*/
 
     parse_result = parse_and_process_su_tram(response, fd);
     free(response);
@@ -199,17 +198,25 @@ int llwrite(int fd, char *buffer, int length)
     else if (parse_result == TIMED_OUT) attempts++;
   }
   free(data_tram);
-  if (attempts == TIMEOUT_ATTEMPTS) return -1;
+  if (attempts == TIMEOUT_ATTEMPTS)
+  {
+    fprintf(stderr, "Reached max number of attempts!\n");
+    return -1;
+  } 
 
   return res;
 }
 
 int llread(int fd, char *buffer)
 {
+  
   char *actual_data = NULL;
   int data_size;
+ 
+
   while (actual_data == NULL)
   {
+    
     unsigned char *data = receive_info_tram(fd, &data_size);
     data = byte_unstuff(data, &data_size);
     
@@ -218,6 +225,7 @@ int llread(int fd, char *buffer)
     actual_data = process_info_tram_received(results, fd);
     free(results);
   }
+  
  
   memcpy(buffer,actual_data,MAX_ARRAY_SIZE);
   free(actual_data);

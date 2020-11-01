@@ -52,13 +52,6 @@ int main(int argc, char **argv)
   //Initialize packet
   packet = (unsigned char **) calloc(MAX_PACKET_ELEMS, sizeof(unsigned char *));
 
-  /*
-  for (int i = 0; i < MAX_PACKET_ELEMS; i++)
-  {
-      packet[i] = (unsigned char *) calloc(MAX_ARRAY_SIZE, sizeof(unsigned char));
-  }
-  */
-
   ll = NULL;
 
   if (argc < 2)
@@ -92,21 +85,21 @@ int main(int argc, char **argv)
   // First Control Packet
   set_sigaction();
 
-  llwrite(fd, (char *)control_packet, control_packet_size);
+  while (llwrite(fd, (char *)control_packet, control_packet_size) < 0);
 
-  printf("packet_num = %d\n", packet_num);
+  //printf("packet_num = %d\n", packet_num);
 
   // File Packets
   for (int i = 0; i < packet_num; i++)
   {
     unsigned char *data_packet = generate_data_packet(i, packet_size, packet[i]);
-    llwrite(fd, (char *)data_packet, packet_size + 4);
+    while (llwrite(fd, (char *)data_packet, packet_size + 4) < 0);
     free(data_packet);
   }
 
   // Last Control Packet
   control_packet[0] = END;
-  llwrite(fd, (char *)control_packet, control_packet_size);
+  while (llwrite(fd, (char *)control_packet, control_packet_size) < 0);
   free(control_packet);
   llclose(fd);
 
