@@ -33,15 +33,13 @@ int main(int argc, char **argv)
     packet[i] = (unsigned char *)calloc(MAX_ARRAY_SIZE, sizeof(unsigned char));
   }
 
-  if ((argc < 2) ||
-      ((strcmp("/dev/ttyS10", argv[1]) != 0) &&
-       (strcmp("/dev/ttyS11", argv[1]) != 0)))
+  if (argc < 2)
   {
     printf("Usage:\tnserial SerialPort\n\tex: nserial /dev/ttyS11\n");
     exit(1);
   }
 
-  fd = llopen(11, RECEIVER);
+  fd = llopen(atoi(argv[1]), RECEIVER);
 
   // First Control Packet
   unsigned char *control_packet_received = (unsigned char *)calloc(MAX_ARRAY_SIZE, sizeof(unsigned char));

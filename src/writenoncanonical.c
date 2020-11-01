@@ -60,9 +60,7 @@ int main(int argc, char **argv)
 
   ll = NULL;
 
-  if ((argc < 2) ||
-      ((strcmp("/dev/ttyS10", argv[1]) != 0) &&
-       (strcmp("/dev/ttyS11", argv[1]) != 0)))
+  if (argc < 2)
   {
     printf("Usage:\tnserial SerialPort\n\tex: nserial /dev/ttyS11\n");
     exit(1);
@@ -72,7 +70,7 @@ int main(int argc, char **argv)
 
   processFile(fileData);
   free(fileData);
-  fd = llopen(10, TRANSMITTER);
+  fd = llopen(atoi(argv[1]), TRANSMITTER);
 
   int *t_values = calloc(2, sizeof(int));
   t_values[0] = FILE_SIZE;
