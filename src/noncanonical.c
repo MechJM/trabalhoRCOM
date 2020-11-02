@@ -8,6 +8,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include "tram.h"
 #include "state_machine.h"
 #include "link_layer.h"
@@ -44,6 +45,8 @@ int main(int argc, char **argv)
   // First Control Packet
   unsigned char *control_packet_received = (unsigned char *)calloc(MAX_ARRAY_SIZE, sizeof(unsigned char));
   while (llread(fd, (char *)control_packet_received) < 0);
+
+  clock_t begin = clock();
   
   unsigned char *size = (unsigned char *)calloc(8, sizeof(unsigned char));
   unsigned char *name = (unsigned char *)calloc(MAX_ARRAY_SIZE, sizeof(unsigned char));
@@ -75,8 +78,6 @@ int main(int argc, char **argv)
     i++;
   }
   
-  
-
   // Last Control Packet
   unsigned char *last_size = (unsigned char *)calloc(8, sizeof(unsigned char));
   unsigned char *last_name = (unsigned char *)calloc(MAX_ARRAY_SIZE, sizeof(unsigned char));
@@ -104,6 +105,10 @@ int main(int argc, char **argv)
     free(packet[i]);
   }
   free(packet);
+
+  clock_t end = clock();
+  double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
+  printf("Execution Time = %f Seconds\n", time_spent);
 
   return 0;
 }
