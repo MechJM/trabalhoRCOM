@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <signal.h>
+#include <time.h>
 #include "tram.h"
 #include "state_machine.h"
 #include "app_layer.h"
@@ -35,6 +36,8 @@ void set_sigaction()
 
 int main(int argc, char **argv)
 {
+  clock_t begin = clock();
+
   struct stat file_data;
   if (stat(argv[2],&file_data) < 0)
   {
@@ -64,6 +67,7 @@ int main(int argc, char **argv)
 
   processFile(fileData);
   free(fileData);
+
   fd = llopen(atoi(argv[1]), TRANSMITTER);
 
   int *t_values = calloc(2, sizeof(int));
@@ -108,6 +112,10 @@ int main(int argc, char **argv)
       free(packet[i]);
   }
   free(packet);
+
+  clock_t end = clock();
+  double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
+  printf("Execution Time = %f Seconds\n", time_spent);
   
   return 0;
 }
