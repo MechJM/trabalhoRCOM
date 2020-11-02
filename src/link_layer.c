@@ -96,11 +96,14 @@ int llopen(int port, int flag)
       if (res != NON_INFO_TRAM_SIZE)
       {
         fprintf(stderr, "Failed to write in llopen!\n");
+        free(first_message);
         return -1;
       }
       alarm(timeout);
+      reached_timeout = 0;
       response = receive_tram(fd);
       result = parse_and_process_su_tram(response, fd);
+      if (response != NULL) free(response);
       if (result == TIMED_OUT) attempts++;
       else if (result == SEND_NEW_DATA)
       {
@@ -110,9 +113,11 @@ int llopen(int port, int flag)
       else
       {
         fprintf(stderr, "Wrong result in llopen!\n");
+        
+        free(first_message);
         return -1;
       }
-      free(response);
+      
     }
     free(first_message);
     if (attempts == TIMEOUT_ATTEMPTS) return -1;
@@ -154,9 +159,11 @@ int llwrite(int fd, char *buffer, int length)
   
 
   //Simulating errors
-  unsigned char copy_100 = data_tram[100];
+  /*
+  unsigned char copy_103 = data_tram[103];
   unsigned char copy_101 = data_tram[101];
   unsigned char copy_102 = data_tram[102];
+  */
   //
  
   int res = -1, parse_result;
@@ -166,35 +173,26 @@ int llwrite(int fd, char *buffer, int length)
   int attempts = 0;
   unsigned char * response;
   // Simulating errors
-  int i = 0;
-  static int call_num = 0;
+  //int i = 0;
   //
   while (!data_sent_success && attempts < TIMEOUT_ATTEMPTS)
   {
     //Simulating errors
+    /*
     if (i++ % 17 == 0)
     {
       
-      data_tram[100] = 9;
+      data_tram[103] = 9;
       data_tram[101] = 9;
       data_tram[102] = 9;
-      printf("Introduced errors. Call num:%d. i:%d\n",call_num++,i);
-      if (call_num == 11)
-      {
-        printf("Packet:\n");
-        for (size_t j = 0; j < 400; j++)
-        {
-          printf("%x ",data_tram[j]);
-        }
-        printf("\n");
-      }
+      
     }
     else
     {
-      data_tram[100] = copy_100;
+      data_tram[103] = copy_103;
       data_tram[101] = copy_101;
       data_tram[102] = copy_102;
-    }
+    }*/
     //
 
     res = write(fd, data_tram, tram_length);
@@ -204,6 +202,7 @@ int llwrite(int fd, char *buffer, int length)
       return -1;
     }
     alarm(timeout);
+    reached_timeout = 0;
     response = receive_tram(fd);
 
     parse_result = parse_and_process_su_tram(response, fd);
@@ -236,8 +235,7 @@ int llread(int fd, char *buffer)
   char *actual_data = NULL;
   int data_size;
  
-  static int call_num = 0;
-  printf("Call num:%d\n",call_num++);
+
   while (actual_data == NULL)
   {
     
@@ -294,6 +292,7 @@ int llclose(int fd)
         return -1;
       }
       alarm(timeout);
+      reached_timeout = 0;
       unsigned char *response = receive_tram(fd);
       result = parse_and_process_su_tram(response, fd);
       free(response);

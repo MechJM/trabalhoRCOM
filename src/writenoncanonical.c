@@ -30,14 +30,15 @@ void set_sigaction()
   action.sa_handler = sigalrm_handler;
   sigemptyset(&action.sa_mask);
   action.sa_flags = 0;
-
+  
   if (sigaction(SIGALRM, &action, NULL) < 0) fprintf(stderr, "Couldn't install signal handler for SIGALRM.\n");
 }
 
 int main(int argc, char **argv)
 {
-  clock_t begin = clock();
 
+  clock_t begin = clock();
+  set_sigaction();
   struct stat file_data;
   if (stat(argv[2],&file_data) < 0)
   {
@@ -87,8 +88,6 @@ int main(int argc, char **argv)
   free(values);
   
   // First Control Packet
-  set_sigaction();
-
   while (llwrite(fd, (char *)control_packet, control_packet_size) < 0);
 
   //printf("packet_num = %d\n", packet_num);
@@ -112,7 +111,7 @@ int main(int argc, char **argv)
       free(packet[i]);
   }
   free(packet);
-
+  
   clock_t end = clock();
   double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
   printf("Execution Time = %f Seconds\n", time_spent);
