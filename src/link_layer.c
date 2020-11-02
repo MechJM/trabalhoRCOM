@@ -141,13 +141,23 @@ int llopen(int port, int flag)
 int llwrite(int fd, char *buffer, int length)
 {
   int tram_length = length + 6;
-  unsigned char *data_tram = generate_info_tram(buffer, COMM_SEND_REP_REC, length);
-  /*
+  /*printf("Sending:\n");
+  for (size_t i = 0; i < 400; i++)
+  {
+    printf("%x ",(unsigned char) buffer[i]);
+  }
+  printf("\n");
+  */unsigned char *data_tram = generate_info_tram(buffer, COMM_SEND_REP_REC, length);
+  
+  data_tram = byte_stuff(data_tram, &tram_length);
+
+  
+
+  //Simulating errors
   unsigned char copy_100 = data_tram[100];
   unsigned char copy_101 = data_tram[101];
   unsigned char copy_102 = data_tram[102];
-  srand(time(NULL));*/
-  data_tram = byte_stuff(data_tram, &tram_length);
+  //
  
   int res = -1, parse_result;
 
@@ -155,24 +165,37 @@ int llwrite(int fd, char *buffer, int length)
 
   int attempts = 0;
   unsigned char * response;
-
+  // Simulating errors
+  int i = 0;
+  static int call_num = 0;
+  //
   while (!data_sent_success && attempts < TIMEOUT_ATTEMPTS)
   {
-    /*
-    if ((rand() % 2000) < 1000)
+    //Simulating errors
+    if (i++ % 17 == 0)
     {
       
       data_tram[100] = 9;
       data_tram[101] = 9;
       data_tram[102] = 9;
+      printf("Introduced errors. Call num:%d. i:%d\n",call_num++,i);
+      if (call_num == 11)
+      {
+        printf("Packet:\n");
+        for (size_t j = 0; j < 400; j++)
+        {
+          printf("%x ",data_tram[j]);
+        }
+        printf("\n");
+      }
     }
     else
     {
       data_tram[100] = copy_100;
       data_tram[101] = copy_101;
       data_tram[102] = copy_102;
-    }*/
-    
+    }
+    //
 
     res = write(fd, data_tram, tram_length);
     if (res != tram_length)
@@ -213,20 +236,29 @@ int llread(int fd, char *buffer)
   char *actual_data = NULL;
   int data_size;
  
-
+  static int call_num = 0;
+  printf("Call num:%d\n",call_num++);
   while (actual_data == NULL)
   {
     
     unsigned char *data = receive_info_tram(fd, &data_size);
+    
     data = byte_unstuff(data, &data_size);
     
     struct parse_results *results = parse_info_tram(data, data_size);
     free(data);
     actual_data = process_info_tram_received(results, fd);
+   
     free(results);
   }
-  
- 
+  /*
+  printf("Receiving:\n");
+  for (size_t i = 0; i < 400; i++)
+  {
+    printf("%x ",(unsigned char) actual_data[i]);
+  }
+  printf("\n");
+  */
   memcpy(buffer,actual_data,MAX_ARRAY_SIZE);
   free(actual_data);
 

@@ -183,7 +183,8 @@ int parse_and_process_su_tram(unsigned char *tram, int fd)
 }
 
 struct parse_results *parse_info_tram(unsigned char *tram, int tram_size)
-{
+{   
+
     //Tram must be unstuffed before being passed to this function, flags should not be included in the tram passed
     struct parse_results *result = calloc(1, sizeof(struct parse_results));
     //Setting default values
@@ -268,6 +269,27 @@ char * process_info_tram_received(struct parse_results *results, int port)
         
         if (!results->duplicate)
         {
+            int should_print = 0;
+            for (size_t i = 0; i < 400; i++)
+            {
+                if (results->received_data[i] == 9 && results->received_data[i + 1] == 9 && results->received_data[i + 2] == 9)
+                {
+                   printf("THIS IS THE ONE!\n");
+                   should_print = 1;
+                   break;
+                } 
+
+            }
+            if (should_print)
+            {
+                printf("Special one:\n");
+                for (size_t i = 0; i < 400; i++)
+                {
+                    printf("%x ",results->received_data[i]);
+                }
+                printf("\n");
+                
+            }
             memcpy(result, results->received_data, results->tram_size - 4);
         }
         else
