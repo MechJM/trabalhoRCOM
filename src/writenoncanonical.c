@@ -70,6 +70,12 @@ int main(int argc, char **argv)
   free(fileData);
 
   fd = llopen(atoi(argv[1]), TRANSMITTER);
+  if (fd < 0)
+  {
+    fprintf(stderr, "llopen failed!\n");
+    free(packet);
+    return -1;
+  }
 
   int *t_values = calloc(2, sizeof(int));
   t_values[0] = FILE_SIZE;

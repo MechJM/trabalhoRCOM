@@ -41,6 +41,17 @@ int main(int argc, char **argv)
   }
 
   fd = llopen(atoi(argv[1]), RECEIVER);
+   if (fd < 0)
+  {
+    fprintf(stderr, "llopen failed!\n");
+    for (size_t i = 0; i < MAX_PACKET_ELEMS; i++)
+    {
+      free(packet[i]);
+    }
+    
+    free(packet);
+    return -1;
+  }
 
   // First Control Packet
   unsigned char *control_packet_received = (unsigned char *)calloc(MAX_ARRAY_SIZE, sizeof(unsigned char));
