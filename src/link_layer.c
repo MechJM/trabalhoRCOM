@@ -146,54 +146,21 @@ int llopen(int port, int flag)
 int llwrite(int fd, char *buffer, int length)
 {
   int tram_length = length + 6;
-  /*printf("Sending:\n");
-  for (size_t i = 0; i < 400; i++)
-  {
-    printf("%x ",(unsigned char) buffer[i]);
-  }
-  printf("\n");
-  */unsigned char *data_tram = generate_info_tram(buffer, COMM_SEND_REP_REC, length);
+  
+  unsigned char *data_tram = generate_info_tram(buffer, COMM_SEND_REP_REC, length);
   
   data_tram = byte_stuff(data_tram, &tram_length);
 
-  
-
-  //Simulating errors
-  /*
-  unsigned char copy_103 = data_tram[103];
-  unsigned char copy_101 = data_tram[101];
-  unsigned char copy_102 = data_tram[102];
-  */
-  //
- 
   int res = -1, parse_result;
 
   int data_sent_success = 0;
 
   int attempts = 0;
   unsigned char * response;
-  // Simulating errors
-  //int i = 0;
-  //
+  
   while (!data_sent_success && attempts < TIMEOUT_ATTEMPTS)
   {
-    //Simulating errors
-    /*
-    if (i++ % 17 == 0)
-    {
-      
-      data_tram[103] = 9;
-      data_tram[101] = 9;
-      data_tram[102] = 9;
-      
-    }
-    else
-    {
-      data_tram[103] = copy_103;
-      data_tram[101] = copy_101;
-      data_tram[102] = copy_102;
-    }*/
-    //
+    
 
     res = write(fd, data_tram, tram_length);
     if (res != tram_length)
@@ -219,6 +186,7 @@ int llwrite(int fd, char *buffer, int length)
     }
     else if (parse_result == TIMED_OUT) attempts++;
   }
+
   free(data_tram);
   if (attempts == TIMEOUT_ATTEMPTS)
   {
@@ -234,29 +202,23 @@ int llread(int fd, char *buffer)
   
   char *actual_data = NULL;
   int data_size;
- 
+  unsigned char *data;
+  struct parse_results *results;
 
   while (actual_data == NULL)
   {
     
-    unsigned char *data = receive_info_tram(fd, &data_size);
+    data = receive_info_tram(fd, &data_size);
     
     data = byte_unstuff(data, &data_size);
     
-    struct parse_results *results = parse_info_tram(data, data_size);
-    free(data);
+    results = parse_info_tram(data, data_size);
+    
     actual_data = process_info_tram_received(results, fd);
-   
-    free(results);
   }
-  /*
-  printf("Receiving:\n");
-  for (size_t i = 0; i < 400; i++)
-  {
-    printf("%x ",(unsigned char) actual_data[i]);
-  }
-  printf("\n");
-  */
+  free(data);
+  free(results);
+  
   memcpy(buffer,actual_data,MAX_ARRAY_SIZE);
   free(actual_data);
 
@@ -305,7 +267,7 @@ int llclose(int fd)
       }
       else
       {
-        fprintf(stderr, "Processing failed!\n");
+        fprintf(stderr, "Processing failed in llclose for the sender! Result was: %d\n",result);
         return -1;
       }
     }
@@ -318,7 +280,7 @@ int llclose(int fd)
     int result = parse_and_process_su_tram(end_request, fd);
     if (result != DO_NOTHING)
     {
-      fprintf(stderr, "Processing failed!\n");
+      fprintf(stderr, "Processing failed in llclose for the receiver!\n");
       return -1;
     }
     free(end_request);
@@ -326,7 +288,7 @@ int llclose(int fd)
     result = parse_and_process_su_tram(acknowledgment, fd);
     if (result != DO_NOTHING)
     {
-      fprintf(stderr, "Processing failed!\n");
+      fprintf(stderr, "Processing failed in llclose for the receiver!\n");
       return -1;
     }
     free(acknowledgment);

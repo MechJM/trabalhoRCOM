@@ -41,10 +41,21 @@ int main(int argc, char **argv)
   }
 
   fd = llopen(atoi(argv[1]), RECEIVER);
+   if (fd < 0)
+  {
+    fprintf(stderr, "llopen failed!\n");
+    for (size_t i = 0; i < MAX_PACKET_ELEMS; i++)
+    {
+      free(packet[i]);
+    }
+    
+    free(packet);
+    return -1;
+  }
 
   // First Control Packet
   unsigned char *control_packet_received = (unsigned char *)calloc(MAX_ARRAY_SIZE, sizeof(unsigned char));
-  while (llread(fd, (char *)control_packet_received) < 0);
+  llread(fd, (char *)control_packet_received);
 
   clock_t begin = clock();
   
@@ -72,7 +83,7 @@ int main(int argc, char **argv)
   int i = 0;
   while (strcmp((char *)tram,(char *)expected_final_control) != 0)
   {
-    while ((stored_packet_size = llread(fd, (char *)tram)) < 0);
+    stored_packet_size = llread(fd, (char *)tram);
     if (tram[0] != 1) break;
     extract_seq_size_data(tram, &seq, &stored_packet_size, packet[i]);
     i++;

@@ -12,10 +12,6 @@
 #include <signal.h>
 #include "app_layer.h"
 
-//long int file_size = 10968;
-//int packet_size;
-//int packet_num;
-
 unsigned char *readFile(unsigned char *fileName)
 {
     printf("Reading File <%s>\n", fileName);
@@ -99,18 +95,11 @@ void processFile(unsigned char *fileData)
     {
         packet_num = file_size / packet_size;
     }
-    //packet = calloc(packet_num, packet_size);
-    /*
-    packet = malloc(sizeof(unsigned char *));
-    *packet = calloc(255,sizeof(unsigned char));
-    */
+    
     printf("Created %d Packets...\n", packet_num);
     savePackets(packet, fileData);
     printf("Packets Ready To Be Sent!\n");
-    /*
-    char *restoredFileName = "restoreFile.gif";
-    restoreFile(restoredFileName, packet, packet_num);
-    */
+    
 }
 
 unsigned char *generate_data_packet(int seq_num, int byte_num,const unsigned char *data)
@@ -158,20 +147,14 @@ unsigned char *generate_control_packet(unsigned char control_field, int param_nu
             result[nextIndex++] = values[i][j];
         }
     }
-    /*
-    printf("before returning:\n");
-    for (int i = 0; i < total_byte_num; i++)
-    {
-        printf("%x ",result[i]);
-    }
     
-    printf("\n");
-    */
     return result;
 }
 
 void extract_size_name(unsigned char *tram, unsigned char *size, unsigned char *name)
 {
+    if (tram[0] != END && tram[0] != START) return;
+
     int middle_of_data = 0, extracted_name = 0, extracted_size = 0;
     int i = 1;
     int data_index = 0;
