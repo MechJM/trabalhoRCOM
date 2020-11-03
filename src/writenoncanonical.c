@@ -46,13 +46,19 @@ int main(int argc, char **argv)
   }
 
   file_size = file_data.st_size;
+  
+  //char *file_name = "pinguim_clone.gif";
+  char file_name[MAX_STR_SIZE + 6];
+  char argv_copy[MAX_STR_SIZE];
 
-  char *file_name = "pinguim_clone.gif";
+  strcpy(argv_copy,argv[2]);
+  char * actual_file_name = strtok(argv_copy,".");
+  sprintf(file_name,"%s_clone.%s",actual_file_name,strtok(NULL,"."));
   //char *file_name = argv[2];
   packet_size = MAX_PACKET_SIZE;
   int fd = 0;
   timeout = 1;
-
+  
   //Initialize packet
   packet = (unsigned char **) calloc(MAX_PACKET_ELEMS, sizeof(unsigned char *));
 
@@ -147,7 +153,7 @@ int main(int argc, char **argv)
       free(packet[i]);
   }
   free(packet);
-  
+
   clock_t end = clock();
   double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
   printf("Execution Time = %f Seconds\n", time_spent);
