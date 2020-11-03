@@ -152,7 +152,8 @@ int llwrite(int fd, char *buffer, int length)
     printf("%x ",(unsigned char) buffer[i]);
   }
   printf("\n");
-  */unsigned char *data_tram = generate_info_tram(buffer, COMM_SEND_REP_REC, length);
+  */
+  unsigned char *data_tram = generate_info_tram(buffer, COMM_SEND_REP_REC, length);
   
   data_tram = byte_stuff(data_tram, &tram_length);
 

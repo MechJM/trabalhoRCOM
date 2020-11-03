@@ -94,7 +94,17 @@ int main(int argc, char **argv)
   free(values);
   
   // First Control Packet
-  while (llwrite(fd, (char *)control_packet, control_packet_size) < 0);
+  if (llwrite(fd, (char *)control_packet, control_packet_size) < 0)
+  {
+    fprintf(stderr, "llwrite failed!\n");
+    free(control_packet);
+    for (int i = 0; i < MAX_PACKET_ELEMS; i++)
+    {
+        free(packet[i]);
+    }
+    free(packet);
+    return -1;
+  }
 
   //printf("packet_num = %d\n", packet_num);
 
@@ -102,13 +112,33 @@ int main(int argc, char **argv)
   for (int i = 0; i < packet_num; i++)
   {
     unsigned char *data_packet = generate_data_packet(i, packet_size, packet[i]);
-    while (llwrite(fd, (char *)data_packet, packet_size + 4) < 0);
+    if (llwrite(fd, (char *)data_packet, packet_size + 4) < 0)
+    {
+      fprintf(stderr, "llwrite failed!\n");
+      free(data_packet);
+      free(control_packet);
+      for (int i = 0; i < MAX_PACKET_ELEMS; i++)
+      {
+          free(packet[i]);
+      }
+      free(packet);
+      return -1;
+    }
     free(data_packet);
   }
 
   // Last Control Packet
   control_packet[0] = END;
-  while (llwrite(fd, (char *)control_packet, control_packet_size) < 0);
+  if (llwrite(fd, (char *)control_packet, control_packet_size) < 0)
+  {
+    fprintf(stderr, "llwrite failed!\n");
+    free(control_packet);
+    for (int i = 0; i < MAX_PACKET_ELEMS; i++)
+    {
+        free(packet[i]);
+    }
+    free(packet);
+  }
   free(control_packet);
   llclose(fd);
 
