@@ -243,15 +243,7 @@ struct parse_results *parse_info_tram(unsigned char *tram, int tram_size)
 
     if (bcc2 != tram[tram_size - 1])
         result->data_integrity = 0;
-    /*
-    printf("Tram size: %d\n",tram_size);
-    printf("Data parsed: ");
-    for (int i = 0; i < tram_size - 4; i++)
-    {
-       printf("%x ",result->received_data[i]);
-    }
     
-    printf("\n");*/
     return result;
 }
 
@@ -269,13 +261,9 @@ char * process_info_tram_received(struct parse_results *results, int port)
         
         if (!results->duplicate)
         {
-            
             memcpy(result, results->received_data, results->tram_size - 4);
         }
-        else
-        {
-            free(results->received_data);
-        }
+        else result = NULL;
             
         response = generate_su_tram(COMM_SEND_REP_REC, RR,0);
         response_size = 5;
@@ -306,7 +294,7 @@ char * process_info_tram_received(struct parse_results *results, int port)
 unsigned char *translate_array(unsigned char *array, int offset, int array_size, int starting_point)
 {
     unsigned char *new_array = calloc(array_size + offset, sizeof(unsigned char));
-    //printf("offset: %d,array_size: %d,starting_point: %d\n",offset,array_size,starting_point);
+    
     for (int i = 0; i < (array_size); i++)
     {
         if (i < starting_point)
@@ -319,7 +307,6 @@ unsigned char *translate_array(unsigned char *array, int offset, int array_size,
         }
         else
         {
-            //if (offset == -1 && array_size == 137 && starting_point == 27) printf("i: %d\n",i);
             if (i == (array_size + offset)) break;
             new_array[i] = array[i - offset];
         }
@@ -339,13 +326,7 @@ unsigned char * byte_stuff(unsigned char *tram, int *tram_size)
             (*tram_size)++;
             tram[i] = ESC_BYTE_1;
             tram[++i] = ESC_BYTE_2;
-            /*
-            printf("After modification:\n");
-            for (int j = 0; j < (*tram_size); j++)
-            {
-                printf("%x ",tram[j]);
-            }
-            printf("\n");*/
+            
         }
         else if (tram[i] == ESC_BYTE_1)
         {
@@ -355,13 +336,7 @@ unsigned char * byte_stuff(unsigned char *tram, int *tram_size)
             tram[++i] = ESC_BYTE_3;
         }
     }
-    /*
-    printf("End of stuffing function:\n");
-    for (int j = 0; j < (*tram_size); j++)
-    {
-        printf("%x ",tram[j]);
-    }
-    printf("\n");*/
+    
     return tram;
 }
 
