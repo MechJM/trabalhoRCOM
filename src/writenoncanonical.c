@@ -16,7 +16,7 @@
 #include "app_layer.h"
 #include "link_layer.h"
 
-#define BAUDRATE B38400
+#define BAUDRATE B115200
 
 void sigalrm_handler(int signo)
 {
@@ -57,7 +57,7 @@ int main(int argc, char **argv)
   //char *file_name = argv[2];
   packet_size = MAX_PACKET_SIZE;
   int fd = 0;
-  timeout = 1;
+  timeout = 3;
   
   //Initialize packet
   packet = (unsigned char **) calloc(MAX_PACKET_ELEMS, sizeof(unsigned char *));

@@ -15,7 +15,7 @@
 #include "state_machine.h"
 
 #define MAX_TRAM_SIZE 2
-#define BAUDRATE B38400
+#define BAUDRATE B115200
 
 // Flag values
 #define TRANSMITTER 0

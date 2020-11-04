@@ -29,9 +29,9 @@
 
 //Sizes
 #define NON_INFO_TRAM_SIZE 5
-#define MAX_ARRAY_SIZE 370
+#define MAX_ARRAY_SIZE 1044
 #define MAX_PACKET_ELEMS 450000
-#define MAX_PACKET_SIZE 350
+#define MAX_PACKET_SIZE 1024
 #define MAX_STR_SIZE 100
 
 //Number of attempts

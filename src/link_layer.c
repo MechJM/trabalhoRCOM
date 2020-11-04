@@ -276,21 +276,28 @@ int llclose(int fd)
   }
   else
   {
+    
     unsigned char *end_request = receive_tram(fd);
+    
     int result = parse_and_process_su_tram(end_request, fd);
+    
     if (result != DO_NOTHING)
     {
       fprintf(stderr, "Processing failed in llclose for the receiver!\n");
       return -1;
     }
+    
     free(end_request);
     unsigned char *acknowledgment = receive_tram(fd);
+    
     result = parse_and_process_su_tram(acknowledgment, fd);
+    
     if (result != DO_NOTHING)
     {
       fprintf(stderr, "Processing failed in llclose for the receiver!\n");
       return -1;
     }
+    
     free(acknowledgment);
   }
   ll_close_serial_port(fd);
