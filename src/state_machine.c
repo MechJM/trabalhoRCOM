@@ -56,6 +56,7 @@ unsigned char * receive_tram(int fd)
 //Should work for receiving SET, UA and DISC
 unsigned char *receive_tram(int fd)
 {
+   
     // the first parameter of calloc is 3 because this function only works for info trams and the flags aren't included
     unsigned char *result = calloc(3, sizeof(unsigned char));
     enum reception_state state = start;
@@ -136,7 +137,7 @@ unsigned char *receive_tram(int fd)
     {
         return NULL;
     } 
-    
+
     return result;
 }
 

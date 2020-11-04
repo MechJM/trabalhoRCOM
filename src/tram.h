@@ -29,8 +29,10 @@
 
 //Sizes
 #define NON_INFO_TRAM_SIZE 5
+
 #define MAX_ARRAY_SIZE 500
 #define MAX_PACKET_ELEMS 500000
+
 #define MAX_STR_SIZE 100
 int max_packet_size;
 

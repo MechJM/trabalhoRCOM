@@ -16,6 +16,7 @@
 #include "app_layer.h"
 #include "link_layer.h"
 
+
 void sigalrm_handler(int signo)
 {
   if (signo != SIGALRM) fprintf(stderr, "This signal handler shouldn't have been called. signo: %d\n", signo);
@@ -55,7 +56,7 @@ int main(int argc, char **argv)
   //char *file_name = argv[2];
   packet_size = atoi(argv[4]);
   int fd = 0;
-  timeout = 1;
+  timeout = 3;
   
   //Initialize packet
   packet = (unsigned char **) calloc(MAX_PACKET_ELEMS, sizeof(unsigned char *));

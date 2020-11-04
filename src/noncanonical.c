@@ -83,7 +83,10 @@ int main(int argc, char **argv)
 
   //Main reception loop
   int i = 0;
+
+  
   while (strcmp((char *)tram, (char *)expected_final_control) != 0)
+
   {
     stored_packet_size = llread(fd, (char *)tram);
     if (tram[0] != 1)
@@ -104,11 +107,13 @@ int main(int argc, char **argv)
   {
     printf("Last Control Packet Checked!\n");
   }
+  restoreFile((char *)name, packet, packet_size, packet_num, final_received_size);
+  
 
   llclose(fd);
-
-  restoreFile((char *)name, packet, packet_size, packet_num, final_received_size);
-
+  
+  
+  
   free(name);
   free(last_name);
   free(tram);
