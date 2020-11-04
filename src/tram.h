@@ -30,11 +30,10 @@
 //Sizes
 #define NON_INFO_TRAM_SIZE 5
 
-#define MAX_ARRAY_SIZE 500
 #define MAX_PACKET_ELEMS 500000
 
 #define MAX_STR_SIZE 100
-int max_packet_size;
+long int max_packet_size;
 
 //Number of attempts
 #define TIMEOUT_ATTEMPTS 3
@@ -54,7 +53,7 @@ unsigned char ** packet;
 //Parse results
 struct parse_results
 {
-    unsigned char received_data[MAX_ARRAY_SIZE]; //NULL if it's not info tram
+    unsigned char * received_data; //NULL if it's not info tram
     int tram_size; //size of the tram in bytes
     int duplicate; //boolean to indicate if the tram received is a duplicate or not
     int data_integrity; //boolean to indicate if bcc2 checks out
@@ -77,7 +76,10 @@ int last_tram_sent_size;
 int last_packet_index;
 
 int packet_size, packet_num;
+
 long int file_size;
+
+long int max_array_size;
 
 void setup_initial_values();
 

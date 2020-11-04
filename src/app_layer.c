@@ -33,7 +33,7 @@ unsigned char *readFile(unsigned char *fileName)
 
 unsigned char *splitFileData(unsigned char *fileData, int x, int packet_size)
 {
-    unsigned char *packet_temp = (unsigned char *)calloc(MAX_ARRAY_SIZE, sizeof(unsigned char));
+    unsigned char *packet_temp = (unsigned char *)calloc(max_array_size, sizeof(unsigned char));
     int i;
     int j;
     for (j = 0, i = x; i < packet_size; i++, j++)

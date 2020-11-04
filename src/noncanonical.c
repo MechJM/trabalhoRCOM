@@ -26,12 +26,13 @@ int main(int argc, char **argv)
   ll = NULL;
   packet_size = atoi(argv[3]);
   max_packet_size = packet_size;
+  max_array_size = max_packet_size + 20;
 
   //Initialize packet
   packet = (unsigned char **)calloc(MAX_PACKET_ELEMS, sizeof(unsigned char *));
   for (int i = 0; i < MAX_PACKET_ELEMS; i++)
   {
-    packet[i] = (unsigned char *)calloc(MAX_ARRAY_SIZE, sizeof(unsigned char));
+    packet[i] = (unsigned char *)calloc(max_array_size, sizeof(unsigned char));
   }
 
   if (argc < 2)
@@ -57,13 +58,13 @@ int main(int argc, char **argv)
   }
 
   // First Control Packet
-  unsigned char *control_packet_received = (unsigned char *)calloc(MAX_ARRAY_SIZE, sizeof(unsigned char));
+  unsigned char *control_packet_received = (unsigned char *)calloc(max_array_size, sizeof(unsigned char));
   llread(fd, (char *)control_packet_received);
 
   clock_t begin = clock();
 
   unsigned char *size = (unsigned char *)calloc(8, sizeof(unsigned char));
-  unsigned char *name = (unsigned char *)calloc(MAX_ARRAY_SIZE, sizeof(unsigned char));
+  unsigned char *name = (unsigned char *)calloc(max_array_size, sizeof(unsigned char));
   extract_size_name(control_packet_received, size, name);
 
   unsigned char *expected_final_control = control_packet_received;
@@ -78,7 +79,7 @@ int main(int argc, char **argv)
   else
     packet_num = received_size / packet_size;
 
-  unsigned char *tram = (unsigned char *)calloc(MAX_ARRAY_SIZE, sizeof(unsigned char));
+  unsigned char *tram = (unsigned char *)calloc(max_array_size, sizeof(unsigned char));
   int stored_packet_size, seq;
 
   //Main reception loop
@@ -97,7 +98,7 @@ int main(int argc, char **argv)
 
   // Last Control Packet
   unsigned char *last_size = (unsigned char *)calloc(8, sizeof(unsigned char));
-  unsigned char *last_name = (unsigned char *)calloc(MAX_ARRAY_SIZE, sizeof(unsigned char));
+  unsigned char *last_name = (unsigned char *)calloc(max_array_size, sizeof(unsigned char));
 
   extract_size_name(tram, last_size, name);
   long final_received_size = *((long *)last_size);

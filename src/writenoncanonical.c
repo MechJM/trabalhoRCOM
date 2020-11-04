@@ -54,7 +54,9 @@ int main(int argc, char **argv)
   char * actual_file_name = strtok(argv_copy,".");
   sprintf(file_name,"%s_clone.%s",actual_file_name,strtok(NULL,"."));
   //char *file_name = argv[2];
-  packet_size = atoi(argv[4]);
+  max_packet_size = atoi(argv[4]);
+  packet_size = max_packet_size;
+  max_array_size = max_packet_size + 20;
   int fd = 0;
   timeout = 3;
   

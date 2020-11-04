@@ -187,6 +187,7 @@ struct parse_results *parse_info_tram(unsigned char *tram, int tram_size)
 
     //Tram must be unstuffed before being passed to this function, flags should not be included in the tram passed
     struct parse_results *result = calloc(1, sizeof(struct parse_results));
+    result->received_data = calloc(max_array_size, sizeof(unsigned char));
     //Setting default values
     //result->received_data = NULL;
     result->tram_size = tram_size;
@@ -251,7 +252,7 @@ char * process_info_tram_received(struct parse_results *results, int port)
 {
     unsigned char *response;
     char * result;
-    result = calloc(MAX_ARRAY_SIZE,sizeof(unsigned char));
+    result = calloc(max_array_size,sizeof(unsigned char));
     int response_size = 0;
 
     if (!results->header_validity)

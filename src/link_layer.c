@@ -217,9 +217,10 @@ int llread(int fd, char *buffer)
     actual_data = process_info_tram_received(results, fd);
   }
   free(data);
+  free(results->received_data);
   free(results);
   
-  memcpy(buffer,actual_data,MAX_ARRAY_SIZE);
+  memcpy(buffer,actual_data,max_array_size);
   free(actual_data);
 
   data_trams_received = data_trams_received + 1;

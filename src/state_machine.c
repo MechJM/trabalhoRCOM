@@ -20,7 +20,7 @@ unsigned char * receive_tram(int fd)
 
     if (first_tram_part[2] == INFO_CTRL || first_tram_part[2] == (INFO_CTRL | S_MASK))
     {
-        result = calloc(MAX_ARRAY_SIZE, sizeof(unsigned char));
+        result = calloc(max_array_size, sizeof(unsigned char));
         int current_index = 3;
         for (int i = 0; i < 3; i++)
         {
@@ -143,7 +143,7 @@ unsigned char *receive_tram(int fd)
 
 unsigned char *receive_info_tram(int fd, int *data_size)
 {
-    unsigned char *result = calloc(MAX_ARRAY_SIZE, sizeof(unsigned char));
+    unsigned char *result = calloc(max_array_size, sizeof(unsigned char));
     enum reception_info_state state = start_info;
 
     unsigned char currentByte = 0x00;
