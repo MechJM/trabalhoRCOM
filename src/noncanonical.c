@@ -57,11 +57,11 @@ int main(int argc, char **argv)
     return -1;
   }
 
+  clock_t begin = clock();
+
   // First Control Packet
   unsigned char *control_packet_received = (unsigned char *)calloc(max_array_size, sizeof(unsigned char));
   llread(fd, (char *)control_packet_received);
-
-  clock_t begin = clock();
 
   unsigned char *size = (unsigned char *)calloc(8, sizeof(unsigned char));
   unsigned char *name = (unsigned char *)calloc(max_array_size, sizeof(unsigned char));
@@ -94,6 +94,7 @@ int main(int argc, char **argv)
       break;
     extract_seq_size_data(tram, &seq, &stored_packet_size, packet[i]);
     i++;
+    printf("Packet Restore = %d%%\n", (100 * i / packet_num));
   }
 
   // Last Control Packet
@@ -108,12 +109,14 @@ int main(int argc, char **argv)
   {
     printf("Last Control Packet Checked!\n");
   }
+
+  clock_t end = clock();
+  double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
+  printf("Execution Time = %f Seconds\n", time_spent);
+
   restoreFile((char *)name, packet, packet_size, packet_num, final_received_size);
   
-
   llclose(fd);
-  
-  
   
   free(name);
   free(last_name);
@@ -125,10 +128,6 @@ int main(int argc, char **argv)
     free(packet[i]);
   }
   free(packet);
-
-  clock_t end = clock();
-  double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
-  printf("Execution Time = %f Seconds\n", time_spent);
 
   return 0;
 }

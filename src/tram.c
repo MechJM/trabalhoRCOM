@@ -216,7 +216,7 @@ struct parse_results *parse_info_tram(unsigned char *tram, int tram_size)
         else if (last_seq == 1)
             result->duplicate = 1;
         memcpy(result->received_data,&tram[3],(tram_size - 4));
-        printf("Data tram received.\n");
+        printf("Data Tram Received.\n");
         break;
     }
     case (INFO_CTRL | S_MASK):
@@ -226,7 +226,7 @@ struct parse_results *parse_info_tram(unsigned char *tram, int tram_size)
         else if (last_seq == 0)
             result->duplicate = 1;
         memcpy(result->received_data,&tram[3],(tram_size - 4));
-        printf("Data tram received.\n");
+        printf("Data Tram Received.\n");
         break;
     }
     default:
@@ -288,7 +288,8 @@ char * process_info_tram_received(struct parse_results *results, int port)
 
     int res = write(port, response, response_size);
     free(response);
-    printf("%d Bytes Written\n", res);
+    res = res;
+    //printf("%d Bytes Written\n", res);
     return result;
 }
 

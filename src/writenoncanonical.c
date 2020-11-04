@@ -35,8 +35,6 @@ void set_sigaction()
 
 int main(int argc, char **argv)
 {
-
-  clock_t begin = clock();
   set_sigaction();
   struct stat file_data;
   if (stat(argv[2],&file_data) < 0)
@@ -75,6 +73,8 @@ int main(int argc, char **argv)
 
   processFile(fileData);
   free(fileData);
+
+  clock_t begin = clock();
 
   //int baudRate = B38400;
   int baudRate = atoi(argv[3]);
@@ -149,6 +149,11 @@ int main(int argc, char **argv)
     }
     free(packet);
   }
+
+  clock_t end = clock();
+  double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
+  printf("Execution Time = %f Seconds\n", time_spent);
+
   free(control_packet);
   llclose(fd);
 
@@ -157,10 +162,6 @@ int main(int argc, char **argv)
       free(packet[i]);
   }
   free(packet);
-
-  clock_t end = clock();
-  double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
-  printf("Execution Time = %f Seconds\n", time_spent);
   
   return 0;
 }
