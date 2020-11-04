@@ -10,12 +10,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <signal.h>
-
 #include "tram.h"
 #include "state_machine.h"
 
 #define MAX_TRAM_SIZE 2
-#define BAUDRATE B38400
 
 // Flag values
 #define TRANSMITTER 0
@@ -35,9 +33,9 @@ static link_layer *ll;
 
 int ll_init(char *port, int baudRate, unsigned int timeout, unsigned int numTransmissions);
 
-int ll_open_serial_port(int fd);
+int ll_open_serial_port(int fd, int baudRate);
 
-int llopen(int port, int flag);
+int llopen(int port, int flag, int baudRate);
 
 int llwrite(int fd, char *buffer, int length);
 

@@ -16,8 +16,6 @@
 #include "app_layer.h"
 #include "link_layer.h"
 
-#define BAUDRATE B38400
-
 void sigalrm_handler(int signo)
 {
   if (signo != SIGALRM) fprintf(stderr, "This signal handler shouldn't have been called. signo: %d\n", signo);
@@ -55,7 +53,7 @@ int main(int argc, char **argv)
   char * actual_file_name = strtok(argv_copy,".");
   sprintf(file_name,"%s_clone.%s",actual_file_name,strtok(NULL,"."));
   //char *file_name = argv[2];
-  packet_size = MAX_PACKET_SIZE;
+  packet_size = atoi(argv[4]);
   int fd = 0;
   timeout = 1;
   
@@ -75,7 +73,10 @@ int main(int argc, char **argv)
   processFile(fileData);
   free(fileData);
 
-  fd = llopen(atoi(argv[1]), TRANSMITTER);
+  //int baudRate = B38400;
+  int baudRate = atoi(argv[3]);
+  fd = llopen(atoi(argv[1]), TRANSMITTER, baudRate);
+
   if (fd < 0)
   {
     fprintf(stderr, "llopen failed!\n");

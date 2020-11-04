@@ -31,8 +31,8 @@
 #define NON_INFO_TRAM_SIZE 5
 #define MAX_ARRAY_SIZE 370
 #define MAX_PACKET_ELEMS 450000
-#define MAX_PACKET_SIZE 350
 #define MAX_STR_SIZE 100
+int max_packet_size;
 
 //Number of attempts
 #define TIMEOUT_ATTEMPTS 3

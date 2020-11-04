@@ -25,7 +25,7 @@ int ll_init(char *port, int baudRate, unsigned int timeout, unsigned int numTran
   return 0;
 }
 
-int ll_open_serial_port(int fd)
+int ll_open_serial_port(int fd, int baudRate)
 {
   fd = open(ll->port, O_RDWR | O_NOCTTY);
   if (fd < 0)
@@ -41,7 +41,7 @@ int ll_open_serial_port(int fd)
   }
 
   bzero(&newtio, sizeof(newtio));
-  newtio.c_cflag = BAUDRATE | CS8 | CLOCAL | CREAD;
+  newtio.c_cflag = baudRate | CS8 | CLOCAL | CREAD;
   newtio.c_iflag = IGNPAR;
   newtio.c_oflag = 0;
 
@@ -68,13 +68,13 @@ int ll_open_serial_port(int fd)
   return fd;
 }
 
-int llopen(int port, int flag)
+int llopen(int port, int flag, int baudRate)
 {
   
   char * actual_port = calloc(12, sizeof(char));
   sprintf(actual_port,"/dev/ttyS%d",port);
   //printf("actual_port: %s\n",actual_port);
-  ll_init(actual_port, BAUDRATE, timeout, 1);
+  ll_init(actual_port, baudRate, timeout, 1);
   
   int fd = 0;
   if (flag == TRANSMITTER)
@@ -85,7 +85,7 @@ int llopen(int port, int flag)
 
     int sent_success = 0;
 
-    fd = ll_open_serial_port(fd);
+    fd = ll_open_serial_port(fd, baudRate);
     unsigned char *first_message = generate_su_tram(COMM_SEND_REP_REC, SET, 0);
     int res,result;
     int attempts = 0;
@@ -126,7 +126,7 @@ int llopen(int port, int flag)
   {
     sender = 0;
     setup_initial_values();
-    fd = ll_open_serial_port(fd);
+    fd = ll_open_serial_port(fd, baudRate);
     unsigned char *first_request = receive_tram(fd);
     int result = parse_and_process_su_tram(first_request, fd);
 
