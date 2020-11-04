@@ -271,6 +271,7 @@ int llclose(int fd)
         return -1;
       }
     }
+    sleep(2);
     free(new_tram);
     if (attempts == TIMEOUT_ATTEMPTS) return -1;
   }
