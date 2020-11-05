@@ -64,7 +64,7 @@ int main(int argc, char **argv)
   llread(fd, (char *)control_packet_received);
 
   unsigned char *size = (unsigned char *)calloc(8, sizeof(unsigned char));
-  unsigned char *name = (unsigned char *)calloc(max_array_size, sizeof(unsigned char));
+  unsigned char *name = (unsigned char *)calloc(MAX_STR_SIZE, sizeof(unsigned char));
   extract_size_name(control_packet_received, size, name);
 
   unsigned char *expected_final_control = control_packet_received;
@@ -99,7 +99,7 @@ int main(int argc, char **argv)
 
   // Last Control Packet
   unsigned char *last_size = (unsigned char *)calloc(8, sizeof(unsigned char));
-  unsigned char *last_name = (unsigned char *)calloc(max_array_size, sizeof(unsigned char));
+  unsigned char *last_name = (unsigned char *)calloc(MAX_STR_SIZE, sizeof(unsigned char));
 
   extract_size_name(tram, last_size, name);
   long final_received_size = *((long *)last_size);
