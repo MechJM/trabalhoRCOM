@@ -54,7 +54,7 @@ int main(int argc, char **argv)
   //char *file_name = argv[2];
   max_packet_size = atoi(argv[4]);
   packet_size = max_packet_size;
-  max_array_size = max_packet_size + 20;
+  max_array_size = max_packet_size * 2;
   int fd = 0;
   timeout = 3;
   

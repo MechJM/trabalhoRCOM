@@ -26,7 +26,7 @@ int main(int argc, char **argv)
   ll = NULL;
   packet_size = atoi(argv[3]);
   max_packet_size = packet_size;
-  max_array_size = max_packet_size + 20;
+  max_array_size = max_packet_size * 2;
 
   //Initialize packet
   packet = (unsigned char **)calloc(MAX_PACKET_ELEMS, sizeof(unsigned char *));
