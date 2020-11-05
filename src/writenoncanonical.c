@@ -56,7 +56,7 @@ int main(int argc, char **argv)
   packet_size = max_packet_size;
   max_array_size = max_packet_size * 2;
   int fd = 0;
-  timeout = 3;
+  timeout = 5;
   
   //Initialize packet
   packet = (unsigned char **) calloc(MAX_PACKET_ELEMS, sizeof(unsigned char *));
