@@ -57,9 +57,11 @@ int main(int argc, char **argv)
   max_array_size = max_packet_size * 2;
   int fd = 0;
   timeout = 5;
+
+  max_packet_elems = ((int) file_size / max_packet_size) + 1;
   
   //Initialize packet
-  packet = (unsigned char **) calloc(MAX_PACKET_ELEMS, sizeof(unsigned char *));
+  packet = (unsigned char **) calloc(max_packet_elems, sizeof(unsigned char *));
 
   ll = NULL;
 
@@ -108,7 +110,7 @@ int main(int argc, char **argv)
   {
     fprintf(stderr, "llwrite failed!\n");
     free(control_packet);
-    for (int i = 0; i < MAX_PACKET_ELEMS; i++)
+    for (int i = 0; i < max_packet_elems; i++)
     {
         free(packet[i]);
     }
@@ -127,7 +129,7 @@ int main(int argc, char **argv)
       fprintf(stderr, "llwrite failed!\n");
       free(data_packet);
       free(control_packet);
-      for (int i = 0; i < MAX_PACKET_ELEMS; i++)
+      for (int i = 0; i < max_packet_elems; i++)
       {
           free(packet[i]);
       }
@@ -143,7 +145,7 @@ int main(int argc, char **argv)
   {
     fprintf(stderr, "llwrite failed!\n");
     free(control_packet);
-    for (int i = 0; i < MAX_PACKET_ELEMS; i++)
+    for (int i = 0; i < max_packet_elems; i++)
     {
         free(packet[i]);
     }
@@ -157,7 +159,7 @@ int main(int argc, char **argv)
   free(control_packet);
   llclose(fd);
 
-  for (int i = 0; i < MAX_PACKET_ELEMS; i++)
+  for (int i = 0; i < max_packet_elems; i++)
   {
       free(packet[i]);
   }

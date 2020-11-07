@@ -28,12 +28,7 @@ int main(int argc, char **argv)
   max_packet_size = packet_size;
   max_array_size = max_packet_size * 2;
 
-  //Initialize packet
-  packet = (unsigned char **)calloc(MAX_PACKET_ELEMS, sizeof(unsigned char *));
-  for (int i = 0; i < MAX_PACKET_ELEMS; i++)
-  {
-    packet[i] = (unsigned char *)calloc(max_array_size, sizeof(unsigned char));
-  }
+  
 
   if (argc < 2)
   {
@@ -48,12 +43,6 @@ int main(int argc, char **argv)
   if (fd < 0)
   {
     fprintf(stderr, "llopen failed!\n");
-    for (size_t i = 0; i < MAX_PACKET_ELEMS; i++)
-    {
-      free(packet[i]);
-    }
-
-    free(packet);
     return -1;
   }
 
@@ -71,6 +60,17 @@ int main(int argc, char **argv)
   expected_final_control[0] = END;
 
   long received_size = *((long *)size);
+
+  max_packet_elems = ((int) received_size / max_packet_size) + 1;
+
+  //Initialize packet
+  packet = (unsigned char **)calloc(max_packet_elems, sizeof(unsigned char *));
+  for (int i = 0; i < max_packet_elems; i++)
+  {
+    packet[i] = (unsigned char *)calloc(max_array_size, sizeof(unsigned char));
+  }
+
+
   free(size);
   // Read File Packets Based On Received_Size
   int packet_num;
@@ -123,7 +123,7 @@ int main(int argc, char **argv)
   free(tram);
   free(control_packet_received);
 
-  for (int i = 0; i < MAX_PACKET_ELEMS; i++)
+  for (int i = 0; i < max_packet_elems; i++)
   {
     free(packet[i]);
   }
