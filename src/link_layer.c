@@ -209,7 +209,7 @@ int llread(int fd, char *buffer)
   {
     
     data = receive_info_tram(fd, &data_size);
-    
+
     data = byte_unstuff(data, &data_size);
     
     results = parse_info_tram(data, data_size);

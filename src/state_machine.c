@@ -1,58 +1,5 @@
 #include "state_machine.h"
-/*
-unsigned char * receive_tram(int fd)
-{
-    unsigned char * first_tram_part = calloc(4, sizeof(unsigned char));
-    unsigned char * result;
-    int res;
-
-    res = read(fd, first_tram_part, 4);
-    if (res != 4) fprintf(stderr, "Failed to read initial packet part in receive_tram function!\n");
-    
-    if ((first_tram_part[0] != FLAG)
-    || (first_tram_part[1] != COMM_REC_REP_SEND && first_tram_part[1] != COMM_SEND_REP_REC) 
-    || (first_tram_part[2] != SET && first_tram_part[2] != DISC && first_tram_part[2] != UA && first_tram_part[2] != RR && first_tram_part[2] != (RR | R_MASK) && first_tram_part[2] != REJ && first_tram_part[2] != (REJ | R_MASK) && first_tram_part[2] != INFO_CTRL && first_tram_part[2] != (INFO_CTRL | S_MASK))
-    || (first_tram_part[3] != (first_tram_part[1] ^ first_tram_part[2]))
-    ) 
-    result = NULL;
-
-    unsigned char current_byte = 0x00;
-
-    if (first_tram_part[2] == INFO_CTRL || first_tram_part[2] == (INFO_CTRL | S_MASK))
-    {
-        result = calloc(max_array_size, sizeof(unsigned char));
-        int current_index = 3;
-        for (int i = 0; i < 3; i++)
-        {
-            result[i] = first_tram_part[i + 1];
-        }
-        while (!reached_timeout)
-        {
-            res = read(fd, &current_byte, 1);
-            if (res != 1) fprintf(stderr, "Failed to read while trying to receive info tram in receive_tram function!\n");
-            if (current_byte == FLAG) break;
-            else result[current_index++] = current_byte;
-        }
-    }
-    else
-    {
-        result = calloc(3, sizeof(unsigned char));
-        for (int i = 0; i < 3; i++)
-        {
-            result[i] = first_tram_part[i + 1];
-        }
-        res = read(fd, &current_byte, 1);
-        if (res != 1) fprintf(stderr, "Failed to read while trying to receive terminating FLAG of S/U tram in receive_tram function!\n");
-        if (current_byte != FLAG) result = NULL;
-    }
-
-    free(first_tram_part);
-
-    if (reached_timeout) result = NULL;
-
-    return result;
-}
-*/
+#include <errno.h>
 //Should work for receiving SET, UA and DISC
 unsigned char *receive_tram(int fd)
 {
@@ -140,6 +87,78 @@ unsigned char *receive_tram(int fd)
 
     return result;
 }
+/*
+unsigned char *receive_info_tram(int fd, int *data_size)
+{
+    unsigned char *result = calloc(max_array_size, sizeof(unsigned char));
+    unsigned char current_byte = 0x00;
+    long int res;
+    res = read(fd, &current_byte, 1);
+    if (res != 1) fprintf(stderr, "Failed to read first flag in receive_info_tram");
+    //printf("First byte: %x\n",current_byte);
+    //if (current_byte != FLAG) return NULL;
+
+    res = read(fd, result, max_packet_size);
+    if (res < 0) fprintf(stderr, "Failed to read in receive_info_tram!\n");
+
+    int i,j, found_flag = 0;
+    for (i = 0; i < max_packet_size; i++)
+    {
+        if (result[i + 1] == FLAG)
+        {
+            found_flag = 1;
+            break;
+        } 
+    }
+    if (found_flag)
+    {
+        off_t off = lseek(fd,-(max_packet_size - i), SEEK_CUR);
+        printf("off:%ld\n",off);
+        printf("errno:%d\n",errno);
+    }
+    else
+    {
+        for (j = i; j < max_packet_size; j++)
+        {
+            if (result[j + 1] == FLAG)
+            {
+                break;
+            } 
+        }
+        off_t off = lseek(fd,-(max_packet_size - j), SEEK_CUR);
+        printf("off:%ld\n",off);
+        printf("errno:%d\n",errno);
+    }
+    
+    
+    
+
+    //printf("res:%ld\n",res);
+    int i = 0;
+
+    while (1)
+    {
+        
+        current_byte = result[i];
+        //printf("i:%d\n",i);
+        if (current_byte == FLAG) break;
+
+        if ((i == 0 && (current_byte != COMM_REC_REP_SEND && current_byte != COMM_SEND_REP_REC))
+        || (i == 1 && (current_byte != INFO_CTRL && current_byte != (INFO_CTRL | S_MASK)))
+        || (i == 2 && ((result[0] ^ result[1]) != current_byte))) 
+            return NULL;
+        i++;
+    }
+    printf("i:%d\n",i);
+    (*data_size) = i;
+
+    
+    if (found_flag) (*data_size) = i;
+    else (*data_size) = j;
+
+    return result;   
+}
+*/
 
 unsigned char *receive_info_tram(int fd, int *data_size)
 {
@@ -156,7 +175,7 @@ unsigned char *receive_info_tram(int fd, int *data_size)
         
         //printf("%x\t",currentByte);
         if (res != 1)
-            fprintf(stderr, "Failed to read in receive_tram!\n");
+            fprintf(stderr, "Failed to read in receive_info_tram!\n");
         //if (currentByte == 0x51) printf("State: %d\n",state);
 
         switch (state)
