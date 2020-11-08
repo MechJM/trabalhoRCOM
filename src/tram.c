@@ -289,7 +289,7 @@ char * process_info_tram_received(struct parse_results *results, int port)
     int res = write(port, response, response_size);
     free(response);
     res = res;
-    //printf("%d Bytes Written\n", res);
+    printf("%d Bytes Written\n", res);
     return result;
 }
 
