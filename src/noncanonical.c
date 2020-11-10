@@ -18,9 +18,26 @@
 
 volatile int STOP = FALSE;
 
+void sigalrm_handler(int signo)
+{
+  if (signo != SIGALRM) fprintf(stderr, "This handler shouldn't have been called.\n");
+  need_to_wait = 0;
+}
+
+void set_sigaction()
+{
+  struct sigaction action;
+  action.sa_handler = sigalrm_handler;
+  sigemptyset(&action.sa_mask);
+  action.sa_flags = 0;
+  
+  if (sigaction(SIGALRM, &action, NULL) < 0) fprintf(stderr, "Couldn't install signal handler for SIGALRM.\n");
+}
+
 int main(int argc, char **argv)
 {
-
+  srand(time(NULL));
+  set_sigaction();
   int fd = 0;
   timeout = 1;
   ll = NULL;
@@ -28,6 +45,8 @@ int main(int argc, char **argv)
   max_packet_size = packet_size;
   max_array_size = max_packet_size * 2;
 
+  fer = atoi(argv[4]);
+  t_prop = atoi(argv[5]);
   
 
   if (argc < 2)
@@ -119,8 +138,12 @@ int main(int argc, char **argv)
   clock_gettime(CLOCK_REALTIME, &end_time);
   double sTime = start_time.tv_sec + start_time.tv_nsec * 1e-9;
   double eTime = end_time.tv_sec + end_time.tv_nsec * 1e-9;
-  
-  printf("Execution Time = %.6lf\n", eTime - sTime);
+  double final_time = eTime - sTime;
+  //Writing results to csv
+  FILE* csv = fopen("results_reader.csv","w");
+  fprintf(csv,"%d,%d,%d,%ld,%f\n",fer,t_prop,baudRate,max_packet_size,final_time);
+  fclose(csv);
+  //printf("Execution Time = %.6lf\n", eTime - sTime);
 
   restoreFile((char *)name, packet, packet_size, packet_num, final_received_size);
   

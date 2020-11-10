@@ -40,6 +40,10 @@
 #define RESEND_DATA 2
 #define TIMED_OUT 3
 
+//Error generation
+#define DATA_ERROR_PROB 30
+#define HEAD_ERROR_PROB 30
+
 //Last sequential number received/sent
 int last_seq;
 
@@ -56,6 +60,9 @@ struct parse_results
     int control_bit; //value of the bit in the control_field, either 0 or 1
     int header_validity; //boolean to indicate if the header is valid
 };
+
+int fer, t_prop;
+int need_to_wait;
 
 int r, s;
 

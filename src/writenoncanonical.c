@@ -43,6 +43,9 @@ int main(int argc, char **argv)
   }
 
   file_size = file_data.st_size;
+
+  fer = atoi(argv[5]);
+  t_prop = atoi(argv[6]);
   
   //char *file_name = "pinguim_clone.gif";
   char file_name[MAX_STR_SIZE + 6];
@@ -162,8 +165,12 @@ int main(int argc, char **argv)
   clock_gettime(CLOCK_REALTIME, &end_time);
   double sTime = start_time.tv_sec + start_time.tv_nsec * 1e-9;
   double eTime = end_time.tv_sec + end_time.tv_nsec * 1e-9;
-  
-  printf("Execution Time = %.6lf\n", eTime - sTime);
+  double final_time = eTime - sTime;
+  //Writing results to csv
+  FILE* csv = fopen("results_writer.csv","w");
+  fprintf(csv,"%d,%d,%d,%ld,%f\n",fer,t_prop,baudRate,max_packet_size,final_time);
+  fclose(csv);
+  //printf("Execution Time = %.6lf\n", eTime - sTime);
 
   for (int i = 0; i < max_packet_elems; i++)
   {

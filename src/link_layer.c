@@ -209,7 +209,30 @@ int llread(int fd, char *buffer)
   {
     
     data = receive_info_tram(fd, &data_size);
-
+    //Simulating t_prop
+    if (data != NULL && t_prop > 0)
+    {
+      need_to_wait = 1;
+      alarm(t_prop);
+      while (need_to_wait);
+    }
+    //Simulating errors
+    if (data != NULL && fer > 0)
+    {
+      int rand_num = rand() % 100 + 1;
+      if (rand_num <= fer)
+      {
+        int rand_num_header = rand() % 100 + 1;
+        int rand_num_data = rand() % 100 + 1;
+        if (rand_num_data <= DATA_ERROR_PROB)
+        {
+          data[20] /= 2;
+          data[21] /= 5;
+          data[22] /= 7;
+        } 
+        if (rand_num_header <= HEAD_ERROR_PROB) data[0] = 9;
+      }
+    }
     data = byte_unstuff(data, &data_size);
     
     results = parse_info_tram(data, data_size);
