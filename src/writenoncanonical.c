@@ -76,10 +76,13 @@ int main(int argc, char **argv)
   processFile(fileData);
   free(fileData);
 
-  clock_t begin = clock();
+  
 
   //int baudRate = B38400;
   int baudRate = atoi(argv[3]);
+
+  struct timespec start_time;
+  clock_gettime(CLOCK_REALTIME, &start_time);
   fd = llopen(atoi(argv[1]), TRANSMITTER, baudRate);
 
   if (fd < 0)
@@ -152,12 +155,15 @@ int main(int argc, char **argv)
     free(packet);
   }
 
-  clock_t end = clock();
-  double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
-  printf("Execution Time = %f Seconds\n", time_spent);
-
   free(control_packet);
   llclose(fd);
+
+  struct timespec end_time;
+  clock_gettime(CLOCK_REALTIME, &end_time);
+  double sTime = start_time.tv_sec + start_time.tv_nsec * 1e-9;
+  double eTime = end_time.tv_sec + end_time.tv_nsec * 1e-9;
+  
+  printf("Execution Time = %.6lf\n", eTime - sTime);
 
   for (int i = 0; i < max_packet_elems; i++)
   {
