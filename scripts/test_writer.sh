@@ -2,7 +2,9 @@
 touch results_writer.csv
 # Parameters: port filename baudrate packet_size FER T_prop
 # Changing FER
+
 echo "CHANGING FER!"
+:'
 echo "FER = 10"
 ./write 0 pinguim.gif B38400 1000 10 0
 ./write 0 pinguim.gif B38400 1000 10 0
@@ -23,6 +25,7 @@ echo "FER = 50"
 ./write 0 pinguim.gif B38400 1000 50 0
 ./write 0 pinguim.gif B38400 1000 50 0
 ./write 0 pinguim.gif B38400 1000 50 0
+'
 echo "FER = 60"
 ./write 0 pinguim.gif B38400 1000 60 0
 ./write 0 pinguim.gif B38400 1000 60 0

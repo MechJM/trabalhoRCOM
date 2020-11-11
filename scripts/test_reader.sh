@@ -3,6 +3,7 @@ touch results_reader.csv
 # Parameters: port baudrate packet_size FER T_prop
 # Changing FER
 echo "CHANGING FER!"
+:'
 echo "FER = 10"
 ./read 0 B38400 1000 10 0 && rm pinguim_clone.gif
 ./read 0 B38400 1000 10 0 && rm pinguim_clone.gif
@@ -23,6 +24,7 @@ echo "FER = 50"
 ./read 0 B38400 1000 50 0 && rm pinguim_clone.gif
 ./read 0 B38400 1000 50 0 && rm pinguim_clone.gif
 ./read 0 B38400 1000 50 0 && rm pinguim_clone.gif
+'
 echo "FER = 60"
 ./read 0 B38400 1000 60 0 && rm pinguim_clone.gif
 ./read 0 B38400 1000 60 0 && rm pinguim_clone.gif
