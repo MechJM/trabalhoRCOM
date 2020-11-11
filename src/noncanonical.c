@@ -140,7 +140,7 @@ int main(int argc, char **argv)
   double eTime = end_time.tv_sec + end_time.tv_nsec * 1e-9;
   double final_time = eTime - sTime;
   //Writing results to csv
-  FILE* csv = fopen("results_reader.csv","w");
+  FILE* csv = fopen("results_reader.csv","a");
   fprintf(csv,"%d,%d,%d,%ld,%f\n",fer,t_prop,baudRate,max_packet_size,final_time);
   fclose(csv);
   //printf("Execution Time = %.6lf\n", eTime - sTime);
