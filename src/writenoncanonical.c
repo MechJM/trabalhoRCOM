@@ -79,7 +79,28 @@ int main(int argc, char **argv)
   clock_t begin = clock();
 
   //int baudRate = B38400;
-  int baudRate = atoi(argv[3]);
+  int baudRate = 0;
+
+  if (strcmp(argv[3],"B0") == 0) baudRate = B0;
+  else if (strcmp(argv[3],"B50") == 0) baudRate = B50;
+  else if (strcmp(argv[3],"B75") == 0) baudRate = B75;
+  else if (strcmp(argv[3],"B110") == 0) baudRate = B110;
+  else if (strcmp(argv[3],"B134") == 0) baudRate = B134;
+  else if (strcmp(argv[3],"B150") == 0) baudRate = B150;
+  else if (strcmp(argv[3],"B200") == 0) baudRate = B200;
+  else if (strcmp(argv[3],"B300") == 0) baudRate = B300;
+  else if (strcmp(argv[3],"B600") == 0) baudRate = B600;
+  else if (strcmp(argv[3],"B1200") == 0) baudRate = B1200;
+  else if (strcmp(argv[3],"B1800") == 0) baudRate = B1800;
+  else if (strcmp(argv[3],"B2400") == 0) baudRate = B2400;
+  else if (strcmp(argv[3],"B4800") == 0) baudRate = B4800;
+  else if (strcmp(argv[3],"B9600") == 0) baudRate = B9600;
+  else if (strcmp(argv[3],"B19200") == 0) baudRate = B19200;
+  else if (strcmp(argv[3],"B38400") == 0) baudRate = B38400;
+  else if (strcmp(argv[3],"B57600") == 0) baudRate = B57600;
+  else if (strcmp(argv[3],"B115200") == 0) baudRate = B115200;
+  else fprintf(stderr,"Invalid baudrate provided!\n");
+
   fd = llopen(atoi(argv[1]), TRANSMITTER, baudRate);
 
   if (fd < 0)
