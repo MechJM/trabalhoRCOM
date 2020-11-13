@@ -1,24 +1,36 @@
-file = open("file.txt","r+")
+import sys
+
+src_file_name = sys.argv[1]
+src_file = open(src_file_name,"r")
+dest_file_name = "avg_" + src_file_name.split('.')[0] + '.' + src_file_name.split('.')[1]
+print(dest_file_name)
+dest_file = open(dest_file_name,"w")
+
+avg_num = int(sys.argv[2])
+num_val_keep = int(sys.argv[3])
+
 index = 0
-lines = file.readlines()
-result_file = open("result.txt","w")
-for line in lines:
-    if (index) % 3 == 0:
-        line1 = line
-        line2 = lines[index + 1]
-        line3 = lines[index + 2]
-        split_line1 = line1.split(',')
-        split_line2 = line2.split(',')
-        split_line3 = line3.split(',')
-        val1 = split_line1[0]
-        val2 = split_line1[1]
-        val3s = []
-        val3s.extend([split_line1[-1],split_line2[-1],split_line3[-1]])
-        avg = (float(val3s[0]) + float(val3s[1]) + float(val3s[2]))/3
-        line1 = line1.replace(split_line1[-1],str(avg))
-        result_file.write(line1 + "\n")
+src_lines = src_file.readlines()
+for i in src_lines:
+    current_line = src_lines[index]
+    if index % avg_num == 0:
+        values_to_keep = []
+        values_to_avg = []
+        line_values = current_line.split(',')
+        for j in range(num_val_keep):
+            values_to_keep.append(line_values[j])
+        for j in range(avg_num):
+            values_to_avg.append(float(src_lines[index + j].split(',')[-1]))
+        total = 0
+        for j in values_to_avg:
+            total += j
+        avg = total / avg_num
+        result_line = ""
+        for j in values_to_keep:
+            result_line += j + ','
+        result_line += str(avg)
+        dest_file.write(result_line + "\n")
     index += 1
 
-
-file.close()
-result_file.close()
+src_file.close()
+dest_file.close()
