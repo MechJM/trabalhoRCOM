@@ -37,7 +37,7 @@ int main(int argc, char **argv)
   }
 
   //int baudRate = B38400;
-  int baudRate = 0;
+  baudRate = 0;
 
   if (strcmp(argv[2],"B0") == 0) baudRate = B0;
   else if (strcmp(argv[2],"B50") == 0) baudRate = B50;
@@ -59,7 +59,7 @@ int main(int argc, char **argv)
   else if (strcmp(argv[2],"B115200") == 0) baudRate = B115200;
   else fprintf(stderr,"Invalid baudrate provided!\n");
 
-  fd = llopen(atoi(argv[1]), RECEIVER, baudRate);
+  fd = llopen(atoi(argv[1]), RECEIVER);
 
   if (fd < 0)
   {

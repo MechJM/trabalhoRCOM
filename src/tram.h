@@ -78,6 +78,8 @@ long int max_packet_elems;
 
 long int file_size;
 
+int baudRate;
+
 long int max_array_size;
 
 void setup_initial_values();

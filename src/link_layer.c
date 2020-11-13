@@ -48,7 +48,7 @@ int ll_open_serial_port(int fd, int baudRate)
   /* set input mode (non-canonical, no echo,...) */
   newtio.c_lflag = 0;
 
-  newtio.c_cc[VTIME] = ll->timeout * 10; /* inter-character timer unused */
+  newtio.c_cc[VTIME] = ll->timeout * 100; /* inter-character timer unused */
   newtio.c_cc[VMIN] = 5;                 /* blocking read until 5 chars received */
 
   /* 
@@ -68,14 +68,14 @@ int ll_open_serial_port(int fd, int baudRate)
   return fd;
 }
 
-int llopen(int port, int flag, int baudRate)
+int llopen(int port, int flag)
 {
   
   char * actual_port = calloc(12, sizeof(char));
   sprintf(actual_port,"/dev/ttyS%d",port);
   //printf("actual_port: %s\n",actual_port);
   ll_init(actual_port, baudRate, timeout, 1);
-  
+
   int fd = 0;
   if (flag == TRANSMITTER)
   {
@@ -99,6 +99,7 @@ int llopen(int port, int flag, int baudRate)
         free(first_message);
         return -1;
       }
+      if (baudRate <= B1800 && baudRate != B0) sleep(1 + 5 * (B1800 - baudRate) * (B1800 - baudRate));
       alarm(timeout);
       reached_timeout = 0;
       response = receive_tram(fd);
@@ -168,6 +169,7 @@ int llwrite(int fd, char *buffer, int length)
       fprintf(stderr, "Failed to write in llwrite!\n");
       return -1;
     }
+    if (baudRate <= B1800 && baudRate != B0) sleep(1 + 5 * (B1800 - baudRate) * (B1800 - baudRate));
     alarm(timeout);
     reached_timeout = 0;
     response = receive_tram(fd);
@@ -254,6 +256,7 @@ int llclose(int fd)
         fprintf(stderr, "Failed to write on llclose!\n");
         return -1;
       }
+      if (baudRate <= B1800 && baudRate != B0) sleep(1 + 5 * (B1800 - baudRate) * (B1800 - baudRate));
       alarm(timeout);
       reached_timeout = 0;
       unsigned char *response = receive_tram(fd);

@@ -79,7 +79,7 @@ int main(int argc, char **argv)
   clock_t begin = clock();
 
   //int baudRate = B38400;
-  int baudRate = 0;
+  baudRate = 0;
 
   if (strcmp(argv[3],"B0") == 0) baudRate = B0;
   else if (strcmp(argv[3],"B50") == 0) baudRate = B50;
@@ -101,7 +101,7 @@ int main(int argc, char **argv)
   else if (strcmp(argv[3],"B115200") == 0) baudRate = B115200;
   else fprintf(stderr,"Invalid baudrate provided!\n");
 
-  fd = llopen(atoi(argv[1]), TRANSMITTER, baudRate);
+  fd = llopen(atoi(argv[1]), TRANSMITTER);
 
   if (fd < 0)
   {
