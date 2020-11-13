@@ -56,7 +56,7 @@ int main(int argc, char **argv)
   packet_size = max_packet_size;
   max_array_size = max_packet_size * 2;
   int fd = 0;
-  timeout = 5;
+  timeout = 10;
 
   max_packet_elems = ((int) file_size / max_packet_size) + 1;
   
