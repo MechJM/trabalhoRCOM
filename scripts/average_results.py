@@ -6,8 +6,8 @@ dest_file_name = "avg_" + src_file_name.split('.')[0] + '.' + src_file_name.spli
 print(dest_file_name)
 dest_file = open(dest_file_name,"w")
 
-avg_num = int(sys.argv[2])
-num_val_keep = int(sys.argv[3])
+avg_num = 3#int(sys.argv[2])
+num_val_keep = 4#int(sys.argv[3])
 
 index = 0
 src_lines = src_file.readlines()
