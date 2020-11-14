@@ -35,7 +35,7 @@ int ll_init(char *port, int baudRate, unsigned int timeout, unsigned int numTran
 
 int ll_open_serial_port(int fd, int baudRate);
 
-int llopen(int port, int flag, int baudRate);
+int llopen(int port, int flag);
 
 int llwrite(int fd, char *buffer, int length);
 
