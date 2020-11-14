@@ -44,61 +44,61 @@ touch results_writer.csv
 #./write 4 pinguim.gif B38400 1000 100 0
 #./write 4 pinguim.gif B38400 1000 100 0
 # Changing T_prop
-echo "CHANGING T_PROP!"
-echo "T_PROP = 1"
-./write 4 pinguim.gif B38400 1000 0 1
-./write 4 pinguim.gif B38400 1000 0 1
-./write 4 pinguim.gif B38400 1000 0 1
-echo "T_PROP = 2"
-./write 4 pinguim.gif B38400 1000 0 2
-./write 4 pinguim.gif B38400 1000 0 2
-./write 4 pinguim.gif B38400 1000 0 2
-echo "T_PROP = 3"
-./write 4 pinguim.gif B38400 1000 0 3
-./write 4 pinguim.gif B38400 1000 0 3
-./write 4 pinguim.gif B38400 1000 0 3
-echo "T_PROP = 4"
-./write 4 pinguim.gif B38400 1000 0 4
-./write 4 pinguim.gif B38400 1000 0 4
-./write 4 pinguim.gif B38400 1000 0 4
-echo "T_PROP = 5"
-./write 4 pinguim.gif B38400 1000 0 5
-./write 4 pinguim.gif B38400 1000 0 5
-./write 4 pinguim.gif B38400 1000 0 5
+#echo "CHANGING T_PROP!"
+#echo "T_PROP = 1"
+#./write 4 pinguim.gif B38400 1000 0 1
+#./write 4 pinguim.gif B38400 1000 0 1
+#./write 4 pinguim.gif B38400 1000 0 1
+#echo "T_PROP = 2"
+#./write 4 pinguim.gif B38400 1000 0 2
+#./write 4 pinguim.gif B38400 1000 0 2
+#./write 4 pinguim.gif B38400 1000 0 2
+#echo "T_PROP = 3"
+#./write 4 pinguim.gif B38400 1000 0 3
+#./write 4 pinguim.gif B38400 1000 0 3
+#./write 4 pinguim.gif B38400 1000 0 3
+#echo "T_PROP = 4"
+#./write 4 pinguim.gif B38400 1000 0 4
+#./write 4 pinguim.gif B38400 1000 0 4
+#./write 4 pinguim.gif B38400 1000 0 4
+#echo "T_PROP = 5"
+#./write 4 pinguim.gif B38400 1000 0 5
+#./write 4 pinguim.gif B38400 1000 0 5
+#./write 4 pinguim.gif B38400 1000 0 5
 # Changing baudrate
-echo "CHANGING BAUDRATE!"
-echo "BAUDRATE = 2400"
-./write 4 pinguim.gif B2400 1000 0 0
-./write 4 pinguim.gif B2400 1000 0 0
-./write 4 pinguim.gif B2400 1000 0 0
-echo "BAUDRATE = 4800"
-./write 4 pinguim.gif B4800 1000 0 0
-./write 4 pinguim.gif B4800 1000 0 0
-./write 4 pinguim.gif B4800 1000 0 0
-echo "BAUDRATE = 9600"
-./write 4 pinguim.gif B9600 1000 0 0
-./write 4 pinguim.gif B9600 1000 0 0
-./write 4 pinguim.gif B9600 1000 0 0
-echo "BAUDRATE = 19200"
-./write 4 pinguim.gif B19200 1000 0 0
-./write 4 pinguim.gif B19200 1000 0 0
-./write 4 pinguim.gif B19200 1000 0 0
-echo "BAUDRATE = 38400"
-./write 4 pinguim.gif B38400 1000 0 0
-./write 4 pinguim.gif B38400 1000 0 0
-./write 4 pinguim.gif B38400 1000 0 0
-echo "BAUDRATE = 57600"
-./write 4 pinguim.gif B57600 1000 0 0
-./write 4 pinguim.gif B57600 1000 0 0
-./write 4 pinguim.gif B57600 1000 0 0
-echo "BAUDRATE = 115200"
-./write 4 pinguim.gif B115200 1000 0 0
-./write 4 pinguim.gif B115200 1000 0 0
-./write 4 pinguim.gif B115200 1000 0 0
+#echo "CHANGING BAUDRATE!"
+#echo "BAUDRATE = 2400"
+#./write 4 pinguim.gif B2400 1000 0 0
+#./write 4 pinguim.gif B2400 1000 0 0
+#./write 4 pinguim.gif B2400 1000 0 0
+#echo "BAUDRATE = 4800"
+#./write 4 pinguim.gif B4800 1000 0 0
+#./write 4 pinguim.gif B4800 1000 0 0
+#./write 4 pinguim.gif B4800 1000 0 0
+#echo "BAUDRATE = 9600"
+#./write 4 pinguim.gif B9600 1000 0 0
+#./write 4 pinguim.gif B9600 1000 0 0
+#./write 4 pinguim.gif B9600 1000 0 0
+#echo "BAUDRATE = 19200"
+#./write 4 pinguim.gif B19200 1000 0 0
+#./write 4 pinguim.gif B19200 1000 0 0
+#./write 4 pinguim.gif B19200 1000 0 0
+#echo "BAUDRATE = 38400"
+#./write 4 pinguim.gif B38400 1000 0 0
+#./write 4 pinguim.gif B38400 1000 0 0
+#./write 4 pinguim.gif B38400 1000 0 0
+#echo "BAUDRATE = 57600"
+#./write 4 pinguim.gif B57600 1000 0 0
+#./write 4 pinguim.gif B57600 1000 0 0
+#./write 4 pinguim.gif B57600 1000 0 0
+#echo "BAUDRATE = 115200"
+#./write 4 pinguim.gif B115200 1000 0 0
+#./write 4 pinguim.gif B115200 1000 0 0
+#./write 4 pinguim.gif B115200 1000 0 0
 # Changing packet size
 echo "CHANGING PACKET SIZE!"
 echo "PACKET SIZE = 512"
-./write 4 pinguim.gif B38400 512 0 0
+#./write 4 pinguim.gif B38400 512 0 0
 ./write 4 pinguim.gif B38400 512 0 0
 ./write 4 pinguim.gif B38400 512 0 0
 echo "PACKET SIZE = 1024"
