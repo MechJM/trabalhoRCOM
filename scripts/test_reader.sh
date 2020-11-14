@@ -3,26 +3,26 @@ touch results_reader.csv
 # Parameters: port baudrate packet_size FER T_prop
 # Changing FER
 echo "CHANGING FER!"
-#echo "FER = 10"
-#./read 0 B38400 1000 10 0 && rm pinguim_clone.gif
-#./read 0 B38400 1000 10 0 && rm pinguim_clone.gif
-#./read 0 B38400 1000 10 0 && rm pinguim_clone.gif
-#echo "FER = 20"
-#./read 0 B38400 1000 20 0 && rm pinguim_clone.gif
-#./read 0 B38400 1000 20 0 && rm pinguim_clone.gif
-#./read 0 B38400 1000 20 0 && rm pinguim_clone.gif
-#echo "FER = 30"
-#./read 0 B38400 1000 30 0 && rm pinguim_clone.gif
-#./read 0 B38400 1000 30 0 && rm pinguim_clone.gif
-#./read 0 B38400 1000 30 0 && rm pinguim_clone.gif
-#echo "FER = 40"
-#./read 0 B38400 1000 40 0 && rm pinguim_clone.gif
-#./read 0 B38400 1000 40 0 && rm pinguim_clone.gif
-#./read 0 B38400 1000 40 0 && rm pinguim_clone.gif
-#echo "FER = 50"
-#./read 0 B38400 1000 50 0 && rm pinguim_clone.gif
-#./read 0 B38400 1000 50 0 && rm pinguim_clone.gif
-#./read 0 B38400 1000 50 0 && rm pinguim_clone.gif
+echo "FER = 10"
+./read 0 B38400 1000 10 0 && rm pinguim_clone.gif
+./read 0 B38400 1000 10 0 && rm pinguim_clone.gif
+./read 0 B38400 1000 10 0 && rm pinguim_clone.gif
+echo "FER = 20"
+./read 0 B38400 1000 20 0 && rm pinguim_clone.gif
+./read 0 B38400 1000 20 0 && rm pinguim_clone.gif
+./read 0 B38400 1000 20 0 && rm pinguim_clone.gif
+echo "FER = 30"
+./read 0 B38400 1000 30 0 && rm pinguim_clone.gif
+./read 0 B38400 1000 30 0 && rm pinguim_clone.gif
+./read 0 B38400 1000 30 0 && rm pinguim_clone.gif
+echo "FER = 40"
+./read 0 B38400 1000 40 0 && rm pinguim_clone.gif
+./read 0 B38400 1000 40 0 && rm pinguim_clone.gif
+./read 0 B38400 1000 40 0 && rm pinguim_clone.gif
+echo "FER = 50"
+./read 0 B38400 1000 50 0 && rm pinguim_clone.gif
+./read 0 B38400 1000 50 0 && rm pinguim_clone.gif
+./read 0 B38400 1000 50 0 && rm pinguim_clone.gif
 echo "FER = 60"
 ./read 0 B38400 1000 60 0 && rm pinguim_clone.gif
 ./read 0 B38400 1000 60 0 && rm pinguim_clone.gif
@@ -67,22 +67,18 @@ echo "T_PROP = 5"
 ./read 0 B38400 1000 0 5 && rm pinguim_clone.gif
 # Changing baudrate
 echo "CHANGING BAUDRATE!"
-echo "BAUDRATE = 300"
-./read 0 B300 1000 0 0 && rm pinguim_clone.gif
-./read 0 B300 1000 0 0 && rm pinguim_clone.gif
-./read 0 B300 1000 0 0 && rm pinguim_clone.gif
-echo "BAUDRATE = 900"
-./read 0 B900 1000 0 0 && rm pinguim_clone.gif
-./read 0 B900 1000 0 0 && rm pinguim_clone.gif
-./read 0 B900 1000 0 0 && rm pinguim_clone.gif
-echo "BAUDRATE = 2700"
-./read 0 B2700 1000 0 0 && rm pinguim_clone.gif
-./read 0 B2700 1000 0 0 && rm pinguim_clone.gif
-./read 0 B2700 1000 0 0 && rm pinguim_clone.gif
-echo "BAUDRATE = 8100"
-./read 0 B8100 1000 0 0 && rm pinguim_clone.gif
-./read 0 B8100 1000 0 0 && rm pinguim_clone.gif
-./read 0 B8100 1000 0 0 && rm pinguim_clone.gif
+echo "BAUDRATE = 2400"
+./read 0 B2400 1000 0 0 && rm pinguim_clone.gif
+./read 0 B2400 1000 0 0 && rm pinguim_clone.gif
+./read 0 B2400 1000 0 0 && rm pinguim_clone.gif
+echo "BAUDRATE = 4800"
+./read 0 B4800 1000 0 0 && rm pinguim_clone.gif
+./read 0 B4800 1000 0 0 && rm pinguim_clone.gif
+./read 0 B4800 1000 0 0 && rm pinguim_clone.gif
+echo "BAUDRATE = 9600"
+./read 0 B9600 1000 0 0 && rm pinguim_clone.gif
+./read 0 B9600 1000 0 0 && rm pinguim_clone.gif
+./read 0 B9600 1000 0 0 && rm pinguim_clone.gif
 echo "BAUDRATE = 19200"
 ./read 0 B19200 1000 0 0 && rm pinguim_clone.gif
 ./read 0 B19200 1000 0 0 && rm pinguim_clone.gif
@@ -91,10 +87,10 @@ echo "BAUDRATE = 38400"
 ./read 0 B38400 1000 0 0 && rm pinguim_clone.gif
 ./read 0 B38400 1000 0 0 && rm pinguim_clone.gif
 ./read 0 B38400 1000 0 0 && rm pinguim_clone.gif
-echo "BAUDRATE = 76800"
-./read 0 B76800 1000 0 0 && rm pinguim_clone.gif
-./read 0 B76800 1000 0 0 && rm pinguim_clone.gif
-./read 0 B76800 1000 0 0 && rm pinguim_clone.gif
+echo "BAUDRATE = 57600"
+./read 0 B57600 1000 0 0 && rm pinguim_clone.gif
+./read 0 B57600 1000 0 0 && rm pinguim_clone.gif
+./read 0 B57600 1000 0 0 && rm pinguim_clone.gif
 echo "BAUDRATE = 115200"
 ./read 0 B115200 1000 0 0 && rm pinguim_clone.gif
 ./read 0 B115200 1000 0 0 && rm pinguim_clone.gif
