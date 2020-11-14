@@ -131,7 +131,6 @@ int main(int argc, char **argv)
 
   
   while (strcmp((char *)tram, (char *)expected_final_control) != 0)
-
   {
     stored_packet_size = llread(fd, (char *)tram);
     if (tram[0] != 1)
@@ -162,7 +161,7 @@ int main(int argc, char **argv)
   double final_time = eTime - sTime;
   //Writing results to csv
   FILE* csv = fopen("results_reader.csv","a");
-  fprintf(csv,"%d,%d,%d,%ld,%f\n",fer,t_prop,baudRate,max_packet_size,final_time);
+  fprintf(csv,"%d,%d,%s,%ld,%f\n",fer,t_prop,argv[2],max_packet_size,final_time);
   fclose(csv);
   //printf("Execution Time = %.6lf\n", eTime - sTime);
 

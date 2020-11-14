@@ -20,7 +20,9 @@ for i in src_lines:
         for j in range(num_val_keep):
             values_to_keep.append(line_values[j])
         for j in range(avg_num):
-            values_to_avg.append(float(src_lines[index + j].split(',')[-1]))
+            elem_to_append = src_lines[index + j].split(',')[-1]
+            if elem_to_append != "-1":
+                values_to_avg.append(float(elem_to_append))
         total = 0
         for j in values_to_avg:
             total += j
