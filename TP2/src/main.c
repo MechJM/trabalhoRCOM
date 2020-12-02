@@ -6,7 +6,6 @@
 
 int main(int argc, char * argv[])
 {   
-    
     if (argc < 2)
     {
         fprintf(stderr, "Usage: download <url>\n");
@@ -50,7 +49,7 @@ int main(int argc, char * argv[])
     
     char * ip_address = getIP(host);
     
-    int sockfd = open_tcp_connection(ip_address, FTP_PORT);
+    int sockfd = open_tcp_connection(ip_address, FTP_PORT, CHECK_REPLY);
     
     /*
     if (login_rcom(sockfd))
@@ -66,18 +65,20 @@ int main(int argc, char * argv[])
 
     int second_connection_port = enter_passive_get_port(sockfd);
     
-    int sockfd2 = open_tcp_connection(ip_address, second_connection_port);
+    int sockfd2 = open_tcp_connection(ip_address, second_connection_port, DONT_CHECK_REPLY);
+
+    int size = get_file_size(sockfd, url_path);
 
     if (request_file(url_path, sockfd))
     {
         fprintf(stderr, "Couldn't request file!\n");
     }
 
-    char * file = read_reply(sockfd2, MAX_FILE_SIZE);
+    char * file = receive_file(sockfd2, size);
 
     FILE * new_file = fopen("file.txt", "w+");
 
-    fwrite(file, sizeof(char), MAX_FILE_SIZE, new_file);    
+    fwrite(file, sizeof(char), size - 1, new_file);    
 
     fclose(new_file);
 

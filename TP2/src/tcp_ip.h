@@ -23,9 +23,12 @@
 #define PORT_OFFSET1 43
 #define PORT_OFFSET2 47
 
+#define CHECK_REPLY 1
+#define DONT_CHECK_REPLY 0
+
 char * getIP(char * hostname);
 
-int open_tcp_connection(char * ip_address, int port);
+int open_tcp_connection(char * ip_address, int port, int check_reply);
 
 int close_tcp_connection(int sockfd);
 
@@ -35,6 +38,10 @@ int login_anonymous(int sockfd);
 
 int enter_passive_get_port(int sockfd);
 
-char * read_reply(int sockfd, long size);
+char * read_reply(int sockfd);
 
 int request_file(char * file_path, int sockfd);
+
+char * receive_file(int sockfd, int size);
+
+int get_file_size(int sockfd, char * file_path);

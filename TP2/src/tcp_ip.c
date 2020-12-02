@@ -28,7 +28,7 @@ struct hostent {
 
 }
 
-int open_tcp_connection(char * ip_address, int port)
+int open_tcp_connection(char * ip_address, int port, int check_reply)
 {
 	int	sockfd;
 	struct	sockaddr_in server_addr;
@@ -56,12 +56,13 @@ int open_tcp_connection(char * ip_address, int port)
     	/*send a string to the server*/
 	//bytes = write(sockfd, buf, strlen(buf));
 	//printf("Bytes escritos %d\n", bytes);
-
-	char * reply;
-
-	reply = read_reply(sockfd), MAX_STR_LEN;
-
-	free(reply);
+	if (check_reply)
+	{
+		char * reply;
+		reply = read_reply(sockfd);
+		free(reply);
+	}
+	
 
     return sockfd;
 }
@@ -81,7 +82,7 @@ int login_rcom(int sockfd)
 
 	write(sockfd, user_message, strlen(user_message));
 
-	reply = read_reply(sockfd, MAX_STR_LEN);
+	reply = read_reply(sockfd);
 
 	strncpy(code, reply, FTP_CODE_LENGTH);
 
@@ -118,7 +119,7 @@ int login_anonymous(int sockfd)
 
 	write(sockfd, user_message, strlen(user_message));
 
-	reply = read_reply(sockfd, MAX_STR_LEN);
+	reply = read_reply(sockfd);
 	
 	strncpy(code, reply, FTP_CODE_LENGTH);
 	code[FTP_CODE_LENGTH] = 0;
@@ -144,7 +145,7 @@ int enter_passive_get_port(int sockfd)
 
 	write(sockfd, passive_cmd, strlen(passive_cmd));
 
-	reply = read_reply(sockfd, MAX_STR_LEN);
+	reply = read_reply(sockfd);
 	
 	strncpy(code, reply, FTP_CODE_LENGTH);
 	code[FTP_CODE_LENGTH] = 0;
@@ -166,10 +167,10 @@ int enter_passive_get_port(int sockfd)
 	return 256 * sec2lastport + lastport;
 }
 
-char * read_reply(int sockfd, long size)
+char * read_reply(int sockfd)
 {
 	char current_char[1];
-	char * result = calloc(size, sizeof(char));
+	char * result = calloc(MAX_STR_LEN, sizeof(char));
 
 	while(1)
 	{
@@ -195,12 +196,54 @@ int request_file(char * file_path, int sockfd)
 	return 0;
 }
 
-char * receive_file(int sockfd)
+char * receive_file(int sockfd, int size)
 {
-	char * result = calloc(MAX_FILE_SIZE, sizeof(char));
+	char current_char;
+	char to_be_appended[2];
+	char * result = calloc(size, sizeof(char));
 
+	FILE * sockptr = fdopen(sockfd, "r");
+	
+	int i = 0;
 
+	while(i < size)
+	{
+		current_char = fgetc(sockptr);
+		if (current_char == EOF) break;
+		else
+		{
+			strncpy(to_be_appended, &current_char, 1);
+			strcat(result, to_be_appended);
+		} 
+	}
 
+	return result;
+}
+
+int get_file_size(int sockfd, char * file_path)
+{
+	char * reply;
+	char code[FTP_CODE_LENGTH + 1];
+	char file_size_msg[MAX_STR_LEN];
+
+	sprintf(file_size_msg, "size %s\n", file_path);
+
+	write(sockfd, file_size_msg, strlen(file_size_msg));
+
+	reply = read_reply(sockfd);
+
+	strncpy(code, reply, FTP_CODE_LENGTH);
+	code[FTP_CODE_LENGTH] = 0;
+
+	if (strcmp(code,"213") != 0)
+	{
+		fprintf(stderr, "Couldn't get file size! Code received: %s\n",code);
+		return -1;
+	}
+
+	int result;
+
+	sscanf(reply, "213 %d\n",&result);
 
 	return result;
 }
