@@ -49,7 +49,7 @@ int main(int argc, char * argv[])
     
     
     char * ip_address = getIP(host);
-
+    
     int sockfd = open_tcp_connection(ip_address, FTP_PORT);
     
     /*
@@ -65,8 +65,23 @@ int main(int argc, char * argv[])
     }
 
     int second_connection_port = enter_passive_get_port(sockfd);
-
+    
     int sockfd2 = open_tcp_connection(ip_address, second_connection_port);
+
+    if (request_file(url_path, sockfd))
+    {
+        fprintf(stderr, "Couldn't request file!\n");
+    }
+
+    char * file = read_reply(sockfd2, MAX_FILE_SIZE);
+
+    FILE * new_file = fopen("file.txt", "w+");
+
+    fwrite(file, sizeof(char), MAX_FILE_SIZE, new_file);    
+
+    fclose(new_file);
+
+    free(file);
 
     close_tcp_connection(sockfd);
 

@@ -59,7 +59,7 @@ int open_tcp_connection(char * ip_address, int port)
 
 	char * reply;
 
-	reply = read_reply(sockfd);
+	reply = read_reply(sockfd), MAX_STR_LEN;
 
 	free(reply);
 
@@ -81,7 +81,7 @@ int login_rcom(int sockfd)
 
 	write(sockfd, user_message, strlen(user_message));
 
-	reply = read_reply(sockfd);
+	reply = read_reply(sockfd, MAX_STR_LEN);
 
 	strncpy(code, reply, FTP_CODE_LENGTH);
 
@@ -96,6 +96,7 @@ int login_rcom(int sockfd)
 	read(sockfd, reply, MAX_STR_LEN);
 
 	strncpy(code, reply, FTP_CODE_LENGTH);
+	code[FTP_CODE_LENGTH] = 0;
 
 	if (strcmp(code, "230") != 0)
 	{
@@ -117,9 +118,10 @@ int login_anonymous(int sockfd)
 
 	write(sockfd, user_message, strlen(user_message));
 
-	reply = read_reply(sockfd);
+	reply = read_reply(sockfd, MAX_STR_LEN);
 	
 	strncpy(code, reply, FTP_CODE_LENGTH);
+	code[FTP_CODE_LENGTH] = 0;
 	
 	if (strcmp(code, "230") != 0)
 	{
@@ -142,9 +144,10 @@ int enter_passive_get_port(int sockfd)
 
 	write(sockfd, passive_cmd, strlen(passive_cmd));
 
-	reply = read_reply(sockfd);
-
+	reply = read_reply(sockfd, MAX_STR_LEN);
+	
 	strncpy(code, reply, FTP_CODE_LENGTH);
+	code[FTP_CODE_LENGTH] = 0;
 	
 	if (strcmp(code,"227") != 0)
 	{
@@ -163,10 +166,10 @@ int enter_passive_get_port(int sockfd)
 	return 256 * sec2lastport + lastport;
 }
 
-char * read_reply(int sockfd)
+char * read_reply(int sockfd, long size)
 {
 	char current_char[1];
-	char * result = calloc(MAX_STR_LEN, sizeof(char));
+	char * result = calloc(size, sizeof(char));
 
 	while(1)
 	{
@@ -174,6 +177,30 @@ char * read_reply(int sockfd)
 		if (strcmp(current_char,"\n") == 0) break;
 		else strcat(result, current_char);
 	}
+
+	return result;
+}
+
+int request_file(char * file_path, int sockfd)
+{
+	//char * reply;
+	//char code[FTP_CODE_LENGTH + 1];
+
+	char file_request_msg[MAX_STR_LEN];
+	sprintf(file_request_msg, "retr %s\n", file_path);
+
+	write(sockfd, file_request_msg, strlen(file_request_msg));
+
+	//free(reply);
+	return 0;
+}
+
+char * receive_file(int sockfd)
+{
+	char * result = calloc(MAX_FILE_SIZE, sizeof(char));
+
+
+
 
 	return result;
 }

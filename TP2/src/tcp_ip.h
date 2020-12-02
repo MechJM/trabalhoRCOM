@@ -14,6 +14,8 @@
 
 #define FTP_PORT 21
 
+#define MAX_FILE_SIZE 3000
+
 #define MAX_STR_LEN 200
 
 #define FTP_CODE_LENGTH 3
@@ -33,4 +35,6 @@ int login_anonymous(int sockfd);
 
 int enter_passive_get_port(int sockfd);
 
-char * read_reply(int sockfd);
+char * read_reply(int sockfd, long size);
+
+int request_file(char * file_path, int sockfd);
