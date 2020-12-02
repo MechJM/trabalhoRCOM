@@ -4,8 +4,6 @@
 #include <inttypes.h>
 #include "tcp_ip.h"
 
-#define MAX_STR_LEN 200
-
 int main(int argc, char * argv[])
 {   
     
@@ -14,15 +12,18 @@ int main(int argc, char * argv[])
         fprintf(stderr, "Usage: download <url>\n");
         exit(1);
     }
-    
+    //Parsing argv
+
+    //URL components
     char user[MAX_STR_LEN];
     char password[MAX_STR_LEN];
     char host[MAX_STR_LEN];
+    char url_path[MAX_STR_LEN];
+
     char * at_pos = strstr(argv[1],"@");
     int user_length;
     int password_length;
     char * host_start = &argv[1][6];
-    
     if (at_pos != NULL)
     {
         char * second_colon_pos = strstr(&argv[1][4],":");
@@ -38,36 +39,38 @@ int main(int argc, char * argv[])
 
         host_start = at_pos + 1;
     }
-    
     char * third_slash_pos = strstr(&argv[1][6],"/"); //assuming user, password and host don't contain slashes themselves
     uintptr_t third_slash_pos_value = (uintptr_t) third_slash_pos;
-
     uintptr_t host_start_value = (uintptr_t) host_start;
- 
     int host_length = third_slash_pos_value - host_start_value;
-
     strncpy(host, host_start, host_length);
-     
+    strncpy(url_path, third_slash_pos + 1, MAX_STR_LEN);
+    //Done parsing argv
+    
+    
     char * ip_address = getIP(host);
 
     int sockfd = open_tcp_connection(ip_address, FTP_PORT);
+    
+    /*
+    if (login_rcom(sockfd))
+    {
+        fprintf(stderr, "Function has failed to login as rcom!\n");
+    }
+    */
 
-    char reply[MAX_STR_LEN];
+    if (login_anonymous(sockfd))
+    {
+        fprintf(stderr, "Function has failed to login anonymously!\n");
+    }
 
-    read(sockfd,reply,MAX_STR_LEN);
+    int second_connection_port = enter_passive_get_port(sockfd);
 
-    printf("Reply: %s\n",reply);
-
-    char user_setup_message[] = "user anonymous\n";
-    //char password_setup_message = "pass password\n";
-
-    write(sockfd, user_setup_message, strlen(user_setup_message));
-
-    read(sockfd,reply,MAX_STR_LEN);
-
-    printf("Reply: %s\n",reply);
+    int sockfd2 = open_tcp_connection(ip_address, second_connection_port);
 
     close_tcp_connection(sockfd);
 
+    close_tcp_connection(sockfd2);
+    
     return 0;
 }
