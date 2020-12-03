@@ -24,7 +24,7 @@ Endereço IP da origem do pacote (TUX43): :
 Endereço IP do destino do pacote (TUX44): :
 172.16.40.254
 
-![Exp1_1](https://github.com/MechJM/trabalhoRCOM/tree/master/TP2/docs/logs/exp1_1.png)
+![Exp1_1](https://raw.githubusercontent.com/MechJM/trabalhoRCOM/master/TP2/docs/logs/exp1_1.png?token=AIVHWXE5XUXUQ4HR3YCDNDK72JCFG)
 
 Pacotes de resposta (reply):
 Endereço MAC da origem do pacote (TUX44): 00:21:5a:5a:7b:ea
