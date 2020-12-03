@@ -1,29 +1,53 @@
-TLDR: Ligar o TUX3 ao TUX4 utilizando um switch.
+# Experiência 1
 
-Pré-Requisitos: Ligar físicamente TUX3 e TUX4 ao switch.
+## TLDR: Ligar o TUXY3 ao TUXY4 utilizando um switch.
 
-Re-inicialização do subsistema de comunicação
-/etc/init.d/networking restart
+1. O que são pacotes ARP e para que são usados?
 
-Configuração TUXY3
+O ART é a abreviatura de Address Resolution Protocol e trata-se de um protocolo de comunicação que serve para mapeiar um endereço de rede, como por exemplo um endereço IPv4, num endereço físico, como por exemplo um endereço Ethernet ou MAC.
 
-activar interface eth0
-– root# ifconfig eth0 up
+2. Quais são os endereços MAC e IP dos pacotes ARP?
 
-listar configurações actuais das interfaces de rede
-– root# ifconfig
+Os endereços MAC e IP dos pacotes ARP podem ser consultados nas duas imagens abaixo. Este registo diz respeito a um comando ping entre o TUX43 e o TUX44.
 
-configurar eth0 com endereço 192.168.0.1 e máscara 16 bits
-– root# ifconfig eth0 192.168.0.1/16
+![Exp1_1](https://github.com/MechJM/trabalhoRCOM/blob/master/TP2/docs/logs/exp1_1.png)
 
-adicionar rota para subrede
-– root# route add -net 192.168.1.0/24 gw 172.16.4.254
+![Exp1_2](https://github.com/MechJM/trabalhoRCOM/blob/master/TP2/docs/logs/exp1_2.png)
 
-adicionar rota default
-– root# route add default gw 192.168.1.1
+3. Quais os pacotes gerados pelo comando ping?
 
-listar rotas actuais
-– root# route -n
+Os pacotes gerados pelo comando ping são em primeira instância pacotes ARP, de maneira a obter os endereços MAC e de seguida pacotes ICMP, Internet Control Message Protocol.
 
-echo 1 > /proc/sys/net/ipv4/ip_forward
-echo 0 > /proc/sys/net/ipv4/icmp_echo_ignore_broadcasts
+4. Quais os endereços MAC e IP dos pacotes ping?
+
+Pela análise dos logs do wireshark desta experiência podemos escrever os endereços MAC e IP dos pacotes ping entre o TUX3 e TUX4. Estes logs foram registados na bancada 4.
+
+Pacotes de pedido (request):
+* Endereço MAC da origem do pacote (TUX43): 00:21:5a:61:2f:d4
+* Endereço Mac do destino do pacote (TUX44): 00:21:5a:5a:7b:ea
+* Endereço IP da origem do pacote (TUX43): 172.16.40.1
+* Endereço IP do destino do pacote (TUX44): 172.16.40.254
+
+![Exp1_3](https://github.com/MechJM/trabalhoRCOM/blob/master/TP2/docs/logs/exp1_3.png)
+
+Pacotes de resposta (reply):
+* Endereço MAC da origem do pacote (TUX44): 00:21:5a:5a:7b:ea
+* Endereço MAC do destino do pacote (TUX43): 00:21:5a:61:2f:d4
+* Endereço IP da origem do pacote (TUX44): 172.16.40.254
+* Endereço IP do destino do pacote (TUX43): 172.16.40.1
+
+![Exp1_4](https://github.com/MechJM/trabalhoRCOM/blob/master/TP2/docs/logs/exp1_4.png)
+
+5. Como saber se a trama recetor Ethernet é ARP, IP ou ICMP?
+
+Se o Ethernet header de um pacote for 0x0800, significa que o tipo de trama é IP. Se o IP header for igual a 1, o protocolo é ICMP. Se o IP header tiver o valor 0x0806, significa que o tipo de trama é ARP. Isto pode ser consultado nos logs do wireshark.
+
+6. Como saber o comprimento de uma trama recetora?
+
+Podemos inspecionar a trama recetona no wireshark e determinar o seu comprimento.
+
+![Exp1_5](https://github.com/MechJM/trabalhoRCOM/blob/master/TP2/docs/logs/exp1_5.png)
+
+7. O que é a interface loopback e porque é importante?
+
+A interface loopback é uma interface virtual da rede que permite um computador receber respostas a perguntas que enviou a si mesmo. É importante para verificar se uma rede foi configurada corretamente.

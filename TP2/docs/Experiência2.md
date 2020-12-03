@@ -1,19 +1,21 @@
-TLDR: Criar duas LAN's virtuais, VLANY0 e VLANY1, associar o TUXY3 e o TUXY4 à VLANY0 e associar o TUXY2 à VLANY1.
+# Experiência 2
 
-1. Configurar VLANY0
+## TLDR: Criar duas LAN's virtuais, VLANY0 e VLANY1, associar o TUXY3 e o TUXY4 à VLANY0 e associar o TUXY2 à VLANY1.
 
-Pré-Requisitos: Ligar TUX2, TUX3 e TUX4 ao switch
+1. Como configurar VLANY0?
 
-Para criar a LAN virtual executar os seguintes comandos no GTKTerm:
+Executar os seguintes comandos no GTKTerm do TUX escolhido:
 * configure terminal
 * vlan y0
 * end
 
-Adicionar portas do Tux 3 e 4 fazendo:
+Para adicionar a porta "N" executar à LAN virtual vlan y0 executar:
 * configure terminal
-* interface fastethernet 0/port_number
+* interface fastethernet 0/N
 * switchport mode acess
 * switchport acess vlan y0
 * end
 
 2. Quantos domínios de transmissão existem e o que se pode concluir dos registos?
+
+Existem dois domínios de transmissão, um domínio que contêm o TUXY3 e TUXY4 e outro domínio que contém o TUXY2. Isto é justificado pelo facto de quando é executado um comando ping no TUXY3, o TUXY4 recebe respostas mas não do TUXY2. O TUXY2 não recebe respostas do TUXY3 nem do TUXY4.
