@@ -1,29 +1,40 @@
-TLDR: Ligar o TUX3 ao TUX4 utilizando um switch.
+TLDR: Ligar o TUXY3 ao TUXY4 utilizando um switch.
 
-Pré-Requisitos: Ligar físicamente TUX3 e TUX4 ao switch.
+1. O que são pacotes ARP e para que são usados?
 
-Re-inicialização do subsistema de comunicação
-/etc/init.d/networking restart
+O ART é a abreviatura de Address Resolution Protocol e trata-se de um protocolo de comunicação que serve para mapeiar um endereço de rede, como por exemplo um endereço IPv4, num endereço físico, como por exemplo um endereço Ethernet ou MAC.
 
-Configuração TUXY3
+2. Quais são os endereços MAC e IP dos pacotes ARB?
 
-activar interface eth0
-– root# ifconfig eth0 up
+3. Quais os pacotes gerados pelo comando ping?
 
-listar configurações actuais das interfaces de rede
-– root# ifconfig
+Os pacotes gerados pelo comando ping são em primeira instância pacotes ARP, de maneira a obter os endereços MAC e de seguida pacotes ICMP, Internet Control Message Protocol.
 
-configurar eth0 com endereço 192.168.0.1 e máscara 16 bits
-– root# ifconfig eth0 192.168.0.1/16
+4. Quais os endereços MAC e IP dos pacotes ping?
 
-adicionar rota para subrede
-– root# route add -net 192.168.1.0/24 gw 172.16.4.254
+Pela análise dos logs do wireshark desta experiência podemos escrever os endereços MAC e IP dos pacotes ping entre o TUX3 e TUX4. Estes logs foram registados na bancada 4.
 
-adicionar rota default
-– root# route add default gw 192.168.1.1
+Pacotes de pedido (request):
+Endereço MAC da origem do pacote (TUX43): 00:21:5a:61:2f:d4
+Endereço Mac do destino do pacote (TUX44): 00:21:5a:5a:7b:ea
+Endereço IP da origem do pacote (TUX43): :
+172.16.40.1
+Endereço IP do destino do pacote (TUX44): :
+172.16.40.254
 
-listar rotas actuais
-– root# route -n
+[Exp1_1](https://github.com/MechJM/trabalhoRCOM/tree/master/TP2/docs/logs/exp1_1.png)
 
-echo 1 > /proc/sys/net/ipv4/ip_forward
-echo 0 > /proc/sys/net/ipv4/icmp_echo_ignore_broadcasts
+Pacotes de resposta (reply):
+Endereço MAC da origem do pacote (TUX44): 00:21:5a:5a:7b:ea
+Endereço MAC do destino do pacote (TUX43):
+00:21:5a:61:2f:d4
+Endereço IP da origem do pacote (TUX44):
+172.16.40.254
+Endereço IP do destino do pacote (TUX43):
+172.16.40.1
+
+[Exp1_2](https://github.com/MechJM/trabalhoRCOM/tree/master/TP2/docs/logs/exp1_2.png)
+
+5. Como saber se a trama recetor Ethernet é ARP, IP ou ICMP?
+
+Se o header da trama for 0x0800, significa que é uma trama IP
