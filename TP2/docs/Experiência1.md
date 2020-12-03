@@ -6,7 +6,11 @@
 
 O ART é a abreviatura de Address Resolution Protocol e trata-se de um protocolo de comunicação que serve para mapeiar um endereço de rede, como por exemplo um endereço IPv4, num endereço físico, como por exemplo um endereço Ethernet ou MAC.
 
-2. Quais são os endereços MAC e IP dos pacotes ARB?
+2. Quais são os endereços MAC e IP dos pacotes ARP?
+
+Os endereços MAC e IP dos pacotes ARP podem ser consultados nas duas imagens abaixo. Este registo diz respeito a um comando ping entre o TUX43 e o TUX44.
+
+![Exp1_0_1](https://raw.githubusercontent.com/MechJM/trabalhoRCOM/master/TP2/docs/logs/exp1_0.png?token=AIVHWXED4KIHXW67P5ND6FS72JD7M)
 
 ![Exp1_0](https://raw.githubusercontent.com/MechJM/trabalhoRCOM/master/TP2/docs/logs/exp1_0.png?token=AIVHWXED4KIHXW67P5ND6FS72JD7M)
 
