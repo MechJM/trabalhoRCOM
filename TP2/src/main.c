@@ -18,6 +18,7 @@ int main(int argc, char * argv[])
     char password[MAX_STR_LEN];
     char host[MAX_STR_LEN];
     char url_path[MAX_STR_LEN];
+    char filename[MAX_STR_LEN];
 
     char * at_pos = strstr(argv[1],"@");
     int user_length;
@@ -45,19 +46,28 @@ int main(int argc, char * argv[])
     strncpy(host, host_start, host_length);
     strncpy(url_path, third_slash_pos + 1, MAX_STR_LEN);
     //Done parsing argv
-    
+
+    //Extracting filename
+    int last_slash_index = -1;
+    for (size_t i = 0; i < strlen(url_path); i++)
+    {
+        if (url_path[i] == '/') last_slash_index = i;
+    }
+    int filename_length = strlen(url_path) - last_slash_index - 1;
+    strncpy(filename, &url_path[last_slash_index + 1], filename_length);
+    //Done extracting filename
     
     char * ip_address = getIP(host);
     
     int sockfd = open_tcp_connection(ip_address, FTP_PORT, CHECK_REPLY);
-    
+       
     /*
     if (login_rcom(sockfd))
     {
         fprintf(stderr, "Function has failed to login as rcom!\n");
     }
     */
-
+    
     if (login_anonymous(sockfd))
     {
         fprintf(stderr, "Function has failed to login anonymously!\n");
@@ -76,7 +86,7 @@ int main(int argc, char * argv[])
 
     char * file = receive_file(sockfd2, size);
 
-    FILE * new_file = fopen("file.txt", "w+");
+    FILE * new_file = fopen(filename, "w+");
 
     fwrite(file, sizeof(char), size - 1, new_file);    
 
