@@ -45,3 +45,5 @@ int request_file(char * file_path, int sockfd);
 char * receive_file(int sockfd, int size);
 
 int get_file_size(int sockfd, char * file_path);
+
+int write_and_get_reply(int sockfd, char * msg, char * reply);

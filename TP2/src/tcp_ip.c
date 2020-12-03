@@ -74,35 +74,25 @@ int close_tcp_connection(int sockfd)
 
 int login_rcom(int sockfd)
 {
-	char * reply;
-	char code[FTP_CODE_LENGTH + 1];
+	char * reply = calloc(MAX_STR_LEN, sizeof(char));
 
 	char user_message[] = "user rcom\n";
 	char pass_message[] = "pass rcom\n";
 
-	write(sockfd, user_message, strlen(user_message));
+	int code1 = write_and_get_reply(sockfd, user_message, reply);
 
-	reply = read_reply(sockfd);
-
-	strncpy(code, reply, FTP_CODE_LENGTH);
-
-	if (strcmp(code,"331") != 0)
+	if (code1 != 331)
 	{
-		fprintf(stderr, "Couldn't login as rcom! Code received: %s\n", code);
-		return atoi(code);
+		fprintf(stderr, "Couldn't login as rcom! Code received: %d\n", code1);
+		return code1;
 	}
 
-	write(sockfd, pass_message, strlen(pass_message));
+	int code2 = write_and_get_reply(sockfd, pass_message, reply);
 
-	read(sockfd, reply, MAX_STR_LEN);
-
-	strncpy(code, reply, FTP_CODE_LENGTH);
-	code[FTP_CODE_LENGTH] = 0;
-
-	if (strcmp(code, "230") != 0)
+	if (code2 != 230)
 	{
-		fprintf(stderr, "Couldn't setup rcom password! Code received: %s\n", code);
-		return atoi(code);
+		fprintf(stderr, "Couldn't setup rcom password! Code received: %d\n", code2);
+		return code2;
 	}
 
 	free(reply);
@@ -112,22 +102,15 @@ int login_rcom(int sockfd)
 
 int login_anonymous(int sockfd)
 {
-	char * reply;
-	char code[FTP_CODE_LENGTH + 1];
-
+	char * reply = calloc(MAX_STR_LEN, sizeof(char));
 	char user_message[] = "user anonymous\n";
 
-	write(sockfd, user_message, strlen(user_message));
-
-	reply = read_reply(sockfd);
+	int code = write_and_get_reply(sockfd, user_message, reply);
 	
-	strncpy(code, reply, FTP_CODE_LENGTH);
-	code[FTP_CODE_LENGTH] = 0;
-	
-	if (strcmp(code, "230") != 0)
+	if (code != 230)
 	{
-		fprintf(stderr, "Couldn't setup anonymous user! Code received: %s\n", code);
-		return atoi(code);
+		fprintf(stderr, "Couldn't setup anonymous user! Code received: %d\n", code);
+		return code;
 	}
 
 	free(reply);
@@ -137,22 +120,16 @@ int login_anonymous(int sockfd)
 
 int enter_passive_get_port(int sockfd)
 {
-	char * reply;
-	char code[FTP_CODE_LENGTH + 1];
+	char * reply = calloc(MAX_STR_LEN, sizeof(char));
 	char passive_cmd[] = "pasv\n";
 	char sec2lastport_str[FTP_CODE_LENGTH + 1], lastport_str[FTP_CODE_LENGTH + 1];
 	int sec2lastport, lastport;
 
-	write(sockfd, passive_cmd, strlen(passive_cmd));
-
-	reply = read_reply(sockfd);
+	int code = write_and_get_reply(sockfd, passive_cmd, reply);
 	
-	strncpy(code, reply, FTP_CODE_LENGTH);
-	code[FTP_CODE_LENGTH] = 0;
-	
-	if (strcmp(code,"227") != 0)
+	if (code != 227)
 	{
-		fprintf(stderr, "Couldn't enter passive mode! Code received: %s\n",code);
+		fprintf(stderr, "Couldn't enter passive mode! Code received: %d\n",code);
 		return -1;
 	}
 
@@ -222,22 +199,16 @@ char * receive_file(int sockfd, int size)
 
 int get_file_size(int sockfd, char * file_path)
 {
-	char * reply;
-	char code[FTP_CODE_LENGTH + 1];
+	char * reply = calloc(MAX_STR_LEN, sizeof(char));
 	char file_size_msg[MAX_STR_LEN];
 
 	sprintf(file_size_msg, "size %s\n", file_path);
 
-	write(sockfd, file_size_msg, strlen(file_size_msg));
+	int code = write_and_get_reply(sockfd, file_size_msg, reply);
 
-	reply = read_reply(sockfd);
-
-	strncpy(code, reply, FTP_CODE_LENGTH);
-	code[FTP_CODE_LENGTH] = 0;
-
-	if (strcmp(code,"213") != 0)
+	if (code != 213)
 	{
-		fprintf(stderr, "Couldn't get file size! Code received: %s\n",code);
+		fprintf(stderr, "Couldn't get file size! Code received: %d\n",code);
 		return -1;
 	}
 
@@ -245,5 +216,27 @@ int get_file_size(int sockfd, char * file_path)
 
 	sscanf(reply, "213 %d\n",&result);
 
+	free(reply);
+
 	return result;
+}
+
+int write_and_get_reply(int sockfd, char * msg, char * reply)
+{
+	char * reply_before_returning = calloc(MAX_STR_LEN, sizeof(char));
+
+	char code[FTP_CODE_LENGTH + 1];
+
+	write(sockfd, msg, strlen(msg));
+
+	reply_before_returning = read_reply(sockfd);
+
+	strcpy(reply, reply_before_returning);
+
+	strncpy(code, reply, FTP_CODE_LENGTH);
+	code[FTP_CODE_LENGTH] = 0;
+
+	free(reply_before_returning);
+
+	return atoi(code);
 }
