@@ -1,4 +1,6 @@
-TLDR: Ligar o TUXY3 ao TUXY4 utilizando um switch.
+# Experiência 1
+
+## TLDR: Ligar o TUXY3 ao TUXY4 utilizando um switch.
 
 1. O que são pacotes ARP e para que são usados?
 
@@ -22,7 +24,7 @@ Endereço IP da origem do pacote (TUX43): :
 Endereço IP do destino do pacote (TUX44): :
 172.16.40.254
 
-[Exp1_1](https://github.com/MechJM/trabalhoRCOM/tree/master/TP2/docs/logs/exp1_1.png)
+![Exp1_1](https://github.com/MechJM/trabalhoRCOM/tree/master/TP2/docs/logs/exp1_1.png)
 
 Pacotes de resposta (reply):
 Endereço MAC da origem do pacote (TUX44): 00:21:5a:5a:7b:ea
@@ -33,7 +35,7 @@ Endereço IP da origem do pacote (TUX44):
 Endereço IP do destino do pacote (TUX43):
 172.16.40.1
 
-[Exp1_2](https://github.com/MechJM/trabalhoRCOM/tree/master/TP2/docs/logs/exp1_2.png)
+![Exp1_2](https://github.com/MechJM/trabalhoRCOM/tree/master/TP2/docs/logs/exp1_2.png)
 
 5. Como saber se a trama recetor Ethernet é ARP, IP ou ICMP?
 
