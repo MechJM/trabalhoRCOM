@@ -19,23 +19,18 @@ Os pacotes gerados pelo comando ping são em primeira instância pacotes ARP, de
 Pela análise dos logs do wireshark desta experiência podemos escrever os endereços MAC e IP dos pacotes ping entre o TUX3 e TUX4. Estes logs foram registados na bancada 4.
 
 Pacotes de pedido (request):
-Endereço MAC da origem do pacote (TUX43): 00:21:5a:61:2f:d4
-Endereço Mac do destino do pacote (TUX44): 00:21:5a:5a:7b:ea
-Endereço IP da origem do pacote (TUX43): :
-172.16.40.1
-Endereço IP do destino do pacote (TUX44): :
-172.16.40.254
+* Endereço MAC da origem do pacote (TUX43): 00:21:5a:61:2f:d4
+* Endereço Mac do destino do pacote (TUX44): 00:21:5a:5a:7b:ea
+* Endereço IP da origem do pacote (TUX43): 172.16.40.1
+* Endereço IP do destino do pacote (TUX44): 172.16.40.254
 
 ![Exp1_1](https://raw.githubusercontent.com/MechJM/trabalhoRCOM/master/TP2/docs/logs/exp1_1.png?token=AIVHWXE5XUXUQ4HR3YCDNDK72JCFG)
 
 Pacotes de resposta (reply):
-Endereço MAC da origem do pacote (TUX44): 00:21:5a:5a:7b:ea
-Endereço MAC do destino do pacote (TUX43):
-00:21:5a:61:2f:d4
-Endereço IP da origem do pacote (TUX44):
-172.16.40.254
-Endereço IP do destino do pacote (TUX43):
-172.16.40.1
+* Endereço MAC da origem do pacote (TUX44): 00:21:5a:5a:7b:ea
+* Endereço MAC do destino do pacote (TUX43): 00:21:5a:61:2f:d4
+* Endereço IP da origem do pacote (TUX44): 172.16.40.254
+* Endereço IP do destino do pacote (TUX43): 172.16.40.1
 
 ![Exp1_2](https://github.com/MechJM/trabalhoRCOM/blob/master/TP2/docs/logs/exp1_2.png?raw=true)
 
