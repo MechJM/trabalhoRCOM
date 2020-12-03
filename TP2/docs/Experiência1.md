@@ -8,7 +8,7 @@ O ART é a abreviatura de Address Resolution Protocol e trata-se de um protocolo
 
 2. Quais são os endereços MAC e IP dos pacotes ARB?
 
-![Exp1_0](https://raw.githubusercontent.com/MechJM/trabalhoRCOM/master/TP2/docs/logs/exp1_1.png?token=AIVHWXE5XUXUQ4HR3YCDNDK72JCFG)
+![Exp1_0](https://raw.githubusercontent.com/MechJM/trabalhoRCOM/master/TP2/docs/logs/exp1_0.png?token=AIVHWXED4KIHXW67P5ND6FS72JD7M)
 
 3. Quais os pacotes gerados pelo comando ping?
 
@@ -47,7 +47,7 @@ Se o Ethernet header de um pacote for 0x0800, significa que o tipo de trama é I
 
 Podemos inspecionar a trama recetona no wireshark e determinar o seu comprimento.
 
-![Exp1_3](https://github.com/MechJM/trabalhoRCOM/blob/master/TP2/docs/logs/exp1_2.png?raw=true)
+![Exp1_3](https://raw.githubusercontent.com/MechJM/trabalhoRCOM/master/TP2/docs/logs/exp1_3.png?token=AIVHWXBBGSBIAOBWVNGBMBC72JEAE)
 
 7. O que é a interface loopback e porque é importante?
 
