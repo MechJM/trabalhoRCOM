@@ -8,6 +8,8 @@ O ART é a abreviatura de Address Resolution Protocol e trata-se de um protocolo
 
 2. Quais são os endereços MAC e IP dos pacotes ARB?
 
+![Exp1_0](https://raw.githubusercontent.com/MechJM/trabalhoRCOM/master/TP2/docs/logs/exp1_1.png?token=AIVHWXE5XUXUQ4HR3YCDNDK72JCFG)
+
 3. Quais os pacotes gerados pelo comando ping?
 
 Os pacotes gerados pelo comando ping são em primeira instância pacotes ARP, de maneira a obter os endereços MAC e de seguida pacotes ICMP, Internet Control Message Protocol.
@@ -35,8 +37,18 @@ Endereço IP da origem do pacote (TUX44):
 Endereço IP do destino do pacote (TUX43):
 172.16.40.1
 
-![Exp1_2](https://github.com/MechJM/trabalhoRCOM/tree/master/TP2/docs/logs/exp1_2.png)
+![Exp1_2](https://github.com/MechJM/trabalhoRCOM/blob/master/TP2/docs/logs/exp1_2.png?raw=true)
 
 5. Como saber se a trama recetor Ethernet é ARP, IP ou ICMP?
 
-Se o header da trama for 0x0800, significa que é uma trama IP
+Se o Ethernet header de um pacote for 0x0800, significa que o tipo de trama é IP. Se o IP header for igual a 1, o protocolo é ICMP. Se o IP header tiver o valor 0x0806, significa que o tipo de trama é ARP. Isto pode ser consultado nos logs do wireshark.
+
+6. Como saber o comprimento de uma trama recetora?
+
+Podemos inspecionar a trama recetona no wireshark e determinar o seu comprimento.
+
+![Exp1_3](https://github.com/MechJM/trabalhoRCOM/blob/master/TP2/docs/logs/exp1_2.png?raw=true)
+
+7. O que é a interface loopback e porque é importante?
+
+A interface loopback é uma interface virtual da rede que permite um computador receber respostas a perguntas que enviou a si mesmo. É importante para verificar se uma rede foi configurada corretamente.
