@@ -10,9 +10,9 @@ O ART é a abreviatura de Address Resolution Protocol e trata-se de um protocolo
 
 Os endereços MAC e IP dos pacotes ARP podem ser consultados nas duas imagens abaixo. Este registo diz respeito a um comando ping entre o TUX43 e o TUX44.
 
-![Exp1_0_1](https://raw.githubusercontent.com/MechJM/trabalhoRCOM/master/TP2/docs/logs/exp1_0.png?token=AIVHWXED4KIHXW67P5ND6FS72JD7M)
+![Exp1_1](https://raw.githubusercontent.com/MechJM/trabalhoRCOM/master/TP2/docs/logs/exp1_0.png?token=AIVHWXED4KIHXW67P5ND6FS72JD7M)
 
-![Exp1_0](https://raw.githubusercontent.com/MechJM/trabalhoRCOM/master/TP2/docs/logs/exp1_0.png?token=AIVHWXED4KIHXW67P5ND6FS72JD7M)
+![Exp1_2](https://raw.githubusercontent.com/MechJM/trabalhoRCOM/master/TP2/docs/logs/exp1_0.png?token=AIVHWXED4KIHXW67P5ND6FS72JD7M)
 
 3. Quais os pacotes gerados pelo comando ping?
 
@@ -28,7 +28,7 @@ Pacotes de pedido (request):
 * Endereço IP da origem do pacote (TUX43): 172.16.40.1
 * Endereço IP do destino do pacote (TUX44): 172.16.40.254
 
-![Exp1_1](https://raw.githubusercontent.com/MechJM/trabalhoRCOM/master/TP2/docs/logs/exp1_1.png?token=AIVHWXE5XUXUQ4HR3YCDNDK72JCFG)
+![Exp1_3](https://raw.githubusercontent.com/MechJM/trabalhoRCOM/master/TP2/docs/logs/exp1_1.png?token=AIVHWXE5XUXUQ4HR3YCDNDK72JCFG)
 
 Pacotes de resposta (reply):
 * Endereço MAC da origem do pacote (TUX44): 00:21:5a:5a:7b:ea
@@ -36,7 +36,7 @@ Pacotes de resposta (reply):
 * Endereço IP da origem do pacote (TUX44): 172.16.40.254
 * Endereço IP do destino do pacote (TUX43): 172.16.40.1
 
-![Exp1_2](https://github.com/MechJM/trabalhoRCOM/blob/master/TP2/docs/logs/exp1_2.png?raw=true)
+![Exp1_4](https://github.com/MechJM/trabalhoRCOM/blob/master/TP2/docs/logs/exp1_2.png?raw=true)
 
 5. Como saber se a trama recetor Ethernet é ARP, IP ou ICMP?
 
@@ -46,7 +46,7 @@ Se o Ethernet header de um pacote for 0x0800, significa que o tipo de trama é I
 
 Podemos inspecionar a trama recetona no wireshark e determinar o seu comprimento.
 
-![Exp1_3](https://raw.githubusercontent.com/MechJM/trabalhoRCOM/master/TP2/docs/logs/exp1_3.png?token=AIVHWXBBGSBIAOBWVNGBMBC72JEAE)
+![Exp1_5](https://raw.githubusercontent.com/MechJM/trabalhoRCOM/master/TP2/docs/logs/exp1_3.png?token=AIVHWXBBGSBIAOBWVNGBMBC72JEAE)
 
 7. O que é a interface loopback e porque é importante?
 
