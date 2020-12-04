@@ -148,7 +148,7 @@ char * read_reply(int sockfd)
 {
 	char current_char[1];
 	char * result = calloc(MAX_STR_LEN, sizeof(char));
-
+	
 	while(1)
 	{
 		read(sockfd, &current_char, 1);
@@ -161,20 +161,27 @@ char * read_reply(int sockfd)
 
 int request_file(char * file_path, int sockfd)
 {
-	//char * reply;
-	//char code[FTP_CODE_LENGTH + 1];
+	char * reply = calloc(MAX_STR_LEN, sizeof(char));
+	
 
 	char file_request_msg[MAX_STR_LEN];
 	sprintf(file_request_msg, "retr %s\n", file_path);
 
-	write(sockfd, file_request_msg, strlen(file_request_msg));
+	int code = write_and_get_reply(sockfd, file_request_msg,reply);
 
-	//free(reply);
+	if (code != 150)
+	{
+		fprintf(stderr, "Failed to request file! Code received: %d\n",code);
+		return code;
+	}
+
+	free(reply);
 	return 0;
 }
 
-unsigned char * receive_file(int sockfd, int size)
+unsigned char * receive_file(int sockfd, int sockfd2, int size)
 {
+	char * reply = calloc(MAX_STR_LEN, sizeof(char));
 	char current_char;
 	unsigned char * result = calloc(size, sizeof(char));
 
@@ -191,6 +198,15 @@ unsigned char * receive_file(int sockfd, int size)
 			result[i++] = (unsigned char) current_char;
 		} 
 	}
+
+	reply = read_reply(sockfd2);
+	
+	if (strncmp(reply, "226", FTP_CODE_LENGTH) != 0)
+	{
+		fprintf(stderr, "Failed to transfer file! Reply received:\n%s\n",reply);
+	}
+	
+	free(reply);
 
 	return result;
 }
@@ -257,5 +273,23 @@ int change_transfer_mode(int sockfd, char * mode)
 
 	free(reply);
 
+	return 0;
+}
+
+int end_ftp_connection(int sockfd)
+{
+	char * reply = calloc(MAX_STR_LEN, sizeof(char));
+	
+	char termination_request[] = "quit\n";
+
+	int code = write_and_get_reply(sockfd, termination_request, reply);
+	
+	if (code != 221)
+	{
+		fprintf(stderr, "Failed to terminate FTP connection! Code received: %d\n",code);
+		return code;
+	}
+
+	free(reply);
 	return 0;
 }

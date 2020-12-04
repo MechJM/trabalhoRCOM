@@ -90,7 +90,7 @@ int main(int argc, char * argv[])
         fprintf(stderr, "Couldn't request file!\n");
     }
 
-    unsigned char * file = receive_file(sockfd2, size);
+    unsigned char * file = receive_file(sockfd2, sockfd, size);
 
     FILE * new_file = fopen(filename, "w+");
 
@@ -99,6 +99,11 @@ int main(int argc, char * argv[])
     fclose(new_file);
 
     free(file);
+
+    if (end_ftp_connection(sockfd))
+    {
+        fprintf(stderr, "Couldn't terminate connection!\n");
+    }
     
     close_tcp_connection(sockfd);
 

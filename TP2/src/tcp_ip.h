@@ -42,10 +42,12 @@ char * read_reply(int sockfd);
 
 int request_file(char * file_path, int sockfd);
 
-unsigned char * receive_file(int sockfd, int size);
+unsigned char * receive_file(int sockfd, int sockfd2, int size);
 
 int get_file_size(int sockfd, char * file_path);
 
 int write_and_get_reply(int sockfd, char * msg, char * reply);
 
 int change_transfer_mode(int sockfd, char * mode);
+
+int end_ftp_connection(int sockfd);
