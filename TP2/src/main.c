@@ -61,6 +61,7 @@ int main(int argc, char * argv[])
     
     int sockfd = open_tcp_connection(ip_address, FTP_PORT, CHECK_REPLY);
        
+    
     /*
     if (login_rcom(sockfd))
     {
@@ -72,28 +73,33 @@ int main(int argc, char * argv[])
     {
         fprintf(stderr, "Function has failed to login anonymously!\n");
     }
-
+    
     int second_connection_port = enter_passive_get_port(sockfd);
     
     int sockfd2 = open_tcp_connection(ip_address, second_connection_port, DONT_CHECK_REPLY);
 
     int size = get_file_size(sockfd, url_path);
 
+    if (change_transfer_mode(sockfd, "I"))
+    {
+        fprintf(stderr, "Couldn't change to binary mode!\n");
+    }
+
     if (request_file(url_path, sockfd))
     {
         fprintf(stderr, "Couldn't request file!\n");
     }
 
-    char * file = receive_file(sockfd2, size);
+    unsigned char * file = receive_file(sockfd2, size);
 
     FILE * new_file = fopen(filename, "w+");
 
-    fwrite(file, sizeof(char), size - 1, new_file);    
+    fwrite(file, sizeof(unsigned char), size - 1, new_file);    
 
     fclose(new_file);
 
     free(file);
-
+    
     close_tcp_connection(sockfd);
 
     close_tcp_connection(sockfd2);

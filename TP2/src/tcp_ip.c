@@ -173,11 +173,10 @@ int request_file(char * file_path, int sockfd)
 	return 0;
 }
 
-char * receive_file(int sockfd, int size)
+unsigned char * receive_file(int sockfd, int size)
 {
 	char current_char;
-	char to_be_appended[2];
-	char * result = calloc(size, sizeof(char));
+	unsigned char * result = calloc(size, sizeof(char));
 
 	FILE * sockptr = fdopen(sockfd, "r");
 	
@@ -189,8 +188,7 @@ char * receive_file(int sockfd, int size)
 		if (current_char == EOF) break;
 		else
 		{
-			strncpy(to_be_appended, &current_char, 1);
-			strcat(result, to_be_appended);
+			result[i++] = (unsigned char) current_char;
 		} 
 	}
 
@@ -239,4 +237,25 @@ int write_and_get_reply(int sockfd, char * msg, char * reply)
 	free(reply_before_returning);
 
 	return atoi(code);
+}
+
+int change_transfer_mode(int sockfd, char * mode)
+{
+	char * reply = calloc(MAX_STR_LEN, sizeof(char));
+
+	char mode_change_request[MAX_STR_LEN];
+
+	sprintf(mode_change_request, "type %s\n", mode);
+
+	int code = write_and_get_reply(sockfd, mode_change_request, reply);
+
+	if (code != 200)
+	{
+		fprintf(stderr,"Failed to change transfer mode! Code received: %d\n", code);
+		return code;
+	}
+
+	free(reply);
+
+	return 0;
 }
