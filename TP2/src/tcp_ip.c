@@ -72,18 +72,21 @@ int close_tcp_connection(int sockfd)
    return close(sockfd);
 }
 
-int login_rcom(int sockfd)
+int login_user(int sockfd, char * user, char * password)
 {
 	char * reply = calloc(MAX_STR_LEN, sizeof(char));
 
-	char user_message[] = "user rcom\n";
-	char pass_message[] = "pass rcom\n";
+	char user_message[MAX_STR_LEN];
+	char pass_message[MAX_STR_LEN];
+
+	sprintf(user_message, "user %s\n", user);
+	sprintf(pass_message, "pass %s\n", password);
 
 	int code1 = write_and_get_reply(sockfd, user_message, reply);
 
 	if (code1 != 331)
 	{
-		fprintf(stderr, "Couldn't login as rcom! Code received: %d\n", code1);
+		fprintf(stderr, "Couldn't login as %s! Code received: %d\n", user, code1);
 		return code1;
 	}
 
@@ -91,7 +94,7 @@ int login_rcom(int sockfd)
 
 	if (code2 != 230)
 	{
-		fprintf(stderr, "Couldn't setup rcom password! Code received: %d\n", code2);
+		fprintf(stderr, "Couldn't setup %s password! Code received: %d\n", user, code2);
 		return code2;
 	}
 

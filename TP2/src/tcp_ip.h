@@ -32,7 +32,7 @@ int open_tcp_connection(char * ip_address, int port, int check_reply);
 
 int close_tcp_connection(int sockfd);
 
-int login_rcom(int sockfd);
+int login_user(int sockfd, char * user, char * password);
 
 int login_anonymous(int sockfd);
 

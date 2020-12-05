@@ -33,9 +33,11 @@ int main(int argc, char * argv[])
        
         password_length = at_pos_value - second_colon_pos_value - 1;
         strncpy(password, second_colon_pos + 1, password_length);
+        password[password_length] = 0;
         
         user_length = second_colon_pos_value - seventh_char_pos_value;
         strncpy(user, &argv[1][6], user_length);
+        user[user_length] = 0;
 
         host_start = at_pos + 1;
     }
@@ -61,18 +63,26 @@ int main(int argc, char * argv[])
     
     int sockfd = open_tcp_connection(ip_address, FTP_PORT, CHECK_REPLY);
        
-    
-    /*
-    if (login_rcom(sockfd))
+    if (at_pos == NULL)
     {
-        fprintf(stderr, "Function has failed to login as rcom!\n");
+        if (login_anonymous(sockfd))
+        {
+            fprintf(stderr, "Function has failed to login anonymously!\n");
+            close_tcp_connection(sockfd);
+            return 1;
+        }
     }
-    */
-    
-    if (login_anonymous(sockfd))
+    else
     {
-        fprintf(stderr, "Function has failed to login anonymously!\n");
+        if (login_user(sockfd, user, password))
+        {
+            fprintf(stderr, "Function has failed to login with provided user!\n");
+            close_tcp_connection(sockfd);
+            return 1;
+        }
     }
+    
+    
     
     int second_connection_port = enter_passive_get_port(sockfd);
     
@@ -83,11 +93,17 @@ int main(int argc, char * argv[])
     if (change_transfer_mode(sockfd, "I"))
     {
         fprintf(stderr, "Couldn't change to binary mode!\n");
+        close_tcp_connection(sockfd);
+        close_tcp_connection(sockfd2);
+        return 1;
     }
 
     if (request_file(url_path, sockfd))
     {
         fprintf(stderr, "Couldn't request file!\n");
+        close_tcp_connection(sockfd);
+        close_tcp_connection(sockfd2);
+        return 1;
     }
 
     unsigned char * file = receive_file(sockfd2, sockfd, size);
@@ -103,6 +119,9 @@ int main(int argc, char * argv[])
     if (end_ftp_connection(sockfd))
     {
         fprintf(stderr, "Couldn't terminate connection!\n");
+        close_tcp_connection(sockfd);
+        close_tcp_connection(sockfd2);
+        return 1;
     }
     
     close_tcp_connection(sockfd);
