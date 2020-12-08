@@ -1,6 +1,9 @@
 # Experiência 1
 
 ## TLDR: Ligar o TUXY3 ao TUXY4 utilizando um switch.
+Para configurar uma rede IP os seguintes comandos foram executados na bancada 4:
+TUX43 - ifconfig eth0 172.16.40.1/24
+TUX44 - ifconfig eth0 172.16.40.254/24
 
 1. O que são pacotes ARP e para que são usados?
 
