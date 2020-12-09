@@ -27,20 +27,36 @@ int main(int argc, char * argv[])
     if (at_pos != NULL)
     {
         char * second_colon_pos = strstr(&argv[1][4],":");
-        uintptr_t at_pos_value = (uintptr_t) at_pos;
-        uintptr_t second_colon_pos_value = (uintptr_t) second_colon_pos;
-        uintptr_t seventh_char_pos_value = (uintptr_t) &argv[1][6];
-       
-        password_length = at_pos_value - second_colon_pos_value - 1;
-        strncpy(password, second_colon_pos + 1, password_length);
-        password[password_length] = 0;
-        
-        user_length = second_colon_pos_value - seventh_char_pos_value;
-        strncpy(user, &argv[1][6], user_length);
-        user[user_length] = 0;
 
+        uintptr_t seventh_char_pos_value = (uintptr_t) &argv[1][6];
+        uintptr_t at_pos_value = (uintptr_t) at_pos;
+
+        if (second_colon_pos != NULL)
+        {
+            uintptr_t second_colon_pos_value = (uintptr_t) second_colon_pos;
+            
+            password_length = at_pos_value - second_colon_pos_value - 1;
+            strncpy(password, second_colon_pos + 1, password_length);
+            password[password_length] = 0;
+            
+            user_length = second_colon_pos_value - seventh_char_pos_value;
+            strncpy(user, &argv[1][6], user_length);
+            user[user_length] = 0;
+        }
+        else
+        {
+            printf("Enter the password:\n");
+            scanf("%s", password);
+
+            user_length = at_pos_value - seventh_char_pos_value;
+            strncpy(user, &argv[1][6], user_length);
+            user[user_length] = 0;
+        }
+        
         host_start = at_pos + 1;
+        
     }
+
     char * third_slash_pos = strstr(&argv[1][6],"/"); //assuming user, password and host don't contain slashes themselves
     uintptr_t third_slash_pos_value = (uintptr_t) third_slash_pos;
     uintptr_t host_start_value = (uintptr_t) host_start;
