@@ -2,6 +2,17 @@
 
 ## TLDR: Configurar um router em Linux
 
+Para configurar uma rede IP os seguintes comandos foram executados na bancada 4 + os da experiência 1 e 2:
+TUX44 - ifconfig eth1 172.16.41.253/24
+TUX44 - echo 1 > /proc/sys/net/ipv4/ip_forward
+TUX42 - route add default gw 172.16.41.253
+
+TUX44 - configure terminal
+interface fastEthernet 0/15
+switchport mode acess
+switchport acess vlan41
+end
+
 1. Que rotas há nos TUX? Qual o seu significado?
 
 Nesta experiência foi configurado o TUXY4 como um router em linux, estabelecendo uma ligação entre as duas LAN's virtuais criadas na experiência 2.
