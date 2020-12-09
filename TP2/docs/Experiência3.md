@@ -1,9 +1,10 @@
 # Experiência 3
 
 ## TLDR: Configurar um router em Linux
+
 Para configurar uma rede IP os seguintes comandos foram executados na bancada 4 + os da experiência 1 e 2:
 TUX44 - ifconfig eth1 172.16.41.253/24
-TUX44 (Enable IP Fowarding) - echo 1 > /proc/sys/net/ipv4/ip_forward
+TUX44 - echo 1 > /proc/sys/net/ipv4/ip_forward
 TUX42 - route add default gw 172.16.41.253
 
 TUX44 - configure terminal
