@@ -189,7 +189,7 @@ int enter_passive_get_port(int sockfd)
 
 char * read_reply(int sockfd)
 {
-	char current_char[1];
+	char current_char[2];
 	char * result = calloc(MAX_REPLY_SIZE, sizeof(char));
 	char * line = calloc(MAX_STR_LEN, sizeof(char));
 	char * first_four_chars = calloc(4 + 1, sizeof(char));
@@ -199,6 +199,7 @@ char * read_reply(int sockfd)
 		while (1)
 		{
 			read(sockfd, &current_char, 1);
+			current_char[1] = 0;
 			if (strcmp(current_char,"\n") == 0) break;
 			else strcat(line, current_char);
 		}
