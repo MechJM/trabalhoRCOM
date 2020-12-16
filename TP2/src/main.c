@@ -12,7 +12,7 @@ int main(int argc, char * argv[])
         exit(1);
     }
     //Parsing argv
-    //printf("cheguei aqui\n");
+   
     //URL components
     char user[MAX_STR_LEN];
     char password[MAX_STR_LEN];
@@ -56,7 +56,7 @@ int main(int argc, char * argv[])
         host_start = at_pos + 1;
         
     }
-    //printf("cheguei aqui2\n");
+    
     char * third_slash_pos = strstr(&argv[1][6],"/"); //assuming user, password and host don't contain slashes themselves
     uintptr_t third_slash_pos_value = (uintptr_t) third_slash_pos;
     uintptr_t host_start_value = (uintptr_t) host_start;
@@ -65,7 +65,7 @@ int main(int argc, char * argv[])
     strncpy(url_path, third_slash_pos + 1, MAX_STR_LEN);
     host[host_length] = 0;
     //Done parsing argv
-    //printf("cheguei aqui3\n");
+    
     //Extracting filename
     int last_slash_index = -1;
     for (size_t i = 0; i < strlen(url_path); i++)
@@ -76,7 +76,7 @@ int main(int argc, char * argv[])
     strncpy(filename, &url_path[last_slash_index + 1], filename_length);
     filename[filename_length] = 0;
     //Done extracting filename
-    //printf("cheguei aqui4\n");
+    
     char * ip_address = getIP(host);
     
     int sockfd = open_tcp_connection(ip_address, FTP_PORT, CHECK_REPLY);
@@ -99,7 +99,7 @@ int main(int argc, char * argv[])
             return 1;
         }
     }
-    //printf("cheguei aqui5\n");
+    
     
     
     int second_connection_port = enter_passive_get_port(sockfd);
@@ -115,7 +115,7 @@ int main(int argc, char * argv[])
         close_tcp_connection(sockfd2);
         return 1;
     }
-    //printf("cheguei aqui6\n");
+    
     if (request_file(url_path, sockfd))
     {
         fprintf(stderr, "Couldn't request file!\n");
@@ -133,7 +133,7 @@ int main(int argc, char * argv[])
     fclose(new_file);
 
     free(file);
-    //printf("cheguei aqui7\n");
+    
     if (end_ftp_connection(sockfd))
     {
         fprintf(stderr, "Couldn't terminate connection!\n");
@@ -145,6 +145,6 @@ int main(int argc, char * argv[])
     close_tcp_connection(sockfd);
 
     close_tcp_connection(sockfd2);
-    //printf("cheguei aqui8\n");
+    
     return 0;
 }
