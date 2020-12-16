@@ -238,15 +238,14 @@ int request_file(char * file_path, int sockfd)
 unsigned char * receive_file(int sockfd, int sockfd2, int size)
 {
 	char * reply = calloc(MAX_STR_LEN, sizeof(char));
-	unsigned char current_char = 0;
 	unsigned char * result = calloc(size, sizeof(char));
 	
-	int i = 0;
-	
-	while(i < size)
+	int count = 0;
+	int bytes_read = 0;
+	while(count < size)
 	{
-		 read(sockfd, &current_char, 1);
-		result[i++] = current_char;
+		bytes_read = read(sockfd, result + count, size);
+		count += bytes_read;
 	}
 	
 	reply = read_reply(sockfd2);
