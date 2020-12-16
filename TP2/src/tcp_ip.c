@@ -106,17 +106,29 @@ int login_user(int sockfd, char * user, char * password)
 int login_anonymous(int sockfd)
 {
 	char * reply = calloc(MAX_STR_LEN, sizeof(char));
+	char * reply2 = calloc(MAX_STR_LEN, sizeof(char));
 	char user_message[] = "user anonymous\n";
 
 	int code = write_and_get_reply(sockfd, user_message, reply);
-	
-	if (code != 230)
+	int code2;
+	if (code == 331)
+	{
+		code2 = write_and_get_reply(sockfd, "pass random_string\n", reply2);
+		if (code2 != 230 && code2 != 220)
+		{
+			fprintf(stderr, "Couldn't setup anonymous user! Code received: %d\n", code);
+			return code;
+		}
+	}
+	else if (code != 230 && code != 220)
 	{
 		fprintf(stderr, "Couldn't setup anonymous user! Code received: %d\n", code);
 		return code;
 	}
 
+
 	free(reply);
+	free(reply2);
 
 	return 0;
 }
