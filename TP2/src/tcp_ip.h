@@ -17,6 +17,7 @@
 #define MAX_FILE_SIZE 3000
 
 #define MAX_STR_LEN 200
+#define MAX_REPLY_SIZE 2000
 
 #define FTP_CODE_LENGTH 3
 

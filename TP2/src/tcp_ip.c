@@ -167,18 +167,29 @@ int enter_passive_get_port(int sockfd)
 
 char * read_reply(int sockfd)
 {
-	//char current_char[1];
-	char * result = calloc(MAX_STR_LEN, sizeof(char));
-	
-	read(sockfd, result, MAX_STR_LEN);
+	char current_char[1];
+	char * result = calloc(MAX_REPLY_SIZE, sizeof(char));
+	char * line = calloc(MAX_STR_LEN, sizeof(char));
+	char * first_four_chars = calloc(4 + 1, sizeof(char));
+
 	printf("Reply: %s\n",result);
-	/*
-	while(1)
+	
+	while (1)
 	{
-		read(sockfd, &current_char, 1);
-		if (strcmp(current_char,"\n") == 0) break;
-		else strcat(result, current_char);
-	}*/
+		while (1)
+		{
+			read(sockfd, &current_char, 1);
+			if (strcmp(current_char,"\n") == 0) break;
+			else strcat(line, current_char);
+		}
+		strncpy(first_four_chars, line, 4);
+		first_four_chars[4] = 0;
+		if (first_four_chars[3] == ' ') break;
+		strcpy(line, "");
+	}
+	
+	free(line);
+	free(first_four_chars);
 
 	return result;
 }
