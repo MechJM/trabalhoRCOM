@@ -63,6 +63,7 @@ int main(int argc, char * argv[])
     int host_length = third_slash_pos_value - host_start_value;
     strncpy(host, host_start, host_length);
     strncpy(url_path, third_slash_pos + 1, MAX_STR_LEN);
+    host[host_length] = 0;
     //Done parsing argv
 
     //Extracting filename
@@ -73,6 +74,7 @@ int main(int argc, char * argv[])
     }
     int filename_length = strlen(url_path) - last_slash_index - 1;
     strncpy(filename, &url_path[last_slash_index + 1], filename_length);
+    filename[filename_length] = 0;
     //Done extracting filename
     
     char * ip_address = getIP(host);
