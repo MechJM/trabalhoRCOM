@@ -114,6 +114,7 @@ int login_anonymous(int sockfd)
 	if (code == 331)
 	{
 		code2 = write_and_get_reply(sockfd, "pass random_string\n", reply2);
+		read_reply(sockfd);
 		if (code2 != 230 && code2 != 220)
 		{
 			fprintf(stderr, "Couldn't setup anonymous user! Code received: %d\n", code);
