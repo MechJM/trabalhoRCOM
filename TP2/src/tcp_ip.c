@@ -188,13 +188,12 @@ char * read_reply(int sockfd)
 	char * result = calloc(MAX_REPLY_SIZE, sizeof(char));
 	char * line = calloc(MAX_STR_LEN, sizeof(char));
 	char * first_four_chars = calloc(4 + 1, sizeof(char));
-
 	while (1)
 	{
 		while (1)
-		{
+		{			
 			read(sockfd, &current_char, 1);
-			current_char[1] = 0;
+			current_char[1] = 0;		
 			if (strcmp(current_char,"\n") == 0) break;
 			else strcat(line, current_char);
 		}
@@ -210,7 +209,6 @@ char * read_reply(int sockfd)
 		strcpy(line, "");
 	}
 	printf("\n");
-	
 	free(line);
 	free(first_four_chars);
 
@@ -240,25 +238,19 @@ int request_file(char * file_path, int sockfd)
 unsigned char * receive_file(int sockfd, int sockfd2, int size)
 {
 	char * reply = calloc(MAX_STR_LEN, sizeof(char));
-	char current_char;
+	unsigned char current_char = 0;
 	unsigned char * result = calloc(size, sizeof(char));
-
-	FILE * sockptr = fdopen(sockfd, "r");
 	
 	int i = 0;
-
+	
 	while(i < size)
 	{
-		current_char = fgetc(sockptr);
-		if (current_char == EOF) break;
-		else
-		{
-			result[i++] = (unsigned char) current_char;
-		} 
+		 read(sockfd, &current_char, 1);
+		result[i++] = current_char;
 	}
-
-	reply = read_reply(sockfd2);
 	
+	reply = read_reply(sockfd2);
+
 	if (strncmp(reply, "226", FTP_CODE_LENGTH) != 0)
 	{
 		fprintf(stderr, "Failed to transfer file! Reply received:\n%s\n",reply);

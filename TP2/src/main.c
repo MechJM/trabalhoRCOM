@@ -115,7 +115,7 @@ int main(int argc, char * argv[])
         close_tcp_connection(sockfd2);
         return 1;
     }
-    
+
     if (request_file(url_path, sockfd))
     {
         fprintf(stderr, "Couldn't request file!\n");
@@ -125,10 +125,10 @@ int main(int argc, char * argv[])
     }
 
     unsigned char * file = receive_file(sockfd2, sockfd, size);
-
+ 
     FILE * new_file = fopen(filename, "w+");
 
-    fwrite(file, sizeof(unsigned char), size - 1, new_file);    
+    fwrite(file, sizeof(unsigned char), size, new_file);    
 
     fclose(new_file);
 
