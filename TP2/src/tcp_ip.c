@@ -143,7 +143,7 @@ int enter_passive_get_port(int sockfd)
 {
 	char * reply = calloc(MAX_STR_LEN, sizeof(char));
 	char passive_cmd[] = "pasv\n";
-	char sec2lastport_str[FTP_CODE_LENGTH + 1], lastport_str[FTP_CODE_LENGTH + 1];
+	char sec2lastport_str[FTP_CODE_LENGTH + 1] = "", lastport_str[FTP_CODE_LENGTH + 1] = "";
 	int sec2lastport, lastport;
 
 	int code = write_and_get_reply(sockfd, passive_cmd, reply);
