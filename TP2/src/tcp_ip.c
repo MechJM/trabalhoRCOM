@@ -154,14 +154,36 @@ int enter_passive_get_port(int sockfd)
 		return -1;
 	}
 
-	strncpy(sec2lastport_str, reply + PORT_OFFSET1, FTP_CODE_LENGTH);
+	int i = 0;
+	int comma_counter = 0;
+	int fourth_comma = -1, fifth_comma = -1;
+	while (reply[i] != ')')
+	{
+		if (reply[i] == ',') comma_counter++;
+		if (comma_counter == 4 && reply[i] == ',')
+		{
+			fourth_comma = i;
+		}
+		if (comma_counter == 5 && reply[i] == ',')
+		{
+			fifth_comma = i;
+		}
+		i++;
+	}
+	
+	strncpy(sec2lastport_str, &reply[fourth_comma + 1], fifth_comma - fourth_comma - 1);
 	sec2lastport = atoi(sec2lastport_str);
 
-	strncpy(lastport_str, reply + PORT_OFFSET2, FTP_CODE_LENGTH);
+	strncpy(lastport_str, &reply[fifth_comma + 1], i - fifth_comma - 1);
 	lastport = atoi(lastport_str);
-
+	
 	free(reply);
-
+	/*
+	printf("second 2 last str: %s\n",sec2lastport_str);
+	printf("second 2 last: %d\n",sec2lastport);
+	printf("last str: %s\n",lastport_str);
+	printf("last: %d\n",lastport);
+	*/
 	return 256 * sec2lastport + lastport;
 }
 
@@ -172,8 +194,6 @@ char * read_reply(int sockfd)
 	char * line = calloc(MAX_STR_LEN, sizeof(char));
 	char * first_four_chars = calloc(4 + 1, sizeof(char));
 
-	printf("Reply: %s\n",result);
-	
 	while (1)
 	{
 		while (1)
@@ -182,12 +202,18 @@ char * read_reply(int sockfd)
 			if (strcmp(current_char,"\n") == 0) break;
 			else strcat(line, current_char);
 		}
+		strcat(line,"\n");
 		strncpy(first_four_chars, line, 4);
 		first_four_chars[4] = 0;
-		if (first_four_chars[3] == ' ') break;
+		strcat(result, line);
+		//printf("Line: %s\n",line);
+		if (first_four_chars[3] == ' '){
+			strcpy(result, line);
+			break;
+		} 
 		strcpy(line, "");
 	}
-	
+	//printf("Reply: %s\n",result);
 	free(line);
 	free(first_four_chars);
 
