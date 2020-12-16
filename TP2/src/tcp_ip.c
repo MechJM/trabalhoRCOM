@@ -108,25 +108,30 @@ int login_anonymous(int sockfd)
 	char * reply = calloc(MAX_STR_LEN, sizeof(char));
 	char * reply2 = calloc(MAX_STR_LEN, sizeof(char));
 	char user_message[] = "user anonymous\n";
+	char pass_message[] = "pass random_string\n";
 
 	int code = write_and_get_reply(sockfd, user_message, reply);
-	
-	if (code == 331)
+	//printf("Reply: %s\n",reply);
+
+	if (code == 230)
 	{
-		int code2 = write_and_get_reply(sockfd, "pass random_string\n", reply2);
+		free(reply);
+		free(reply2);
+		return 0;
+	}
+	else if (code == 331)
+	{
+		int code2 = write_and_get_reply(sockfd, pass_message, reply2);
+		//printf("Reply2: %s\n",reply2);
 	
-		if (code2 != 230 && code2 != 220)
+		if (code2 != 230)
 		{
 			fprintf(stderr, "Couldn't setup anonymous user! Code received: %d\n", code);
+			free(reply);
+			free(reply2);
 			return code;
 		}
 	}
-	else if (code != 230 && code != 220)
-	{
-		fprintf(stderr, "Couldn't setup anonymous user! Code received: %d\n", code);
-		return code;
-	}
-
 
 	free(reply);
 	free(reply2);
@@ -142,7 +147,7 @@ int enter_passive_get_port(int sockfd)
 	int sec2lastport, lastport;
 
 	int code = write_and_get_reply(sockfd, passive_cmd, reply);
-	
+
 	if (code != 227)
 	{
 		fprintf(stderr, "Couldn't enter passive mode! Code received: %d\n",code);
@@ -162,15 +167,18 @@ int enter_passive_get_port(int sockfd)
 
 char * read_reply(int sockfd)
 {
-	char current_char[1];
+	//char current_char[1];
 	char * result = calloc(MAX_STR_LEN, sizeof(char));
 	
+	read(sockfd, result, MAX_STR_LEN);
+	printf("Reply: %s\n",result);
+	/*
 	while(1)
 	{
 		read(sockfd, &current_char, 1);
 		if (strcmp(current_char,"\n") == 0) break;
 		else strcat(result, current_char);
-	}
+	}*/
 
 	return result;
 }
