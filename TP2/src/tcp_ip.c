@@ -178,12 +178,7 @@ int enter_passive_get_port(int sockfd)
 	lastport = atoi(lastport_str);
 	
 	free(reply);
-	/*
-	printf("second 2 last str: %s\n",sec2lastport_str);
-	printf("second 2 last: %d\n",sec2lastport);
-	printf("last str: %s\n",lastport_str);
-	printf("last: %d\n",lastport);
-	*/
+	
 	return 256 * sec2lastport + lastport;
 }
 
@@ -207,14 +202,15 @@ char * read_reply(int sockfd)
 		strncpy(first_four_chars, line, 4);
 		first_four_chars[4] = 0;
 		strcat(result, line);
-		//printf("Line: %s\n",line);
+		printf("%s",line);
 		if (first_four_chars[3] == ' '){
 			strcpy(result, line);
 			break;
 		} 
 		strcpy(line, "");
 	}
-	//printf("Reply: %s\n",result);
+	printf("\n");
+	
 	free(line);
 	free(first_four_chars);
 
