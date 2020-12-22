@@ -20,10 +20,7 @@ struct hostent {
             herror("gethostbyname");
             exit(1);
         }
-        /*
-        printf("Host name  : %s\n", h->h_name);
-        printf("IP Address : %s\n",inet_ntoa(*((struct in_addr *)h->h_addr)));
-        */
+
         return inet_ntoa(*((struct in_addr *)h->h_addr));
 
 }
@@ -32,8 +29,7 @@ int open_tcp_connection(char * ip_address, int port, int check_reply)
 {
 	int	sockfd;
 	struct	sockaddr_in server_addr;
-	//char	buf[] = "Mensagem de teste na travessia da pilha TCP/IP\n";  
-	//int	bytes;
+
 	
 	/*server address handling*/
 	bzero((char*)&server_addr,sizeof(server_addr));
@@ -54,8 +50,7 @@ int open_tcp_connection(char * ip_address, int port, int check_reply)
 		exit(0);
 	}
     	/*send a string to the server*/
-	//bytes = write(sockfd, buf, strlen(buf));
-	//printf("Bytes escritos %d\n", bytes);
+
 	if (check_reply)
 	{
 		char * reply;
@@ -111,7 +106,7 @@ int login_anonymous(int sockfd)
 	char pass_message[] = "pass random_string\n";
 
 	int code = write_and_get_reply(sockfd, user_message, reply);
-	//printf("Reply: %s\n",reply);
+	
 
 	if (code == 230)
 	{
@@ -122,7 +117,7 @@ int login_anonymous(int sockfd)
 	else if (code == 331)
 	{
 		int code2 = write_and_get_reply(sockfd, pass_message, reply2);
-		//printf("Reply2: %s\n",reply2);
+		
 	
 		if (code2 != 230)
 		{
